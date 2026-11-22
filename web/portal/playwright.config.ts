@@ -1,7 +1,7 @@
 import { defineConfig } from '@playwright/test'
 
 /** Home screenshots against the running stack (make up), run in the `e2e` compose service from web/portal. */
-const origin = process.env.E2E_PORTAL_ORIGIN ?? 'http://gdsite.localhost:28080'
+const origin = process.env.E2E_PORTAL_ORIGIN ?? 'http://gd-realestate-starter.localhost:28080'
 const host = new URL(origin).hostname
 
 export default defineConfig({

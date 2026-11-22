@@ -10,9 +10,10 @@ The production stack is `docker-compose.prod.yml` with its own env file. The dev
 | `nginx` | built from `docker/prod/nginx.Dockerfile` | the only published ports (80, 443). TLS from mounted certs. Serves the admin (built static files) and proxies the portal and the API. Also builds the admin |
 | `portal` | built from `docker/prod/portal.Dockerfile` | `next start`. Builds the site on its first start (needs the API, so it cannot build earlier), about 2 to 4 minutes |
 | `php`, `php-queue`, `php-scheduler` | built from `docker/prod/php.Dockerfile` | code and vendor baked in, opcache, migrations on start |
-| `mariadb` | `mariadb:<pin>` | **no published port**, data in the `mariadb-data` volume |
+| `postgres` | `postgres:<pin>-alpine` | **no published port**, data in the `postgres-data` volume |
+| `redis` | `redis:<pin>-alpine` | **no published port**, password + ACL user, data in the `redis-data` volume |
 
-No Mailpit, no dev servers, no Redis (the app uses MariaDB for cache, sessions and queue). Every service has a restart policy (`always`), a healthcheck and rotated logs.
+No Mailpit, no dev servers (Redis serves cache, sessions and queue). Every service has a restart policy (`always`), a healthcheck and rotated logs.
 
 ## 1. DNS
 
@@ -34,13 +35,13 @@ One certificate must cover all three names (a wildcard `*.example.com` plus `exa
 
 ```sh
 sudo certbot certonly --standalone -d example.com -d admin.example.com -d api.example.com
-sudo mkdir -p /etc/gdsite/certs
-sudo ln -sf /etc/letsencrypt/live/example.com/fullchain.pem /etc/gdsite/certs/fullchain.pem
-sudo ln -sf /etc/letsencrypt/live/example.com/privkey.pem  /etc/gdsite/certs/privkey.pem
+sudo mkdir -p /etc/gd-realestate-starter/certs
+sudo ln -sf /etc/letsencrypt/live/example.com/fullchain.pem /etc/gd-realestate-starter/certs/fullchain.pem
+sudo ln -sf /etc/letsencrypt/live/example.com/privkey.pem  /etc/gd-realestate-starter/certs/privkey.pem
 ```
 
 Symlinks into `/etc/letsencrypt` do not resolve inside the container, so copy the real files instead:
-`sudo cp -L /etc/letsencrypt/live/example.com/{fullchain,privkey}.pem /etc/gdsite/certs/`. Renewal (monthly cron, or a certbot deploy hook):
+`sudo cp -L /etc/letsencrypt/live/example.com/{fullchain,privkey}.pem /etc/gd-realestate-starter/certs/`. Renewal (monthly cron, or a certbot deploy hook):
 renew, copy the files again, then `docker compose -f docker-compose.prod.yml --env-file .env.prod exec nginx nginx -s reload`.
 (Certbot's standalone mode needs port 80 free: run it before the first start, and use `--webroot` or a DNS challenge for renewals.)
 If a load balancer or CDN terminates TLS in front, mount its origin certificate here and set `TRUSTED_PROXY_CIDR` to the balancer's address range only.
@@ -83,7 +84,7 @@ Schedule it and copy the result off the server:
 15 2 * * *  cd /opt/site && sh scripts/backup.sh >> backups/backup.log 2>&1
 ```
 
-The script checks that the dump is complete and the archives are valid, and fails loudly otherwise. It dumps MariaDB with `mariadb-dump` (the stack has no PostgreSQL and no Redis).
+The script checks that the dump is complete and the archives are valid, and fails loudly otherwise. It dumps PostgreSQL with `pg_dump`; Redis holds only disposable state and is not dumped.
 `.env.prod` is deliberately not in the backup. **Test a restore** on a spare server before you need it:
 
 ```sh
@@ -107,5 +108,5 @@ Disk: uploads and the database grow; `docker system df` and `df -h` monthly. Upd
 
 - The production CSP drops `unsafe-eval` and, for the admin, `unsafe-inline` scripts. The portal still needs `unsafe-inline` for Next's bootstrap script (nonces are the next step, see SECURITY.md finding 5).
 - HSTS is sent on every HTTPS response. Do not enable it for a domain you cannot keep on HTTPS.
-- Only 22, 80 and 443 should be reachable from the internet. MariaDB is not published; verify with `ss -ltnp`.
+- Only 22, 80 and 443 should be reachable from the internet. PostgreSQL and Redis are not published; verify with `ss -ltnp`.
 - Rotate `PORTAL_REVALIDATE_SECRET`, the database passwords and the superadmin password if `.env.prod` was ever exposed (change the file, then `up -d` and, for the superadmin, re-run the seeder).

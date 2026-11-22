@@ -1,18 +1,18 @@
-# gd-business-site-boilerplate
+# gd-realestate-starter
 
 ## Repo map
-- `api/` — Laravel API (PHP 8.5, MariaDB; cache, sessions and queue use the database)
+- `api/` — Laravel API (PHP 8.5, PostgreSQL 18.6, Redis 8.10.3 for cache, sessions, queue)
 - `web/admin` — Next.js admin app
 - `web/portal` — Next.js public portal
 - `packages/` — shared packages
 - `docker/` — Dockerfiles and compose config
 - `docs/` — PHASES.md, VERSIONS.md, ENV.md, DECISIONS.md, PATTERNS.md
 
-## Commands (docker compose directly, not make)
+## Commands (docker compose and sh scripts only; never make)
 - `docker compose up -d --build --wait` / `docker compose down --remove-orphans` — start / stop the stack
 - `sh scripts/check-ports.sh` — check host ports from .env are free or ours
 - `docker compose exec -T php vendor/bin/pest --compact --filter=...` — targeted Pest tests
-- Final check (once, at the end of a phase; needs the stack up): `docker compose config -q`, `sh -n` on scripts, `docker compose exec -T nginx nginx -t`, then in php: `vendor/bin/pint --test`, `vendor/bin/phpstan analyse --memory-limit=1G --no-progress`, `vendor/bin/pest --compact`, `composer audit`, `php artisan security:routes`; plus `sh scripts/check-secrets.sh`, `node scripts/check-floors.mjs`
+- Final check (once, at the end of a phase; needs the stack up): `sh scripts/check.sh`
 
 ## Rules
 1) One phase at a time; read only CLAUDE.md, the phase row and files it names.
@@ -25,3 +25,4 @@
    (done, deviations, decisions I must make), then STOP and wait for approval.
 8) Commits and PRs: never add a Claude signature, Co-Authored-By trailer, "Generated with" line
    or any other Claude attribution to commit messages, PR descriptions, code or docs. Anywhere.
+9) Language: English only (portal and admin). Keep LOCALE_SUPPORTED=en; do not build or seed second-language content unless told to.

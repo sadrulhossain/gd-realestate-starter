@@ -1,6 +1,6 @@
 # Upgrade
 
-Two kinds of upgrade: **your site to a newer release of this boilerplate**, and **the pinned software** (PHP, Node, nginx, MariaDB, packages). Both end the same way: back up, deploy, check.
+Two kinds of upgrade: **your site to a newer release of this boilerplate**, and **the pinned software** (PHP, Node, nginx, PostgreSQL, Redis, packages). Both end the same way: back up, deploy, check.
 
 ## Before every upgrade
 
@@ -37,11 +37,12 @@ The single source of truth is [VERSIONS.md](VERSIONS.md): a **pin** (what we bui
 2. Change the pin in `docs/VERSIONS.md` (with source and date), then in `.env.example`, `.env.prod.example` (and your `.env` / `.env.prod`) for images, or in `composer.json` / `package.json` / `pnpm-workspace.yaml` for packages. Pins in package files are exact, no ranges.
 3. `docker compose exec php composer update <package>` or `pnpm up <package>@<version>`; commit the lock file.
 4. The README checks (Pest, Pint, Larastan, composer audit, security gates) and the Playwright suites. Fix what breaks before merging.
-5. Deploy as above. Image pins (PHP, Node, nginx, MariaDB) rebuild or pull new images on `up -d --build`.
+5. Deploy as above. Image pins (PHP, Node, nginx, PostgreSQL, Redis) rebuild or pull new images on `up -d --build`.
 
 Notes per component:
 
-- **MariaDB**: stay on the LTS line (11.8). Minor updates are safe (`MARIADB_AUTO_UPGRADE=1` upgrades the system tables). A major jump: take a backup, test the restore on a spare server first.
+- **PostgreSQL**: minor updates (18.x) are safe. A major jump (19): back up, test the restore on a spare server first, and read the image notes for the data directory layout.
+- **Redis**: minor updates are safe; the data is disposable (cache, sessions, queue).
 - **PHP**: the pin is the patch release; rebuild the image. Read the release notes for removed ini settings (`docker/php/security.ini`).
 - **Node / Next.js**: rebuilds the portal image; the portal rebuilds its site on start. Keep `pnpm audit` clean and re-run the axe and smoke specs.
 - **nginx**: re-run `nginx -t` (the compose healthcheck fails if the config does not load).

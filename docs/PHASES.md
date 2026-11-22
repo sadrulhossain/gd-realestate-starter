@@ -5,8 +5,8 @@ Tick a phase only when it is finished and committed.
 | Done | # | Phase | Scope / files |
 |------|---|-------|---------------|
 | [x] | 0 | Repo scaffold and docs | .gitignore, .editorconfig, CLAUDE.md, docs/* |
-| [x] | 1 | Docker infrastructure | docker-compose.yml, docker/*, scripts/check-ports.sh, Makefile, .env.example, hello apps in web/admin, web/portal, api/public |
-| [x] | 2 | Laravel API | api/*, Dockerfile (composer, phpredis), /api/v1/health, /api/v1/meta/locales, JSON errors, Pest/Pint/Larastan/Scramble, make t/check |
+| [x] | 1 | Docker infrastructure | docker-compose.yml, docker/*, scripts/check-ports.sh, .env.example, hello apps in web/admin, web/portal, api/public |
+| [x] | 2 | Laravel API | api/*, Dockerfile (composer, phpredis), /api/v1/health, /api/v1/meta/locales, JSON errors, Pest/Pint/Larastan/Scramble, scripts/check.sh |
 | [x] | 3 | Auth and RBAC | Passport 13, spatie/laravel-permission, menus table, /me, /me/menus, seeders, access tests |
 | [x] | 4 | Settings, sections, media | settings (singleton), sections, MediaService + WebP queue, HasSecondLanguage, PATTERNS.md |
 | [x] | 5 | FAQs, services, testimonials, team, gallery | migration + model + FormRequests + Resource + Policy + public/admin routes + seeder + feature test per module; image endpoints |
@@ -23,6 +23,7 @@ Tick a phase only when it is finished and committed.
 | [x] | 15 | Security, accessibility, performance | Advisory and floor re-check, composer/pnpm audit, Trivy; review of PKCE, policies (route audit script), uploads, captcha/throttle, CORS, nginx headers, secrets; axe + Lighthouse on the portal; memory sizing; findings in docs/SECURITY.md |
 | [x] | 16 | Production and release | docker-compose.prod.yml (portal Node server, admin static via nginx, TLS from mounted certs, no dev ports/Mailpit, private DB, restart + healthchecks), backup/restore scripts, README, DEPLOY, CUSTOMIZE, UPGRADE, CHANGELOG, tag v1.0.0 |
 | [x] | 17 | Polish and theming | admin splash, collapsible nested sidebar menu, logo + favicon upload (settings, admin, portal), manual `Site*Seeder` sample data, portal redesign, mobile-friendly admin and portal |
+| [x] | R0 | Fork, PostgreSQL swap, Redis | fork of the business-site template (phases 0-17 inherited), PostgreSQL 18.6 (pg_trgm, cube, earthdistance), Redis 8.10.3 for cache/session/queue, English only, no make, scripts/check.sh |
 
 <!-- TODO: the phase table was not included in the Phase 0 brief ("[paste the table below]").
      Paste phases 1..N here, one row each, with a [ ] checkbox. -->
