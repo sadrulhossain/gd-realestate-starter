@@ -1,20 +1,20 @@
 # Production stack. Not a profile of the dev file: the dev stack bind-mounts source and runs dev servers, this one runs
 # built images only. Use it with its own env file:
 #   docker compose -f docker-compose.prod.yml --env-file .env.prod up -d --build --wait
-# Published ports: 80 and 443 (nginx) only. MariaDB has no published port; there is no Redis, no Mailpit, no dev server.
-name: ${COMPOSE_PROJECT_NAME:-gdsite}
+# Published ports: 80 and 443 (nginx) only. PostgreSQL and Redis have no published port; there is no Mailpit, no dev server.
+name: ${COMPOSE_PROJECT_NAME:-gd-realestate-starter}
 
 x-logging: &logging
   driver: json-file
   options: { max-size: "10m", max-file: "3" }
 
 x-php: &php
-  image: ${COMPOSE_PROJECT_NAME:-gdsite}-php:${PHP_VERSION}
+  image: ${COMPOSE_PROJECT_NAME:-gd-realestate-starter}-php:${PHP_VERSION}
   restart: always
   init: true
   logging: *logging
   environment: &php-env
-    - APP_NAME=${APP_NAME:-My Business}
+    - APP_NAME=${APP_NAME:-My Real Estate}
     - APP_ENV=production
     - APP_DEBUG=false
     - APP_KEY=${APP_KEY:?set APP_KEY}
@@ -25,16 +25,21 @@ x-php: &php
     - LOCALE_SUPPORTED=${LOCALE_SUPPORTED:-en}
     - LOG_CHANNEL=stderr
     - LOG_LEVEL=${LOG_LEVEL:-warning}
-    - CACHE_STORE=database
-    - SESSION_DRIVER=database
+    - CACHE_STORE=redis
+    - SESSION_DRIVER=redis
     - SESSION_SECURE_COOKIE=true
-    - QUEUE_CONNECTION=database
-    - DB_CONNECTION=mariadb
-    - DB_HOST=mariadb
-    - DB_PORT=3306
-    - DB_DATABASE=${MARIADB_DATABASE}
-    - DB_USERNAME=${MARIADB_USER}
-    - DB_PASSWORD=${MARIADB_PASSWORD:?set MARIADB_PASSWORD}
+    - QUEUE_CONNECTION=redis
+    - REDIS_CLIENT=phpredis
+    - DB_CONNECTION=pgsql
+    - DB_HOST=postgres
+    - DB_PORT=5432
+    - DB_DATABASE=${POSTGRES_DB}
+    - DB_USERNAME=${POSTGRES_USER}
+    - DB_PASSWORD=${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD}
+    - REDIS_HOST=redis
+    - REDIS_PORT=6379
+    - REDIS_USERNAME=${REDIS_USER}
+    - REDIS_PASSWORD=${REDIS_PASSWORD:?set REDIS_PASSWORD}
     - MAIL_MAILER=${MAIL_MAILER:-smtp}
     - MAIL_HOST=${MAIL_HOST:-}
     - MAIL_PORT=${MAIL_PORT:-587}
@@ -42,7 +47,7 @@ x-php: &php
     - MAIL_USERNAME=${MAIL_USERNAME:-}
     - MAIL_PASSWORD=${MAIL_PASSWORD:-}
     - MAIL_FROM_ADDRESS=${MAIL_FROM_ADDRESS:-no-reply@${APP_DOMAIN}}
-    - MAIL_FROM_NAME=${APP_NAME:-My Business}
+    - MAIL_FROM_NAME=${APP_NAME:-My Real Estate}
     - UPLOADS_CONTAINER_PATH=${UPLOADS_CONTAINER_PATH}
     - UPLOADS_MAX_MB=${UPLOADS_MAX_MB:-5}
     - PORTAL_REVALIDATE_URL=http://portal:3000/api/revalidate
@@ -59,30 +64,47 @@ x-php: &php
     - uploads-data:${UPLOADS_CONTAINER_PATH}
 
 services:
-  mariadb:
-    image: mariadb:${MARIADB_VERSION}
-    container_name: ${COMPOSE_PROJECT_NAME:-gdsite}-mariadb
+  postgres:
+    image: postgres:${POSTGRES_VERSION}-alpine
+    container_name: ${COMPOSE_PROJECT_NAME:-gd-realestate-starter}-postgres
     restart: always
     logging: *logging
     # No `ports:` on purpose: only containers on this compose network can reach the database.
     environment:
-      - MARIADB_DATABASE=${MARIADB_DATABASE}
-      - MARIADB_USER=${MARIADB_USER}
-      - MARIADB_PASSWORD=${MARIADB_PASSWORD:?set MARIADB_PASSWORD}
-      - MARIADB_ROOT_PASSWORD=${MARIADB_ROOT_PASSWORD:?set MARIADB_ROOT_PASSWORD}
-      - MARIADB_AUTO_UPGRADE=1
+      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD}
     volumes:
-      - mariadb-data:/var/lib/mysql
+      - postgres-data:/var/lib/postgresql
     healthcheck:
-      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
       interval: 10s
       timeout: 5s
-      retries: 20
-      start_period: 30s
+      retries: 10
+      start_period: 20s
+
+  redis:
+    image: redis:${REDIS_VERSION}-alpine
+    container_name: ${COMPOSE_PROJECT_NAME:-gd-realestate-starter}-redis
+    restart: always
+    logging: *logging
+    # No `ports:` on purpose: internal network only.
+    entrypoint: ["sh", "/docker/redis-entrypoint.sh"]
+    environment:
+      - REDIS_USER=${REDIS_USER}
+      - REDIS_PASSWORD=${REDIS_PASSWORD:?set REDIS_PASSWORD}
+    volumes:
+      - redis-data:/data
+      - ./docker/redis/entrypoint.sh:/docker/redis-entrypoint.sh:ro
+    healthcheck:
+      test: ["CMD-SHELL", "REDISCLI_AUTH=\"$$REDIS_PASSWORD\" redis-cli --user \"$$REDIS_USER\" ping | grep -q PONG"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
 
   php:
     <<: *php
-    container_name: ${COMPOSE_PROJECT_NAME:-gdsite}-php
+    container_name: ${COMPOSE_PROJECT_NAME:-gd-realestate-starter}-php
     # The one php service that builds the image; the queue worker and the scheduler reuse it.
     build:
       context: .
@@ -90,6 +112,7 @@ services:
       args:
         PHP_VERSION: ${PHP_VERSION}
         COMPOSER_VERSION: ${COMPOSER_VERSION}
+        PHPREDIS_VERSION: ${PHPREDIS_VERSION}
         UPLOADS_CONTAINER_PATH: ${UPLOADS_CONTAINER_PATH}
     command: ["php-start.sh"]
     healthcheck:
@@ -99,11 +122,12 @@ services:
       retries: 5
       start_period: 60s
     depends_on:
-      mariadb: { condition: service_healthy }
+      postgres: { condition: service_healthy }
+      redis: { condition: service_healthy }
 
   php-queue:
     <<: *php
-    container_name: ${COMPOSE_PROJECT_NAME:-gdsite}-php-queue
+    container_name: ${COMPOSE_PROJECT_NAME:-gd-realestate-starter}-php-queue
     user: www-data
     command: ["php", "artisan", "queue:work", "--sleep=3", "--tries=3", "--max-time=3600"]
     healthcheck:
@@ -116,7 +140,7 @@ services:
 
   php-scheduler:
     <<: *php
-    container_name: ${COMPOSE_PROJECT_NAME:-gdsite}-php-scheduler
+    container_name: ${COMPOSE_PROJECT_NAME:-gd-realestate-starter}-php-scheduler
     user: www-data
     command: ["php", "artisan", "schedule:work"]
     healthcheck:
@@ -129,14 +153,14 @@ services:
 
   # Next.js as a Node server. Builds the site on first start (see docker/prod/portal.Dockerfile), hence the long start_period.
   portal:
-    image: ${COMPOSE_PROJECT_NAME:-gdsite}-portal:${NODE_VERSION}
+    image: ${COMPOSE_PROJECT_NAME:-gd-realestate-starter}-portal:${NODE_VERSION}
     build:
       context: .
       dockerfile: docker/prod/portal.Dockerfile
       args:
         NODE_VERSION: ${NODE_VERSION}
         IMAGE_ID: ${IMAGE_ID:-local}
-    container_name: ${COMPOSE_PROJECT_NAME:-gdsite}-portal
+    container_name: ${COMPOSE_PROJECT_NAME:-gd-realestate-starter}-portal
     restart: always
     init: true
     logging: *logging
@@ -161,7 +185,7 @@ services:
       nginx: { condition: service_healthy }
 
   nginx:
-    image: ${COMPOSE_PROJECT_NAME:-gdsite}-nginx:${NGINX_VERSION}
+    image: ${COMPOSE_PROJECT_NAME:-gd-realestate-starter}-nginx:${NGINX_VERSION}
     build:
       context: .
       dockerfile: docker/prod/nginx.Dockerfile
@@ -169,7 +193,7 @@ services:
         NODE_VERSION: ${NODE_VERSION}
         NGINX_VERSION: ${NGINX_VERSION}
         OAUTH_ADMIN_CLIENT_ID: ${OAUTH_ADMIN_CLIENT_ID}
-    container_name: ${COMPOSE_PROJECT_NAME:-gdsite}-nginx
+    container_name: ${COMPOSE_PROJECT_NAME:-gd-realestate-starter}-nginx
     restart: always
     logging: *logging
     environment:
@@ -195,7 +219,8 @@ services:
       php: { condition: service_healthy }
 
 volumes:
-  mariadb-data:
+  postgres-data:
+  redis-data:
   api-storage:
   uploads-data:
   portal-next:

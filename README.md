@@ -1,11 +1,11 @@
-# gd-business-site-boilerplate
+# gd-realestate-starter
 
 A small-business website you can run on one VPS: a public portal (Next.js) in two languages, an admin app (React) to edit everything,
 and a Laravel API behind both. Content: hero, about us, sections, services, pricing (per service, hidden until switched on), team, testimonials, gallery, FAQ, blog, contact inbox, settings (logo, favicon, currency, social links), users and roles.
 
 | Part | Where | Stack |
 |------|-------|-------|
-| API | `api/` | Laravel 13, PHP 8.5, MariaDB, Passport (OAuth 2 + PKCE), spatie/permission |
+| API | `api/` | Laravel 13, PHP 8.5, PostgreSQL 18, Redis 8, Passport (OAuth 2 + PKCE), spatie/permission |
 | Portal | `web/portal` | Next.js 16 (App Router, ISR), Tailwind 4 |
 | Admin | `web/admin` | Vite, React 19, TanStack Query, TipTap |
 | Shared | `packages/` | design tokens, typed API client, OpenAPI types |
@@ -20,6 +20,8 @@ You need Docker with Compose and a browser. Nothing else is installed on the hos
 git clone <your fork> site && cd site
 cp .env.example .env     # then set APP_KEY=base64:<output of: openssl rand -base64 32> and change every change-me
 docker compose up -d --build --wait
+docker compose exec php composer install
+docker compose exec php php artisan migrate --seed
 sh scripts/ensure-test-db.sh   # creates the testing database used by Pest
 ```
 
@@ -27,9 +29,9 @@ Then open (the `.localhost` names resolve to your machine in modern browsers; no
 
 | URL | What |
 |-----|------|
-| http://gdsite.localhost:28080 | Portal (`/bn` for the second language when enabled) |
-| http://admin.gdsite.localhost:28080 | Admin (sign in with the superadmin below) |
-| http://api.gdsite.localhost:28080/docs/api | API reference (Scramble, dev only) |
+| http://gd-realestate-starter.localhost:28080 | Portal (`/bn` for the second language when enabled) |
+| http://admin.gd-realestate-starter.localhost:28080 | Admin (sign in with the superadmin below) |
+| http://api.gd-realestate-starter.localhost:28080/docs/api | API reference (Scramble, dev only) |
 | http://localhost:28026 | Mailpit, catches the contact-form mail |
 
 First run only: set `SUPERADMIN_EMAIL`, `SUPERADMIN_PASSWORD` and `OAUTH_ADMIN_REDIRECT_URI` in `api/.env` (copy `api/.env.example`), then
@@ -52,7 +54,7 @@ Daily commands:
 | `sh scripts/check-ports.sh` | host ports from `.env` are free or ours |
 | `docker compose exec -T php php artisan scramble:export --path=storage/openapi.json` | re-export the API spec; move `api/storage/openapi.json` to `packages/api-types/openapi.json`, then `pnpm generate:types` |
 
-The optional `Makefile` wraps these (`make up`, `make t FILTER=...`, `make check`, `make security`, `make openapi`, `make web`); nothing depends on it.
+Final phase check (stack up): `sh scripts/check.sh`. Targeted tests: `docker compose exec -T php vendor/bin/pest --compact --filter=Name`.
 
 Browser tests (Playwright, official image): `docker compose --profile e2e run --rm --no-deps -T -w /app/web/portal e2e npx playwright test`.
 
@@ -62,7 +64,7 @@ The dev containers do not see file changes on Windows hosts: after editing porta
 
 One VPS (1 vCPU / 1 GB is the minimum, 2 GB recommended: [docs/SIZING.md](docs/SIZING.md)), your domain, a TLS certificate.
 `docker-compose.prod.yml` runs the portal as a Node server, serves the admin as built static files from nginx, publishes only ports 80 and 443,
-keeps MariaDB private and restarts everything on failure. Steps: [docs/DEPLOY.md](docs/DEPLOY.md). Backups: `sh scripts/backup.sh`.
+keeps PostgreSQL and Redis private and restarts everything on failure. Steps: [docs/DEPLOY.md](docs/DEPLOY.md). Backups: `sh scripts/backup.sh`.
 
 ## Documentation
 

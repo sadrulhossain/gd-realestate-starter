@@ -10,7 +10,9 @@ Dependencies not listed here must not be added (CLAUDE.md rule 2).
 | Node.js 24 LTS "Krypton" | 24.22.3 | 24.22.3 | https://nodejs.org/en/blog/vulnerability/november-2026-security-releases | 2026-11-11 | `node:24.22.3-alpine` exists (pulled 2026-11-12) |
 | Next.js | 16.4.6 | 16.4.6 | https://github.com/vercel/next.js/releases/tag/v16.4.6 | 2026-11-12 | n/a |
 | nginx | 1.30.6 | 1.30.6 | https://nginx.org/en/CHANGES-1.30 | 2026-11-11 | `nginx:1.30.6-alpine` exists |
-| MariaDB (LTS) | 11.8.9 | 11.8.9 | https://hub.docker.com/_/mariadb/tags?name=11.8.9 | 2026-11-12 | `mariadb:11.8.9` exists |
+| PostgreSQL | 18.6 | 18.6 | https://hub.docker.com/_/postgres/tags?name=18.6-alpine | 2026-11-22 | `postgres:18.6-alpine` exists |
+| Redis | 8.10.3 | 8.10.3 | https://hub.docker.com/_/redis/tags?name=8.10.3-alpine | 2026-11-22 | `redis:8.10.3-alpine` exists |
+| phpredis | 6.3.0 | 6.3.0 | https://pecl.php.net/package/redis/6.3.0 | 2026-11-22 | n/a (pecl) |
 | Mailpit | v1.33.1 | v1.33.1 | https://github.com/axllent/mailpit/releases/tag/v1.33.1 | 2026-11-12 | `axllent/mailpit:v1.33.1` exists |
 | Vite | 8.3.8 | 8.3.8 | https://www.npmjs.com/package/vite/v/8.3.8 | 2026-11-12 | n/a (npm) |
 | React / React DOM | 19.3.1 | 19.3.1 | https://www.npmjs.com/package/react/v/19.3.1 | 2026-11-12 | n/a (npm) |

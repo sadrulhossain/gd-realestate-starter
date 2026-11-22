@@ -2,7 +2,7 @@
 
 Log of architecture decisions. Format: `## NNN — Title` / Date / Decision / Why.
 
-## 001 — phpredis, not Predis (superseded by 010)
+## 001 — phpredis, not Predis
 2026-11-12. Use the phpredis extension (PECL redis 6.3.0). It compiles on PHP 8.5.12-fpm-alpine and loads; ACL user auth works through Laravel's `REDIS_USERNAME`/`REDIS_PASSWORD`. Predis is not installed.
 
 ## 002 — JSON error format
@@ -52,7 +52,7 @@ generated from `packages/api-types/openapi.json` (`pnpm generate:types`, committ
 fetch: Scramble documents updates as PUT while the API takes PATCH, so `patch` reuses the `put` types. Re-export the spec with `php artisan scramble:export` (php container) after migrating the dev DB (Scramble reads column types from it; without migrations every field degrades to `string`).
 The node container mounts the repo at /app with named volumes over every node_modules; `docker compose run --rm --no-deps -T -e NODE_ENV=production node sh -c 'cd /app && corepack enable && pnpm install --frozen-lockfile && pnpm generate:types && pnpm -r --if-present typecheck && pnpm -r --if-present build'` installs, regenerates types,
 typechecks and builds both apps with NODE_ENV=production (Next prerender breaks under NODE_ENV=development).
-## 010 - MariaDB, no Redis
+## 010 - MariaDB, no Redis (superseded by 012)
 2026-11-12. PostgreSQL is replaced by MariaDB 11.8.9 (LTS) using Laravel's `mariadb` driver and the `pdo_mysql` extension. Redis and phpredis are
 removed: cache, sessions and queue use the `database` drivers (tables from the stock cache/jobs/sessions migrations). Consequences: queue
 latency is polling-based (`queue:work --sleep=3`), cache locks and the rate limiter live in the `cache`/`cache_locks` tables, and the health
@@ -70,3 +70,16 @@ Sign-out: `POST /v1/logout` revokes the access and refresh tokens, then the brow
 returns to `/signed-out`. Modules are config (`web/admin/src/modules.ts` -> `CrudPage`). Gaps: the sidebar has no icons; menu rows whose screen is
 not built yet (posts, messages, settings) land on the 404 page. Browser tests run in the `e2e` compose service (official Playwright image,
 profile `e2e`), not in the node container: Alpine's Chromium would not install reliably here.
+
+## 012 - Real estate kit: PostgreSQL 18.6 and Redis 8.10.3 return
+2026-11-22. Forked from the business-site template `main` at commit `3eade4d9a84283c96255ab7d7fc31b15d5c7f644` (the template base). Decision 010 is reversed for this kit:
+property search needs PostgreSQL full-text, `pg_trgm` and `cube` + `earthdistance` (enabled in migration `enable_postgres_extensions`), and cache, sessions, queue,
+captcha and throttles run on Redis (ACL user, default user off, RESTORE/DEBUG/MODULE/CONFIG denied, internal network, host port bound to 127.0.0.1 in dev only).
+phpredis 6.3.0 is used (it compiles and loads on PHP 8.5.12; Predis is not installed). Compose adds `postgres` and `redis`; the queue worker and scheduler
+containers stay on the API image. Tests keep cache/session on `array` and queue on `sync` and use `<POSTGRES_DB>_testing`.
+
+## 013 - English only
+2026-11-22. The kit ships English only (portal and admin): `LOCALE_SUPPORTED=en`. The second-language machinery inherited from the template stays dormant; no second-language content is built or seeded.
+
+## 014 - No make
+2026-11-22. The Makefile is removed. Use `docker compose` and the sh scripts: `scripts/check.sh` (final check), `scripts/check-versions.sh`, `scripts/check-ports.sh`, `scripts/ensure-test-db.sh`.
