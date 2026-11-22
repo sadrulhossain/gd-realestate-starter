@@ -69,6 +69,26 @@ class MediaService
         return $path;
     }
 
+    /**
+     * FormRequest rules for a PDF document (brochure).
+     *
+     * @return list<string>
+     */
+    public static function documentRules(): array
+    {
+        return ['file', 'mimetypes:application/pdf', 'max:'.(config('uploads.max_mb') * 1024)];
+    }
+
+    /** Stores a PDF under a random name; documents get no image variants. */
+    public function storeDocument(UploadedFile $file, string $dir): string
+    {
+        $folder = $dir.'/'.Str::lower(Str::random(32));
+
+        $this->disk()->putFileAs($folder, $file, 'original.pdf');
+
+        return "{$folder}/original.pdf";
+    }
+
     /** Removes the original and all variants. */
     public function delete(?string $path): void
     {

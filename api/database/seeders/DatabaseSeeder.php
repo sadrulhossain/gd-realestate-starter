@@ -26,6 +26,7 @@ class DatabaseSeeder extends Seeder
             LocationsModuleSeeder::class,
             PropertyTypesModuleSeeder::class,
             AmenitiesModuleSeeder::class,
+            PropertiesModuleSeeder::class,
             SettingsModuleSeeder::class,
             AccessModuleSeeder::class,
             SuperadminSeeder::class,

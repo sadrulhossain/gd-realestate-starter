@@ -20,6 +20,9 @@ use App\Http\Controllers\Api\V1\PostController;
 use App\Http\Controllers\Api\V1\PostImageController;
 use App\Http\Controllers\Api\V1\PricingController;
 use App\Http\Controllers\Api\V1\ProfileController;
+use App\Http\Controllers\Api\V1\PropertyController;
+use App\Http\Controllers\Api\V1\PropertyMediaController;
+use App\Http\Controllers\Api\V1\PropertyStatusController;
 use App\Http\Controllers\Api\V1\PropertyTypeController;
 use App\Http\Controllers\Api\V1\RoleController;
 use App\Http\Controllers\Api\V1\SectionController;
@@ -58,6 +61,8 @@ Route::prefix('v1')->group(function (): void {
         Route::get('public/locations', [LocationController::class, 'publicIndex']);
         Route::get('public/property-types', [PropertyTypeController::class, 'publicIndex']);
         Route::get('public/amenities', [AmenityController::class, 'publicIndex']);
+        Route::get('public/properties', [PropertyController::class, 'publicIndex']);
+        Route::get('public/properties/{slug}', [PropertyController::class, 'publicShow']);
     });
 
     // Contact form: captcha first, then the throttled submit.
@@ -128,6 +133,12 @@ Route::prefix('v1')->group(function (): void {
         Route::apiResource('locations', LocationController::class);
         Route::apiResource('property-types', PropertyTypeController::class)->parameters(['property-types' => 'property_type']);
         Route::apiResource('amenities', AmenityController::class);
+
+        Route::apiResource('properties', PropertyController::class);
+        Route::post('properties/{property}/status', [PropertyStatusController::class, 'store']);
+        Route::post('properties/{property}/media', [PropertyMediaController::class, 'store']);
+        Route::patch('properties/{property}/media/{media}', [PropertyMediaController::class, 'update']);
+        Route::delete('properties/{property}/media/{media}', [PropertyMediaController::class, 'destroy']);
 
         // Contact inbox (no create/delete)
         Route::apiResource('contact-messages', ContactMessageController::class)
