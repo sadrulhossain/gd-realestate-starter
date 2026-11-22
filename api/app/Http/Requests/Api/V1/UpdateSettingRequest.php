@@ -5,6 +5,7 @@ namespace App\Http\Requests\Api\V1;
 use App\Models\Setting;
 use App\Support\Bilingual;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class UpdateSettingRequest extends FormRequest
 {
@@ -25,6 +26,7 @@ class UpdateSettingRequest extends FormRequest
             ]),
             'currency' => ['sometimes', 'nullable', 'string', 'max:10'],
             'currency_symbol' => ['sometimes', 'nullable', 'string', 'max:10'],
+            'area_unit' => ['sometimes', Rule::in(['sqft', 'sqm'])],
             'phone' => ['sometimes', 'nullable', 'string', 'max:40'],
             'email' => ['sometimes', 'nullable', 'email', 'max:255'],
             'hours' => ['sometimes', 'nullable', 'array:'.implode(',', Setting::DAYS)],

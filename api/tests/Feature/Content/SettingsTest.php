@@ -111,3 +111,13 @@ it('accepts an .ico favicon but not as a logo', function () {
 
     $this->post('/api/v1/settings/logo', ['image' => UploadedFile::fake()->create('logo.ico', 1, 'image/vnd.microsoft.icon')], $accept)->assertUnprocessable();
 });
+
+it('defaults the area unit to sqft and accepts only sqft or sqm', function () {
+    actingAsRole('editor', ['settings.view', 'settings.update']);
+
+    $this->getJson('/api/v1/settings')->assertOk()->assertJsonPath('data.area_unit', 'sqft');
+    $this->patchJson('/api/v1/settings', ['area_unit' => 'sqm'])->assertOk()->assertJsonPath('data.area_unit', 'sqm');
+
+    $bad = $this->patchJson('/api/v1/settings', ['area_unit' => 'acre'])->assertStatus(422);
+    expect(array_keys($bad->json('error.details')))->toEqual(['area_unit']);
+});

@@ -2,12 +2,15 @@
 
 namespace App\Providers;
 
+use App\Models\Amenity;
 use App\Models\Category;
 use App\Models\Faq;
 use App\Models\GalleryItem;
+use App\Models\Location;
 use App\Models\OAuthClient;
 use App\Models\Post;
 use App\Models\Pricing;
+use App\Models\PropertyType;
 use App\Models\Section;
 use App\Models\Service;
 use App\Models\Setting;
@@ -47,7 +50,8 @@ class AppServiceProvider extends ServiceProvider
 
         // Public content changes -> queued signed webhook so the portal revalidates its cache.
         foreach ([
-            Category::class, Faq::class, GalleryItem::class, Post::class, Pricing::class, Section::class,
+            Amenity::class, Category::class, Faq::class, GalleryItem::class, Location::class, Post::class, PropertyType::class,
+            Pricing::class, Section::class,
             Service::class, Setting::class, TeamMember::class, Testimonial::class,
         ] as $model) {
             $model::observe(ContentObserver::class);

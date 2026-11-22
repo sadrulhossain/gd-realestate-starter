@@ -121,3 +121,9 @@ singleton reference: Settings. Paths below are relative to `api/app` unless note
 - A new service needs `restart: always`, a `healthcheck`, the `logging` anchor and a `depends_on` with `condition: service_healthy`.
 - The portal builds on first container start (it needs the API); bump `IMAGE_ID` per release. The php entrypoint migrates and caches config; seeders are run by hand (UPGRADE.md).
 - Backups: `scripts/backup.sh` / `restore.sh`. Anything new that holds state (a volume) must be added to both.
+
+## Real estate catalogue (phase R1)
+- Locations are a flat list with `parent_id` (country > city > area, at most `Location::MAX_DEPTH` levels); clients build the tree. Slugs are unique per parent, roots included (partial unique index, because NULL parents are distinct). Tree rules live in `Requests/Concerns/ValidatesLocationTree`: reuse it for any new tree table.
+- A location with children cannot be deleted (409). The public list hides a location whose ancestor is inactive.
+- Property types (`key`, group residential|commercial|land) and amenities are plain Category-shaped modules; seed defaults with `firstOrCreate` so edits survive re-seeding. Permission prefixes: `locations`, `property_types`, `amenities`.
+- `settings.area_unit` is `sqft|sqm`; currency fields already existed in settings.

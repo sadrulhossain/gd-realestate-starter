@@ -6,10 +6,267 @@
     },
     "servers": [
         {
-            "url": "http://api.gdsite.localhost:28080/api"
+            "url": "http://api.gd-realestate-starter.localhost:29080/api"
         }
     ],
     "paths": {
+        "/v1/public/amenities": {
+            "get": {
+                "operationId": "amenity.publicIndex",
+                "description": "Active rows ordered by `sort_order`. No authentication.",
+                "summary": "List amenities (public)",
+                "tags": [
+                    "Amenity"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Array of `AmenityResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/AmenityResource"
+                                            }
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/v1/amenities": {
+            "get": {
+                "operationId": "amenities.index",
+                "summary": "List amenities",
+                "tags": [
+                    "Amenity"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Array of `AmenityResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/AmenityResource"
+                                            }
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            },
+            "post": {
+                "operationId": "amenities.store",
+                "summary": "Create a amenity",
+                "tags": [
+                    "Amenity"
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/StoreAmenityRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "`AmenityResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/AmenityResource"
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    }
+                }
+            }
+        },
+        "/v1/amenities/{amenity}": {
+            "get": {
+                "operationId": "amenities.show",
+                "summary": "Show a amenity",
+                "tags": [
+                    "Amenity"
+                ],
+                "parameters": [
+                    {
+                        "name": "amenity",
+                        "in": "path",
+                        "required": true,
+                        "description": "The amenity ID",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "`AmenityResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/AmenityResource"
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            },
+            "put": {
+                "operationId": "amenities.update",
+                "summary": "Update a amenity",
+                "tags": [
+                    "Amenity"
+                ],
+                "parameters": [
+                    {
+                        "name": "amenity",
+                        "in": "path",
+                        "required": true,
+                        "description": "The amenity ID",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/UpdateAmenityRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "`AmenityResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/AmenityResource"
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    }
+                }
+            },
+            "delete": {
+                "operationId": "amenities.destroy",
+                "summary": "Delete an amenity",
+                "tags": [
+                    "Amenity"
+                ],
+                "parameters": [
+                    {
+                        "name": "amenity",
+                        "in": "path",
+                        "required": true,
+                        "description": "The amenity ID",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No content"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            }
+        },
         "/v1/public/categories": {
             "get": {
                 "operationId": "category.publicIndex",
@@ -1354,6 +1611,287 @@
                                 }
                             }
                         }
+                    }
+                }
+            }
+        },
+        "/v1/public/locations": {
+            "get": {
+                "operationId": "location.publicIndex",
+                "description": "A flat list ordered by `sort_order`; build the tree from `parent_id`.\nA location below an inactive parent is hidden too. No authentication.",
+                "summary": "List active locations (public)",
+                "tags": [
+                    "Location"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Array of `LocationResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/LocationResource"
+                                            }
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/v1/locations": {
+            "get": {
+                "operationId": "locations.index",
+                "description": "A flat list of every location, inactive ones included; build the tree from `parent_id`.",
+                "summary": "List locations",
+                "tags": [
+                    "Location"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Array of `LocationResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/LocationResource"
+                                            }
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            },
+            "post": {
+                "operationId": "locations.store",
+                "summary": "Create a location",
+                "tags": [
+                    "Location"
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/StoreLocationRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "`LocationResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/LocationResource"
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    }
+                }
+            }
+        },
+        "/v1/locations/{location}": {
+            "get": {
+                "operationId": "locations.show",
+                "summary": "Show a location",
+                "tags": [
+                    "Location"
+                ],
+                "parameters": [
+                    {
+                        "name": "location",
+                        "in": "path",
+                        "required": true,
+                        "description": "The location ID",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "`LocationResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/LocationResource"
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            },
+            "put": {
+                "operationId": "locations.update",
+                "summary": "Update a location",
+                "tags": [
+                    "Location"
+                ],
+                "parameters": [
+                    {
+                        "name": "location",
+                        "in": "path",
+                        "required": true,
+                        "description": "The location ID",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/UpdateLocationRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "`LocationResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/LocationResource"
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    }
+                }
+            },
+            "delete": {
+                "operationId": "locations.destroy",
+                "description": "A location that still has children answers 409.",
+                "summary": "Delete a location",
+                "tags": [
+                    "Location"
+                ],
+                "parameters": [
+                    {
+                        "name": "location",
+                        "in": "path",
+                        "required": true,
+                        "description": "The location ID",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No content"
+                    },
+                    "409": {
+                        "description": "An error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "description": "Error overview.",
+                                            "examples": [
+                                                "Delete or move the child locations first."
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "message"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
                     }
                 }
             }
@@ -2885,6 +3423,263 @@
                 }
             }
         },
+        "/v1/public/property-types": {
+            "get": {
+                "operationId": "propertyType.publicIndex",
+                "description": "Active rows ordered by `sort_order`. No authentication.",
+                "summary": "List property types (public)",
+                "tags": [
+                    "PropertyType"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Array of `PropertyTypeResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/PropertyTypeResource"
+                                            }
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/v1/property-types": {
+            "get": {
+                "operationId": "property-types.index",
+                "summary": "List property types",
+                "tags": [
+                    "PropertyType"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Array of `PropertyTypeResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/PropertyTypeResource"
+                                            }
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            },
+            "post": {
+                "operationId": "property-types.store",
+                "summary": "Create a property type",
+                "tags": [
+                    "PropertyType"
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/StorePropertyTypeRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "`PropertyTypeResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/PropertyTypeResource"
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    }
+                }
+            }
+        },
+        "/v1/property-types/{property_type}": {
+            "get": {
+                "operationId": "property-types.show",
+                "summary": "Show a property type",
+                "tags": [
+                    "PropertyType"
+                ],
+                "parameters": [
+                    {
+                        "name": "property_type",
+                        "in": "path",
+                        "required": true,
+                        "description": "The property type ID",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "`PropertyTypeResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/PropertyTypeResource"
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            },
+            "put": {
+                "operationId": "property-types.update",
+                "summary": "Update a property type",
+                "tags": [
+                    "PropertyType"
+                ],
+                "parameters": [
+                    {
+                        "name": "property_type",
+                        "in": "path",
+                        "required": true,
+                        "description": "The property type ID",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/UpdatePropertyTypeRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "`PropertyTypeResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/PropertyTypeResource"
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    }
+                }
+            },
+            "delete": {
+                "operationId": "property-types.destroy",
+                "summary": "Delete a property type",
+                "tags": [
+                    "PropertyType"
+                ],
+                "parameters": [
+                    {
+                        "name": "property_type",
+                        "in": "path",
+                        "required": true,
+                        "description": "The property type ID",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No content"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            }
+        },
         "/v1/roles": {
             "get": {
                 "operationId": "roles.index",
@@ -3461,7 +4256,7 @@
         },
         "/v1/hero": {
             "get": {
-                "operationId": "v1.sectionPanel.show_21",
+                "operationId": "v1.sectionPanel.show_24",
                 "description": "Title and text (both languages) and image of the hero or about section.",
                 "summary": "Show a section panel",
                 "tags": [
@@ -3495,7 +4290,7 @@
                 }
             },
             "patch": {
-                "operationId": "v1.sectionPanel.update_22",
+                "operationId": "v1.sectionPanel.update_25",
                 "description": "Partial update of the title and text (both languages).",
                 "summary": "Update a section panel",
                 "tags": [
@@ -3543,7 +4338,7 @@
         },
         "/v1/hero/image": {
             "post": {
-                "operationId": "v1.sectionPanel.storeImage_23",
+                "operationId": "v1.sectionPanel.storeImage_26",
                 "description": "Multipart field `image` (jpeg, png or webp). Replaces the current image.",
                 "summary": "Upload the section image",
                 "tags": [
@@ -3590,7 +4385,7 @@
                 }
             },
             "delete": {
-                "operationId": "v1.sectionPanel.destroyImage_24",
+                "operationId": "v1.sectionPanel.destroyImage_27",
                 "summary": "Remove the section image",
                 "tags": [
                     "SectionPanel"
@@ -3625,7 +4420,7 @@
         },
         "/v1/about": {
             "get": {
-                "operationId": "v1.sectionPanel.show_25",
+                "operationId": "v1.sectionPanel.show_28",
                 "description": "Title and text (both languages) and image of the hero or about section.",
                 "summary": "Show a section panel",
                 "tags": [
@@ -3659,7 +4454,7 @@
                 }
             },
             "patch": {
-                "operationId": "v1.sectionPanel.update_26",
+                "operationId": "v1.sectionPanel.update_29",
                 "description": "Partial update of the title and text (both languages).",
                 "summary": "Update a section panel",
                 "tags": [
@@ -3707,7 +4502,7 @@
         },
         "/v1/about/image": {
             "post": {
-                "operationId": "v1.sectionPanel.storeImage_27",
+                "operationId": "v1.sectionPanel.storeImage_30",
                 "description": "Multipart field `image` (jpeg, png or webp). Replaces the current image.",
                 "summary": "Upload the section image",
                 "tags": [
@@ -3754,7 +4549,7 @@
                 }
             },
             "delete": {
-                "operationId": "v1.sectionPanel.destroyImage_28",
+                "operationId": "v1.sectionPanel.destroyImage_31",
                 "summary": "Remove the section image",
                 "tags": [
                     "SectionPanel"
@@ -5561,6 +6356,59 @@
     },
     "components": {
         "schemas": {
+            "AmenityResource": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "integer"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "name_2nd": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "icon": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "group": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "sort_order": {
+                        "type": "integer"
+                    },
+                    "is_active": {
+                        "type": "boolean"
+                    },
+                    "updated_at": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "format": "date-time"
+                    }
+                },
+                "required": [
+                    "id",
+                    "name",
+                    "name_2nd",
+                    "icon",
+                    "group",
+                    "sort_order",
+                    "is_active",
+                    "updated_at"
+                ],
+                "title": "AmenityResource"
+            },
             "CategoryResource": {
                 "type": "object",
                 "properties": {
@@ -5763,6 +6611,70 @@
                     "updated_at"
                 ],
                 "title": "GalleryItemResource"
+            },
+            "LocationResource": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "integer"
+                    },
+                    "parent_id": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ]
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "name_2nd": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "slug": {
+                        "type": "string"
+                    },
+                    "lat": {
+                        "type": [
+                            "number",
+                            "null"
+                        ]
+                    },
+                    "lng": {
+                        "type": [
+                            "number",
+                            "null"
+                        ]
+                    },
+                    "sort_order": {
+                        "type": "integer"
+                    },
+                    "is_active": {
+                        "type": "boolean"
+                    },
+                    "updated_at": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "format": "date-time"
+                    }
+                },
+                "required": [
+                    "id",
+                    "parent_id",
+                    "name",
+                    "name_2nd",
+                    "slug",
+                    "lat",
+                    "lng",
+                    "sort_order",
+                    "is_active",
+                    "updated_at"
+                ],
+                "title": "LocationResource"
             },
             "MenuResource": {
                 "type": "object",
@@ -6074,6 +6986,53 @@
                 ],
                 "title": "PricingResource"
             },
+            "PropertyTypeResource": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "integer"
+                    },
+                    "key": {
+                        "type": "string"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "name_2nd": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "group": {
+                        "type": "string"
+                    },
+                    "sort_order": {
+                        "type": "integer"
+                    },
+                    "is_active": {
+                        "type": "boolean"
+                    },
+                    "updated_at": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "format": "date-time"
+                    }
+                },
+                "required": [
+                    "id",
+                    "key",
+                    "name",
+                    "name_2nd",
+                    "group",
+                    "sort_order",
+                    "is_active",
+                    "updated_at"
+                ],
+                "title": "PropertyTypeResource"
+            },
             "ReorderMenusRequest": {
                 "type": "object",
                 "properties": {
@@ -6285,6 +7244,9 @@
                             "null"
                         ]
                     },
+                    "area_unit": {
+                        "type": "string"
+                    },
                     "logo": {
                         "type": "string"
                     },
@@ -6340,6 +7302,7 @@
                     "tagline_2nd",
                     "currency",
                     "currency_symbol",
+                    "area_unit",
                     "logo",
                     "favicon",
                     "address",
@@ -6351,6 +7314,48 @@
                     "updated_at"
                 ],
                 "title": "SettingResource"
+            },
+            "StoreAmenityRequest": {
+                "type": "object",
+                "properties": {
+                    "name": {
+                        "type": "string",
+                        "maxLength": 100
+                    },
+                    "name_2nd": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "maxLength": 100
+                    },
+                    "icon": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "maxLength": 60
+                    },
+                    "group": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "maxLength": 60
+                    },
+                    "sort_order": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 65535
+                    },
+                    "is_active": {
+                        "type": "boolean"
+                    }
+                },
+                "required": [
+                    "name"
+                ],
+                "title": "StoreAmenityRequest"
             },
             "StoreCategoryRequest": {
                 "type": "object",
@@ -6530,6 +7535,62 @@
                     }
                 },
                 "title": "StoreGalleryItemRequest"
+            },
+            "StoreLocationRequest": {
+                "type": "object",
+                "properties": {
+                    "name": {
+                        "type": "string",
+                        "maxLength": 100
+                    },
+                    "name_2nd": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "maxLength": 100
+                    },
+                    "parent_id": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ]
+                    },
+                    "slug": {
+                        "type": "string",
+                        "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$",
+                        "maxLength": 120
+                    },
+                    "lat": {
+                        "type": [
+                            "number",
+                            "null"
+                        ],
+                        "minimum": -90,
+                        "maximum": 90
+                    },
+                    "lng": {
+                        "type": [
+                            "number",
+                            "null"
+                        ],
+                        "minimum": -180,
+                        "maximum": 180
+                    },
+                    "sort_order": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 65535
+                    },
+                    "is_active": {
+                        "type": "boolean"
+                    }
+                },
+                "required": [
+                    "name",
+                    "slug"
+                ],
+                "title": "StoreLocationRequest"
             },
             "StorePostImageRequest": {
                 "type": "object",
@@ -6733,6 +7794,49 @@
                     "price"
                 ],
                 "title": "StorePricingRequest"
+            },
+            "StorePropertyTypeRequest": {
+                "type": "object",
+                "properties": {
+                    "name": {
+                        "type": "string",
+                        "maxLength": 100
+                    },
+                    "name_2nd": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "maxLength": 100
+                    },
+                    "key": {
+                        "type": "string",
+                        "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$",
+                        "maxLength": 60
+                    },
+                    "group": {
+                        "type": "string",
+                        "enum": [
+                            "residential",
+                            "commercial",
+                            "land"
+                        ]
+                    },
+                    "sort_order": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 65535
+                    },
+                    "is_active": {
+                        "type": "boolean"
+                    }
+                },
+                "required": [
+                    "name",
+                    "key",
+                    "group"
+                ],
+                "title": "StorePropertyTypeRequest"
             },
             "StoreRoleRequest": {
                 "type": "object",
@@ -7137,6 +8241,45 @@
                 ],
                 "title": "TestimonialResource"
             },
+            "UpdateAmenityRequest": {
+                "type": "object",
+                "properties": {
+                    "name": {
+                        "type": "string",
+                        "maxLength": 100
+                    },
+                    "name_2nd": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "maxLength": 100
+                    },
+                    "icon": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "maxLength": 60
+                    },
+                    "group": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "maxLength": 60
+                    },
+                    "sort_order": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 65535
+                    },
+                    "is_active": {
+                        "type": "boolean"
+                    }
+                },
+                "title": "UpdateAmenityRequest"
+            },
             "UpdateCategoryRequest": {
                 "type": "object",
                 "properties": {
@@ -7241,6 +8384,58 @@
                     }
                 },
                 "title": "UpdateGalleryItemRequest"
+            },
+            "UpdateLocationRequest": {
+                "type": "object",
+                "properties": {
+                    "name": {
+                        "type": "string",
+                        "maxLength": 100
+                    },
+                    "name_2nd": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "maxLength": 100
+                    },
+                    "parent_id": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ]
+                    },
+                    "slug": {
+                        "type": "string",
+                        "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$",
+                        "maxLength": 120
+                    },
+                    "lat": {
+                        "type": [
+                            "number",
+                            "null"
+                        ],
+                        "minimum": -90,
+                        "maximum": 90
+                    },
+                    "lng": {
+                        "type": [
+                            "number",
+                            "null"
+                        ],
+                        "minimum": -180,
+                        "maximum": 180
+                    },
+                    "sort_order": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 65535
+                    },
+                    "is_active": {
+                        "type": "boolean"
+                    }
+                },
+                "title": "UpdateLocationRequest"
             },
             "UpdateMenuRequest": {
                 "type": "object",
@@ -7461,6 +8656,44 @@
                 },
                 "title": "UpdateProfileRequest"
             },
+            "UpdatePropertyTypeRequest": {
+                "type": "object",
+                "properties": {
+                    "name": {
+                        "type": "string",
+                        "maxLength": 100
+                    },
+                    "name_2nd": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "maxLength": 100
+                    },
+                    "key": {
+                        "type": "string",
+                        "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$",
+                        "maxLength": 60
+                    },
+                    "group": {
+                        "type": "string",
+                        "enum": [
+                            "residential",
+                            "commercial",
+                            "land"
+                        ]
+                    },
+                    "sort_order": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 65535
+                    },
+                    "is_active": {
+                        "type": "boolean"
+                    }
+                },
+                "title": "UpdatePropertyTypeRequest"
+            },
             "UpdateRoleRequest": {
                 "type": "object",
                 "properties": {
@@ -7645,6 +8878,13 @@
                             "null"
                         ],
                         "maxLength": 10
+                    },
+                    "area_unit": {
+                        "type": "string",
+                        "enum": [
+                            "sqft",
+                            "sqm"
+                        ]
                     },
                     "phone": {
                         "type": [
