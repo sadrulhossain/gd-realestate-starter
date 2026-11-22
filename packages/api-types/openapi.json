@@ -3423,6 +3423,1102 @@
                 }
             }
         },
+        "/v1/public/properties": {
+            "get": {
+                "operationId": "property.publicIndex",
+                "description": "Only `available` and `under_offer` properties. Filters: `listing_type`, `property_type` (key or id),\n`location` (id, includes its sub-locations), `price_min`/`price_max` (minor units), `beds_min`, `baths_min`,\n`area_min`/`area_max`, `amenities` (ids, all required), `furnished`, `featured`, `status`.\n`q` is a keyword search (full-text, typo tolerant); `lat`, `lng` and `radius_km` limit by distance.\n`sort`: relevance (default with `q`), newest (default), price_asc, price_desc, area_asc, area_desc.\n12 per page (`per_page` up to 48). No authentication.",
+                "summary": "Search properties (public)",
+                "tags": [
+                    "Property"
+                ],
+                "parameters": [
+                    {
+                        "name": "listing_type",
+                        "in": "query",
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "sale",
+                                "rent"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "property_type",
+                        "in": "query",
+                        "schema": {
+                            "type": "string",
+                            "maxLength": 60
+                        }
+                    },
+                    {
+                        "name": "location",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer",
+                            "minimum": 1
+                        }
+                    },
+                    {
+                        "name": "price_min",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer",
+                            "minimum": 0
+                        }
+                    },
+                    {
+                        "name": "price_max",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer",
+                            "minimum": 0
+                        }
+                    },
+                    {
+                        "name": "beds_min",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer",
+                            "minimum": 0,
+                            "maximum": 99
+                        }
+                    },
+                    {
+                        "name": "baths_min",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer",
+                            "minimum": 0,
+                            "maximum": 99
+                        }
+                    },
+                    {
+                        "name": "area_min",
+                        "in": "query",
+                        "schema": {
+                            "type": "number",
+                            "minimum": 0
+                        }
+                    },
+                    {
+                        "name": "area_max",
+                        "in": "query",
+                        "schema": {
+                            "type": "number",
+                            "minimum": 0
+                        }
+                    },
+                    {
+                        "name": "amenities[]",
+                        "in": "query",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "integer",
+                                "minimum": 1
+                            },
+                            "maxItems": 20
+                        }
+                    },
+                    {
+                        "name": "furnished",
+                        "in": "query",
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "unfurnished",
+                                "semi_furnished",
+                                "furnished"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "featured",
+                        "in": "query",
+                        "schema": {
+                            "type": "boolean"
+                        }
+                    },
+                    {
+                        "name": "status",
+                        "in": "query",
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "available",
+                                "under_offer"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "q",
+                        "in": "query",
+                        "schema": {
+                            "type": "string",
+                            "maxLength": 100
+                        }
+                    },
+                    {
+                        "name": "lat",
+                        "in": "query",
+                        "schema": {
+                            "type": "number",
+                            "minimum": -90,
+                            "maximum": 90
+                        }
+                    },
+                    {
+                        "name": "lng",
+                        "in": "query",
+                        "schema": {
+                            "type": "number",
+                            "minimum": -180,
+                            "maximum": 180
+                        }
+                    },
+                    {
+                        "name": "radius_km",
+                        "in": "query",
+                        "schema": {
+                            "type": "number",
+                            "maximum": 500
+                        }
+                    },
+                    {
+                        "name": "sort",
+                        "in": "query",
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "relevance",
+                                "newest",
+                                "price_asc",
+                                "price_desc",
+                                "area_asc",
+                                "area_desc"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer",
+                            "minimum": 1,
+                            "maximum": 48
+                        }
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer",
+                            "minimum": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Paginated set of `PublicPropertyResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/PublicPropertyResource"
+                                            }
+                                        },
+                                        "links": {
+                                            "type": "object",
+                                            "properties": {
+                                                "first": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "last": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "prev": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "next": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                }
+                                            },
+                                            "required": [
+                                                "first",
+                                                "last",
+                                                "prev",
+                                                "next"
+                                            ]
+                                        },
+                                        "meta": {
+                                            "type": "object",
+                                            "properties": {
+                                                "current_page": {
+                                                    "type": "integer",
+                                                    "minimum": 1
+                                                },
+                                                "from": {
+                                                    "type": [
+                                                        "integer",
+                                                        "null"
+                                                    ],
+                                                    "minimum": 1
+                                                },
+                                                "last_page": {
+                                                    "type": "integer",
+                                                    "minimum": 1
+                                                },
+                                                "links": {
+                                                    "type": "array",
+                                                    "description": "Generated paginator links.",
+                                                    "items": {
+                                                        "type": "object",
+                                                        "properties": {
+                                                            "url": {
+                                                                "type": [
+                                                                    "string",
+                                                                    "null"
+                                                                ]
+                                                            },
+                                                            "label": {
+                                                                "type": "string"
+                                                            },
+                                                            "active": {
+                                                                "type": "boolean"
+                                                            }
+                                                        },
+                                                        "required": [
+                                                            "url",
+                                                            "label",
+                                                            "active"
+                                                        ]
+                                                    }
+                                                },
+                                                "path": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ],
+                                                    "description": "Base path for paginator generated URLs."
+                                                },
+                                                "per_page": {
+                                                    "type": "integer",
+                                                    "description": "Number of items shown per page.",
+                                                    "minimum": 0
+                                                },
+                                                "to": {
+                                                    "type": [
+                                                        "integer",
+                                                        "null"
+                                                    ],
+                                                    "description": "Number of the last item in the slice.",
+                                                    "minimum": 1
+                                                },
+                                                "total": {
+                                                    "type": "integer",
+                                                    "description": "Total number of items being paginated.",
+                                                    "minimum": 0
+                                                }
+                                            },
+                                            "required": [
+                                                "current_page",
+                                                "from",
+                                                "last_page",
+                                                "links",
+                                                "path",
+                                                "per_page",
+                                                "to",
+                                                "total"
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "data",
+                                        "links",
+                                        "meta"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    }
+                }
+            }
+        },
+        "/v1/public/properties/{slug}": {
+            "get": {
+                "operationId": "property.publicShow",
+                "description": "Available and under-offer properties only (others answer 404). `related` holds up to four similar properties.",
+                "summary": "Show a property by slug (public)",
+                "tags": [
+                    "Property"
+                ],
+                "parameters": [
+                    {
+                        "name": "slug",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "`PublicPropertyDetailResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "allOf": [
+                                                {
+                                                    "$ref": "#/components/schemas/PublicPropertyDetailResource"
+                                                },
+                                                {
+                                                    "type": "object",
+                                                    "required": [
+                                                        "property_type",
+                                                        "location",
+                                                        "cover",
+                                                        "amenities",
+                                                        "media"
+                                                    ]
+                                                }
+                                            ]
+                                        },
+                                        "related": {
+                                            "type": "array",
+                                            "items": {
+                                                "allOf": [
+                                                    {
+                                                        "$ref": "#/components/schemas/PublicPropertyResource"
+                                                    },
+                                                    {
+                                                        "type": "object",
+                                                        "required": [
+                                                            "property_type",
+                                                            "location",
+                                                            "cover"
+                                                        ]
+                                                    }
+                                                ]
+                                            }
+                                        }
+                                    },
+                                    "required": [
+                                        "data",
+                                        "related"
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/v1/properties": {
+            "get": {
+                "operationId": "properties.index",
+                "description": "Every status, newest first, 20 per page. Filter with `status`, `listing_type` and `q` (title or reference code).",
+                "summary": "List properties",
+                "tags": [
+                    "Property"
+                ],
+                "parameters": [
+                    {
+                        "name": "status",
+                        "in": "query",
+                        "schema": {
+                            "type": "string",
+                            "maxLength": 20
+                        }
+                    },
+                    {
+                        "name": "listing_type",
+                        "in": "query",
+                        "schema": {
+                            "type": "string",
+                            "maxLength": 10
+                        }
+                    },
+                    {
+                        "name": "q",
+                        "in": "query",
+                        "schema": {
+                            "type": "string",
+                            "maxLength": 100
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Paginated set of `PropertyResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "allOf": [
+                                                    {
+                                                        "$ref": "#/components/schemas/PropertyResource"
+                                                    },
+                                                    {
+                                                        "type": "object",
+                                                        "required": [
+                                                            "property_type",
+                                                            "location",
+                                                            "cover"
+                                                        ]
+                                                    }
+                                                ]
+                                            }
+                                        },
+                                        "links": {
+                                            "type": "object",
+                                            "properties": {
+                                                "first": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "last": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "prev": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "next": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                }
+                                            },
+                                            "required": [
+                                                "first",
+                                                "last",
+                                                "prev",
+                                                "next"
+                                            ]
+                                        },
+                                        "meta": {
+                                            "type": "object",
+                                            "properties": {
+                                                "current_page": {
+                                                    "type": "integer",
+                                                    "minimum": 1
+                                                },
+                                                "from": {
+                                                    "type": [
+                                                        "integer",
+                                                        "null"
+                                                    ],
+                                                    "minimum": 1
+                                                },
+                                                "last_page": {
+                                                    "type": "integer",
+                                                    "minimum": 1
+                                                },
+                                                "links": {
+                                                    "type": "array",
+                                                    "description": "Generated paginator links.",
+                                                    "items": {
+                                                        "type": "object",
+                                                        "properties": {
+                                                            "url": {
+                                                                "type": [
+                                                                    "string",
+                                                                    "null"
+                                                                ]
+                                                            },
+                                                            "label": {
+                                                                "type": "string"
+                                                            },
+                                                            "active": {
+                                                                "type": "boolean"
+                                                            }
+                                                        },
+                                                        "required": [
+                                                            "url",
+                                                            "label",
+                                                            "active"
+                                                        ]
+                                                    }
+                                                },
+                                                "path": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ],
+                                                    "description": "Base path for paginator generated URLs."
+                                                },
+                                                "per_page": {
+                                                    "type": "integer",
+                                                    "description": "Number of items shown per page.",
+                                                    "minimum": 0
+                                                },
+                                                "to": {
+                                                    "type": [
+                                                        "integer",
+                                                        "null"
+                                                    ],
+                                                    "description": "Number of the last item in the slice.",
+                                                    "minimum": 1
+                                                },
+                                                "total": {
+                                                    "type": "integer",
+                                                    "description": "Total number of items being paginated.",
+                                                    "minimum": 0
+                                                }
+                                            },
+                                            "required": [
+                                                "current_page",
+                                                "from",
+                                                "last_page",
+                                                "links",
+                                                "path",
+                                                "per_page",
+                                                "to",
+                                                "total"
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "data",
+                                        "links",
+                                        "meta"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            },
+            "post": {
+                "operationId": "properties.store",
+                "description": "Always starts as `draft`; change the status with `POST properties/{id}/status`.\n`rent_period` is required for rent listings. `price` is in minor units. `amenity_ids` is the full amenity list.",
+                "summary": "Create a property",
+                "tags": [
+                    "Property"
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/StorePropertyRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "`PropertyResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "allOf": [
+                                                {
+                                                    "$ref": "#/components/schemas/PropertyResource"
+                                                },
+                                                {
+                                                    "type": "object",
+                                                    "required": [
+                                                        "property_type",
+                                                        "location",
+                                                        "amenity_ids",
+                                                        "cover",
+                                                        "media",
+                                                        "status_history"
+                                                    ]
+                                                }
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    }
+                }
+            }
+        },
+        "/v1/properties/{property}": {
+            "get": {
+                "operationId": "properties.show",
+                "summary": "Show a property, with its media and status history",
+                "tags": [
+                    "Property"
+                ],
+                "parameters": [
+                    {
+                        "name": "property",
+                        "in": "path",
+                        "required": true,
+                        "description": "The property ID",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "`PropertyResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "allOf": [
+                                                {
+                                                    "$ref": "#/components/schemas/PropertyResource"
+                                                },
+                                                {
+                                                    "type": "object",
+                                                    "required": [
+                                                        "property_type",
+                                                        "location",
+                                                        "amenity_ids",
+                                                        "cover",
+                                                        "media",
+                                                        "status_history"
+                                                    ]
+                                                }
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            },
+            "put": {
+                "operationId": "properties.update",
+                "summary": "Update a property (not its status)",
+                "tags": [
+                    "Property"
+                ],
+                "parameters": [
+                    {
+                        "name": "property",
+                        "in": "path",
+                        "required": true,
+                        "description": "The property ID",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/UpdatePropertyRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "`PropertyResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "allOf": [
+                                                {
+                                                    "$ref": "#/components/schemas/PropertyResource"
+                                                },
+                                                {
+                                                    "type": "object",
+                                                    "required": [
+                                                        "property_type",
+                                                        "location",
+                                                        "amenity_ids",
+                                                        "cover",
+                                                        "media",
+                                                        "status_history"
+                                                    ]
+                                                }
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    }
+                }
+            },
+            "delete": {
+                "operationId": "properties.destroy",
+                "summary": "Delete a property and its media files",
+                "tags": [
+                    "Property"
+                ],
+                "parameters": [
+                    {
+                        "name": "property",
+                        "in": "path",
+                        "required": true,
+                        "description": "The property ID",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No content"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            }
+        },
+        "/v1/properties/{property}/media": {
+            "post": {
+                "operationId": "propertyMedia.store",
+                "description": "`kind` is image, floorplan (image files), brochure (PDF) or video_url (send `url`, no file).\nSend files as multipart `file`. The first image becomes the cover.",
+                "summary": "Add media to a property",
+                "tags": [
+                    "PropertyMedia"
+                ],
+                "parameters": [
+                    {
+                        "name": "property",
+                        "in": "path",
+                        "required": true,
+                        "description": "The property ID",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "$ref": "#/components/schemas/StorePropertyMediaRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "`PropertyMediaResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/PropertyMediaResource"
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    }
+                }
+            }
+        },
+        "/v1/properties/{property}/media/{media}": {
+            "patch": {
+                "operationId": "propertyMedia.update",
+                "description": "`sort` reorders; `is_cover: true` makes this image the cover and clears the previous one. Only images can be the cover.",
+                "summary": "Update media",
+                "tags": [
+                    "PropertyMedia"
+                ],
+                "parameters": [
+                    {
+                        "name": "property",
+                        "in": "path",
+                        "required": true,
+                        "description": "The property ID",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "media",
+                        "in": "path",
+                        "required": true,
+                        "description": "The media ID",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/UpdatePropertyMediaRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "`PropertyMediaResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/PropertyMediaResource"
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    }
+                }
+            },
+            "delete": {
+                "operationId": "propertyMedia.destroy",
+                "description": "Removing the cover promotes the next image.",
+                "summary": "Remove media",
+                "tags": [
+                    "PropertyMedia"
+                ],
+                "parameters": [
+                    {
+                        "name": "property",
+                        "in": "path",
+                        "required": true,
+                        "description": "The property ID",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "media",
+                        "in": "path",
+                        "required": true,
+                        "description": "The media ID",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No content"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            }
+        },
+        "/v1/properties/{property}/status": {
+            "post": {
+                "operationId": "propertyStatus.store",
+                "description": "Allowed moves: draft to available or archived; available to draft, under_offer, sold (sale only),\nrented (rent only) or archived; under_offer to available, sold, rented or archived; sold and rented\nto available or archived; archived to draft. Anything else answers 422. Each change is written to the history.",
+                "summary": "Change a property's status",
+                "tags": [
+                    "PropertyStatus"
+                ],
+                "parameters": [
+                    {
+                        "name": "property",
+                        "in": "path",
+                        "required": true,
+                        "description": "The property ID",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ChangePropertyStatusRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "`PropertyResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "allOf": [
+                                                {
+                                                    "$ref": "#/components/schemas/PropertyResource"
+                                                },
+                                                {
+                                                    "type": "object",
+                                                    "required": [
+                                                        "property_type",
+                                                        "location",
+                                                        "cover",
+                                                        "status_history"
+                                                    ]
+                                                }
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    }
+                }
+            }
+        },
         "/v1/public/property-types": {
             "get": {
                 "operationId": "propertyType.publicIndex",
@@ -4256,7 +5352,7 @@
         },
         "/v1/hero": {
             "get": {
-                "operationId": "v1.sectionPanel.show_24",
+                "operationId": "v1.sectionPanel.show_26",
                 "description": "Title and text (both languages) and image of the hero or about section.",
                 "summary": "Show a section panel",
                 "tags": [
@@ -4290,7 +5386,7 @@
                 }
             },
             "patch": {
-                "operationId": "v1.sectionPanel.update_25",
+                "operationId": "v1.sectionPanel.update_27",
                 "description": "Partial update of the title and text (both languages).",
                 "summary": "Update a section panel",
                 "tags": [
@@ -4338,7 +5434,7 @@
         },
         "/v1/hero/image": {
             "post": {
-                "operationId": "v1.sectionPanel.storeImage_26",
+                "operationId": "v1.sectionPanel.storeImage_28",
                 "description": "Multipart field `image` (jpeg, png or webp). Replaces the current image.",
                 "summary": "Upload the section image",
                 "tags": [
@@ -4385,7 +5481,7 @@
                 }
             },
             "delete": {
-                "operationId": "v1.sectionPanel.destroyImage_27",
+                "operationId": "v1.sectionPanel.destroyImage_29",
                 "summary": "Remove the section image",
                 "tags": [
                     "SectionPanel"
@@ -4420,7 +5516,7 @@
         },
         "/v1/about": {
             "get": {
-                "operationId": "v1.sectionPanel.show_28",
+                "operationId": "v1.sectionPanel.show_30",
                 "description": "Title and text (both languages) and image of the hero or about section.",
                 "summary": "Show a section panel",
                 "tags": [
@@ -4454,7 +5550,7 @@
                 }
             },
             "patch": {
-                "operationId": "v1.sectionPanel.update_29",
+                "operationId": "v1.sectionPanel.update_31",
                 "description": "Partial update of the title and text (both languages).",
                 "summary": "Update a section panel",
                 "tags": [
@@ -4502,7 +5598,7 @@
         },
         "/v1/about/image": {
             "post": {
-                "operationId": "v1.sectionPanel.storeImage_30",
+                "operationId": "v1.sectionPanel.storeImage_32",
                 "description": "Multipart field `image` (jpeg, png or webp). Replaces the current image.",
                 "summary": "Upload the section image",
                 "tags": [
@@ -4549,7 +5645,7 @@
                 }
             },
             "delete": {
-                "operationId": "v1.sectionPanel.destroyImage_31",
+                "operationId": "v1.sectionPanel.destroyImage_33",
                 "summary": "Remove the section image",
                 "tags": [
                     "SectionPanel"
@@ -6448,6 +7544,25 @@
                 ],
                 "title": "CategoryResource"
             },
+            "ChangePropertyStatusRequest": {
+                "type": "object",
+                "properties": {
+                    "status": {
+                        "$ref": "#/components/schemas/PropertyStatus"
+                    },
+                    "note": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "maxLength": 500
+                    }
+                },
+                "required": [
+                    "status"
+                ],
+                "title": "ChangePropertyStatusRequest"
+            },
             "ContactMessageResource": {
                 "type": "object",
                 "properties": {
@@ -6986,6 +8101,346 @@
                 ],
                 "title": "PricingResource"
             },
+            "PropertyMediaResource": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "integer"
+                    },
+                    "kind": {
+                        "type": "string"
+                    },
+                    "file": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "url": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "sort": {
+                        "type": "integer"
+                    },
+                    "is_cover": {
+                        "type": "boolean"
+                    }
+                },
+                "required": [
+                    "id",
+                    "kind",
+                    "file",
+                    "url",
+                    "sort",
+                    "is_cover"
+                ],
+                "title": "PropertyMediaResource"
+            },
+            "PropertyResource": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "integer"
+                    },
+                    "ref_code": {
+                        "type": "string"
+                    },
+                    "slug": {
+                        "type": "string"
+                    },
+                    "title": {
+                        "type": "string"
+                    },
+                    "title_2nd": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "description": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "description_2nd": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "listing_type": {
+                        "type": "string"
+                    },
+                    "property_type_id": {
+                        "type": "integer"
+                    },
+                    "location_id": {
+                        "type": "integer"
+                    },
+                    "address_line": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "lat": {
+                        "type": [
+                            "number",
+                            "null"
+                        ]
+                    },
+                    "lng": {
+                        "type": [
+                            "number",
+                            "null"
+                        ]
+                    },
+                    "price": {
+                        "type": "integer"
+                    },
+                    "rent_period": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "area": {
+                        "type": [
+                            "number",
+                            "null"
+                        ]
+                    },
+                    "area_unit": {
+                        "type": "string"
+                    },
+                    "beds": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ]
+                    },
+                    "baths": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ]
+                    },
+                    "floor": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ]
+                    },
+                    "total_floors": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ]
+                    },
+                    "facing": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "year_built": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ]
+                    },
+                    "furnished": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "status": {
+                        "$ref": "#/components/schemas/PropertyStatus"
+                    },
+                    "featured": {
+                        "type": "boolean"
+                    },
+                    "agent_id": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ]
+                    },
+                    "project_id": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ]
+                    },
+                    "unit_id": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ]
+                    },
+                    "owner_id": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ]
+                    },
+                    "seo_title": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "seo_description": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "published_at": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "format": "date-time"
+                    },
+                    "property_type": {
+                        "$ref": "#/components/schemas/PropertyTypeResource"
+                    },
+                    "location": {
+                        "$ref": "#/components/schemas/LocationResource"
+                    },
+                    "amenity_ids": {
+                        "type": "object",
+                        "additionalProperties": {}
+                    },
+                    "cover": {
+                        "anyOf": [
+                            {
+                                "$ref": "#/components/schemas/PropertyMediaResource"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ]
+                    },
+                    "media": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/PropertyMediaResource"
+                        }
+                    },
+                    "status_history": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "from_status": {
+                                    "type": [
+                                        "string",
+                                        "null"
+                                    ]
+                                },
+                                "to_status": {
+                                    "type": "string"
+                                },
+                                "user_id": {
+                                    "type": [
+                                        "integer",
+                                        "null"
+                                    ]
+                                },
+                                "note": {
+                                    "type": [
+                                        "string",
+                                        "null"
+                                    ]
+                                },
+                                "created_at": {
+                                    "type": "string",
+                                    "format": "date-time"
+                                }
+                            },
+                            "required": [
+                                "from_status",
+                                "to_status",
+                                "user_id",
+                                "note",
+                                "created_at"
+                            ]
+                        }
+                    },
+                    "created_at": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "format": "date-time"
+                    },
+                    "updated_at": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "format": "date-time"
+                    }
+                },
+                "required": [
+                    "id",
+                    "ref_code",
+                    "slug",
+                    "title",
+                    "title_2nd",
+                    "description",
+                    "description_2nd",
+                    "listing_type",
+                    "property_type_id",
+                    "location_id",
+                    "address_line",
+                    "lat",
+                    "lng",
+                    "price",
+                    "rent_period",
+                    "area",
+                    "area_unit",
+                    "beds",
+                    "baths",
+                    "floor",
+                    "total_floors",
+                    "facing",
+                    "year_built",
+                    "furnished",
+                    "status",
+                    "featured",
+                    "agent_id",
+                    "project_id",
+                    "unit_id",
+                    "owner_id",
+                    "seo_title",
+                    "seo_description",
+                    "published_at",
+                    "created_at",
+                    "updated_at"
+                ],
+                "title": "PropertyResource"
+            },
+            "PropertyStatus": {
+                "type": "string",
+                "description": "Property lifecycle. Status changes only through PropertyStatusService, which enforces this table.\n",
+                "enum": [
+                    "draft",
+                    "available",
+                    "under_offer",
+                    "sold",
+                    "rented",
+                    "archived"
+                ],
+                "title": "PropertyStatus"
+            },
             "PropertyTypeResource": {
                 "type": "object",
                 "properties": {
@@ -7032,6 +8487,336 @@
                     "updated_at"
                 ],
                 "title": "PropertyTypeResource"
+            },
+            "PublicPropertyDetailResource": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "integer"
+                    },
+                    "ref_code": {
+                        "type": "string"
+                    },
+                    "slug": {
+                        "type": "string"
+                    },
+                    "title": {
+                        "type": "string"
+                    },
+                    "title_2nd": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "listing_type": {
+                        "type": "string"
+                    },
+                    "status": {
+                        "$ref": "#/components/schemas/PropertyStatus"
+                    },
+                    "featured": {
+                        "type": "boolean"
+                    },
+                    "property_type": {
+                        "$ref": "#/components/schemas/PropertyTypeResource"
+                    },
+                    "location": {
+                        "$ref": "#/components/schemas/LocationResource"
+                    },
+                    "address_line": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "lat": {
+                        "type": [
+                            "number",
+                            "null"
+                        ]
+                    },
+                    "lng": {
+                        "type": [
+                            "number",
+                            "null"
+                        ]
+                    },
+                    "price": {
+                        "type": "integer"
+                    },
+                    "rent_period": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "area": {
+                        "type": [
+                            "number",
+                            "null"
+                        ]
+                    },
+                    "area_unit": {
+                        "type": "string"
+                    },
+                    "beds": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ]
+                    },
+                    "baths": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ]
+                    },
+                    "furnished": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "cover": {
+                        "anyOf": [
+                            {
+                                "$ref": "#/components/schemas/PropertyMediaResource"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ]
+                    },
+                    "published_at": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "format": "date-time"
+                    },
+                    "description": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "description_2nd": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "floor": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ]
+                    },
+                    "total_floors": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ]
+                    },
+                    "facing": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "year_built": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ]
+                    },
+                    "seo_title": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "seo_description": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "amenities": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/AmenityResource"
+                        }
+                    },
+                    "media": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/PropertyMediaResource"
+                        }
+                    }
+                },
+                "required": [
+                    "id",
+                    "ref_code",
+                    "slug",
+                    "title",
+                    "title_2nd",
+                    "listing_type",
+                    "status",
+                    "featured",
+                    "address_line",
+                    "lat",
+                    "lng",
+                    "price",
+                    "rent_period",
+                    "area",
+                    "area_unit",
+                    "beds",
+                    "baths",
+                    "furnished",
+                    "published_at",
+                    "description",
+                    "description_2nd",
+                    "floor",
+                    "total_floors",
+                    "facing",
+                    "year_built",
+                    "seo_title",
+                    "seo_description"
+                ],
+                "title": "PublicPropertyDetailResource"
+            },
+            "PublicPropertyResource": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "integer"
+                    },
+                    "ref_code": {
+                        "type": "string"
+                    },
+                    "slug": {
+                        "type": "string"
+                    },
+                    "title": {
+                        "type": "string"
+                    },
+                    "title_2nd": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "listing_type": {
+                        "type": "string"
+                    },
+                    "status": {
+                        "$ref": "#/components/schemas/PropertyStatus"
+                    },
+                    "featured": {
+                        "type": "boolean"
+                    },
+                    "property_type": {
+                        "$ref": "#/components/schemas/PropertyTypeResource"
+                    },
+                    "location": {
+                        "$ref": "#/components/schemas/LocationResource"
+                    },
+                    "address_line": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "lat": {
+                        "type": [
+                            "number",
+                            "null"
+                        ]
+                    },
+                    "lng": {
+                        "type": [
+                            "number",
+                            "null"
+                        ]
+                    },
+                    "price": {
+                        "type": "integer"
+                    },
+                    "rent_period": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "area": {
+                        "type": [
+                            "number",
+                            "null"
+                        ]
+                    },
+                    "area_unit": {
+                        "type": "string"
+                    },
+                    "beds": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ]
+                    },
+                    "baths": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ]
+                    },
+                    "furnished": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "cover": {
+                        "anyOf": [
+                            {
+                                "$ref": "#/components/schemas/PropertyMediaResource"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ]
+                    },
+                    "published_at": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "format": "date-time"
+                    }
+                },
+                "required": [
+                    "id",
+                    "ref_code",
+                    "slug",
+                    "title",
+                    "title_2nd",
+                    "listing_type",
+                    "status",
+                    "featured",
+                    "address_line",
+                    "lat",
+                    "lng",
+                    "price",
+                    "rent_period",
+                    "area",
+                    "area_unit",
+                    "beds",
+                    "baths",
+                    "furnished",
+                    "published_at"
+                ],
+                "title": "PublicPropertyResource"
             },
             "ReorderMenusRequest": {
                 "type": "object",
@@ -7794,6 +9579,268 @@
                     "price"
                 ],
                 "title": "StorePricingRequest"
+            },
+            "StorePropertyMediaRequest": {
+                "type": "object",
+                "properties": {
+                    "kind": {
+                        "type": "string",
+                        "enum": [
+                            "image",
+                            "floorplan",
+                            "brochure",
+                            "video_url"
+                        ]
+                    },
+                    "file": {
+                        "type": "string",
+                        "format": "binary",
+                        "contentMediaType": "application/octet-stream",
+                        "description": "Maximum file size: 5120 kilobytes."
+                    },
+                    "url": {
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "kind",
+                    "file"
+                ],
+                "title": "StorePropertyMediaRequest"
+            },
+            "StorePropertyRequest": {
+                "type": "object",
+                "properties": {
+                    "title": {
+                        "type": "string",
+                        "maxLength": 200
+                    },
+                    "description": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "maxLength": 10000
+                    },
+                    "title_2nd": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "maxLength": 200
+                    },
+                    "description_2nd": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "maxLength": 10000
+                    },
+                    "slug": {
+                        "type": "string",
+                        "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$",
+                        "maxLength": 180
+                    },
+                    "listing_type": {
+                        "type": "string",
+                        "enum": [
+                            "sale",
+                            "rent"
+                        ]
+                    },
+                    "property_type_id": {
+                        "type": "integer"
+                    },
+                    "location_id": {
+                        "type": "integer"
+                    },
+                    "address_line": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "maxLength": 255
+                    },
+                    "lat": {
+                        "type": [
+                            "number",
+                            "null"
+                        ],
+                        "description": "No `sometimes` here: it would skip required_with when the other coordinate is sent alone.",
+                        "minimum": -90,
+                        "maximum": 90
+                    },
+                    "lng": {
+                        "type": [
+                            "number",
+                            "null"
+                        ],
+                        "minimum": -180,
+                        "maximum": 180
+                    },
+                    "price": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 999999999999999
+                    },
+                    "rent_period": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "enum": [
+                            "month",
+                            "year",
+                            "day",
+                            null
+                        ]
+                    },
+                    "area": {
+                        "type": [
+                            "number",
+                            "null"
+                        ],
+                        "minimum": 0,
+                        "maximum": 99999999
+                    },
+                    "area_unit": {
+                        "type": "string",
+                        "enum": [
+                            "sqft",
+                            "sqm"
+                        ]
+                    },
+                    "beds": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ],
+                        "minimum": 0,
+                        "maximum": 99
+                    },
+                    "baths": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ],
+                        "minimum": 0,
+                        "maximum": 99
+                    },
+                    "floor": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ],
+                        "minimum": -5,
+                        "maximum": 200
+                    },
+                    "total_floors": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ],
+                        "minimum": 0,
+                        "maximum": 200
+                    },
+                    "facing": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "enum": [
+                            "north",
+                            "south",
+                            "east",
+                            "west",
+                            "north_east",
+                            "north_west",
+                            "south_east",
+                            "south_west",
+                            null
+                        ]
+                    },
+                    "year_built": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ],
+                        "minimum": 1800,
+                        "maximum": 2036
+                    },
+                    "furnished": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "enum": [
+                            "unfurnished",
+                            "semi_furnished",
+                            "furnished",
+                            null
+                        ]
+                    },
+                    "featured": {
+                        "type": "boolean"
+                    },
+                    "agent_id": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ],
+                        "minimum": 1
+                    },
+                    "project_id": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ],
+                        "minimum": 1
+                    },
+                    "unit_id": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ],
+                        "minimum": 1
+                    },
+                    "owner_id": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ],
+                        "minimum": 1
+                    },
+                    "seo_title": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "maxLength": 255
+                    },
+                    "seo_description": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "maxLength": 320
+                    },
+                    "amenity_ids": {
+                        "type": "array",
+                        "items": {
+                            "type": "integer"
+                        },
+                        "maxItems": 100,
+                        "uniqueItems": true
+                    }
+                },
+                "required": [
+                    "title",
+                    "listing_type",
+                    "property_type_id",
+                    "location_id",
+                    "price"
+                ],
+                "title": "StorePropertyRequest"
             },
             "StorePropertyTypeRequest": {
                 "type": "object",
@@ -8655,6 +10702,257 @@
                     }
                 },
                 "title": "UpdateProfileRequest"
+            },
+            "UpdatePropertyMediaRequest": {
+                "type": "object",
+                "properties": {
+                    "sort": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 65535
+                    },
+                    "is_cover": {
+                        "enum": [
+                            "yes",
+                            "on",
+                            "1",
+                            1,
+                            "true",
+                            true
+                        ]
+                    }
+                },
+                "title": "UpdatePropertyMediaRequest"
+            },
+            "UpdatePropertyRequest": {
+                "type": "object",
+                "properties": {
+                    "title": {
+                        "type": "string",
+                        "maxLength": 200
+                    },
+                    "description": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "maxLength": 10000
+                    },
+                    "title_2nd": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "maxLength": 200
+                    },
+                    "description_2nd": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "maxLength": 10000
+                    },
+                    "slug": {
+                        "type": "string",
+                        "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$",
+                        "maxLength": 180
+                    },
+                    "listing_type": {
+                        "type": "string",
+                        "enum": [
+                            "sale",
+                            "rent"
+                        ]
+                    },
+                    "property_type_id": {
+                        "type": "integer"
+                    },
+                    "location_id": {
+                        "type": "integer"
+                    },
+                    "address_line": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "maxLength": 255
+                    },
+                    "lat": {
+                        "type": [
+                            "number",
+                            "null"
+                        ],
+                        "description": "No `sometimes` here: it would skip required_with when the other coordinate is sent alone.",
+                        "minimum": -90,
+                        "maximum": 90
+                    },
+                    "lng": {
+                        "type": [
+                            "number",
+                            "null"
+                        ],
+                        "minimum": -180,
+                        "maximum": 180
+                    },
+                    "price": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 999999999999999
+                    },
+                    "rent_period": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "enum": [
+                            "month",
+                            "year",
+                            "day",
+                            null
+                        ]
+                    },
+                    "area": {
+                        "type": [
+                            "number",
+                            "null"
+                        ],
+                        "minimum": 0,
+                        "maximum": 99999999
+                    },
+                    "area_unit": {
+                        "type": "string",
+                        "enum": [
+                            "sqft",
+                            "sqm"
+                        ]
+                    },
+                    "beds": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ],
+                        "minimum": 0,
+                        "maximum": 99
+                    },
+                    "baths": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ],
+                        "minimum": 0,
+                        "maximum": 99
+                    },
+                    "floor": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ],
+                        "minimum": -5,
+                        "maximum": 200
+                    },
+                    "total_floors": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ],
+                        "minimum": 0,
+                        "maximum": 200
+                    },
+                    "facing": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "enum": [
+                            "north",
+                            "south",
+                            "east",
+                            "west",
+                            "north_east",
+                            "north_west",
+                            "south_east",
+                            "south_west",
+                            null
+                        ]
+                    },
+                    "year_built": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ],
+                        "minimum": 1800,
+                        "maximum": 2036
+                    },
+                    "furnished": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "enum": [
+                            "unfurnished",
+                            "semi_furnished",
+                            "furnished",
+                            null
+                        ]
+                    },
+                    "featured": {
+                        "type": "boolean"
+                    },
+                    "agent_id": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ],
+                        "minimum": 1
+                    },
+                    "project_id": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ],
+                        "minimum": 1
+                    },
+                    "unit_id": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ],
+                        "minimum": 1
+                    },
+                    "owner_id": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ],
+                        "minimum": 1
+                    },
+                    "seo_title": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "maxLength": 255
+                    },
+                    "seo_description": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "maxLength": 320
+                    },
+                    "amenity_ids": {
+                        "type": "array",
+                        "items": {
+                            "type": "integer"
+                        },
+                        "maxItems": 100,
+                        "uniqueItems": true
+                    },
+                    "status": {
+                        "type": "string"
+                    }
+                },
+                "title": "UpdatePropertyRequest"
             },
             "UpdatePropertyTypeRequest": {
                 "type": "object",

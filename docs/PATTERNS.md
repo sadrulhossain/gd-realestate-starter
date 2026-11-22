@@ -127,3 +127,11 @@ singleton reference: Settings. Paths below are relative to `api/app` unless note
 - A location with children cannot be deleted (409). The public list hides a location whose ancestor is inactive.
 - Property types (`key`, group residential|commercial|land) and amenities are plain Category-shaped modules; seed defaults with `firstOrCreate` so edits survive re-seeding. Permission prefixes: `locations`, `property_types`, `amenities`.
 - `settings.area_unit` is `sqft|sqm`; currency fields already existed in settings.
+
+## Properties (phase R2)
+- Status is never mass-assigned or sent to PATCH (`status` is `prohibited` there). It moves only through `Services/PropertyStatusService` (`POST properties/{id}/status`), which checks `Enums/PropertyStatus::next()`, writes `property_status_history`, and sets `published_at` the first time a property becomes available. `sold` is for sale listings, `rented` for rent.
+- Public vs admin: `PublicPropertyResource` (card) and `PublicPropertyDetailResource` never carry owner, agent, project, unit or history; `PropertyResource` is admin only. Public statuses are `PropertyStatus::publicValues()` (available, under_offer); other statuses answer 404 by slug.
+- Search lives in `Services/PropertySearch`: filters, `tsvector` match (`search_vector`, generated column + GIN) OR a `pg_trgm` word-similarity match on the title (threshold set to 0.4 per query), ranked by `ts_rank`; radius uses `earth_box` (GiST index on `ll_to_earth(lat, lng)`) plus `earth_distance`. New filter columns need an index in the migration. lat/lng are `double precision` so the index expression needs no casts.
+- `ref_code` comes from the `property_ref_seq` sequence, owned by `properties.id` so `migrate:fresh` drops it with the table.
+- Media (`property_media`): image/floorplan files and PDF brochures go through `MediaService` (`store`, `storeDocument`); `video_url` stores the URL in `path`. One cover per property (partial unique index); the first image becomes the cover, only an image can be the cover, removing the cover promotes the next image.
+- `agent_id`, `project_id`, `unit_id`, `owner_id` are plain columns until R3/R4 add their tables and foreign keys.

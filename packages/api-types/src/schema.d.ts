@@ -801,6 +801,162 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/public/properties": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Search properties (public)
+         * @description Only `available` and `under_offer` properties. Filters: `listing_type`, `property_type` (key or id),
+         *     `location` (id, includes its sub-locations), `price_min`/`price_max` (minor units), `beds_min`, `baths_min`,
+         *     `area_min`/`area_max`, `amenities` (ids, all required), `furnished`, `featured`, `status`.
+         *     `q` is a keyword search (full-text, typo tolerant); `lat`, `lng` and `radius_km` limit by distance.
+         *     `sort`: relevance (default with `q`), newest (default), price_asc, price_desc, area_asc, area_desc.
+         *     12 per page (`per_page` up to 48). No authentication.
+         */
+        get: operations["property.publicIndex"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/public/properties/{slug}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Show a property by slug (public)
+         * @description Available and under-offer properties only (others answer 404). `related` holds up to four similar properties.
+         */
+        get: operations["property.publicShow"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/properties": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List properties
+         * @description Every status, newest first, 20 per page. Filter with `status`, `listing_type` and `q` (title or reference code).
+         */
+        get: operations["properties.index"];
+        put?: never;
+        /**
+         * Create a property
+         * @description Always starts as `draft`; change the status with `POST properties/{id}/status`.
+         *     `rent_period` is required for rent listings. `price` is in minor units. `amenity_ids` is the full amenity list.
+         */
+        post: operations["properties.store"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/properties/{property}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Show a property, with its media and status history */
+        get: operations["properties.show"];
+        /** Update a property (not its status) */
+        put: operations["properties.update"];
+        post?: never;
+        /** Delete a property and its media files */
+        delete: operations["properties.destroy"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/properties/{property}/media": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Add media to a property
+         * @description `kind` is image, floorplan (image files), brochure (PDF) or video_url (send `url`, no file).
+         *     Send files as multipart `file`. The first image becomes the cover.
+         */
+        post: operations["propertyMedia.store"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/properties/{property}/media/{media}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /**
+         * Remove media
+         * @description Removing the cover promotes the next image.
+         */
+        delete: operations["propertyMedia.destroy"];
+        options?: never;
+        head?: never;
+        /**
+         * Update media
+         * @description `sort` reorders; `is_cover: true` makes this image the cover and clears the previous one. Only images can be the cover.
+         */
+        patch: operations["propertyMedia.update"];
+        trace?: never;
+    };
+    "/v1/properties/{property}/status": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Change a property's status
+         * @description Allowed moves: draft to available or archived; available to draft, under_offer, sold (sale only),
+         *     rented (rent only) or archived; under_offer to available, sold, rented or archived; sold and rented
+         *     to available or archived; archived to draft. Anything else answers 422. Each change is written to the history.
+         */
+        post: operations["propertyStatus.store"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/public/property-types": {
         parameters: {
             query?: never;
@@ -1015,7 +1171,7 @@ export interface paths {
          * Show a section panel
          * @description Title and text (both languages) and image of the hero or about section.
          */
-        get: operations["v1.sectionPanel.show_24"];
+        get: operations["v1.sectionPanel.show_26"];
         put?: never;
         post?: never;
         delete?: never;
@@ -1025,7 +1181,7 @@ export interface paths {
          * Update a section panel
          * @description Partial update of the title and text (both languages).
          */
-        patch: operations["v1.sectionPanel.update_25"];
+        patch: operations["v1.sectionPanel.update_27"];
         trace?: never;
     };
     "/v1/hero/image": {
@@ -1041,9 +1197,9 @@ export interface paths {
          * Upload the section image
          * @description Multipart field `image` (jpeg, png or webp). Replaces the current image.
          */
-        post: operations["v1.sectionPanel.storeImage_26"];
+        post: operations["v1.sectionPanel.storeImage_28"];
         /** Remove the section image */
-        delete: operations["v1.sectionPanel.destroyImage_27"];
+        delete: operations["v1.sectionPanel.destroyImage_29"];
         options?: never;
         head?: never;
         patch?: never;
@@ -1060,7 +1216,7 @@ export interface paths {
          * Show a section panel
          * @description Title and text (both languages) and image of the hero or about section.
          */
-        get: operations["v1.sectionPanel.show_28"];
+        get: operations["v1.sectionPanel.show_30"];
         put?: never;
         post?: never;
         delete?: never;
@@ -1070,7 +1226,7 @@ export interface paths {
          * Update a section panel
          * @description Partial update of the title and text (both languages).
          */
-        patch: operations["v1.sectionPanel.update_29"];
+        patch: operations["v1.sectionPanel.update_31"];
         trace?: never;
     };
     "/v1/about/image": {
@@ -1086,9 +1242,9 @@ export interface paths {
          * Upload the section image
          * @description Multipart field `image` (jpeg, png or webp). Replaces the current image.
          */
-        post: operations["v1.sectionPanel.storeImage_30"];
+        post: operations["v1.sectionPanel.storeImage_32"];
         /** Remove the section image */
-        delete: operations["v1.sectionPanel.destroyImage_31"];
+        delete: operations["v1.sectionPanel.destroyImage_33"];
         options?: never;
         head?: never;
         patch?: never;
@@ -1524,6 +1680,11 @@ export interface components {
             /** Format: date-time */
             updated_at: string | null;
         };
+        /** ChangePropertyStatusRequest */
+        ChangePropertyStatusRequest: {
+            status: components["schemas"]["PropertyStatus"];
+            note?: string | null;
+        };
         /** ContactMessageResource */
         ContactMessageResource: {
             id: number;
@@ -1637,6 +1798,77 @@ export interface components {
             /** Format: date-time */
             updated_at: string | null;
         };
+        /** PropertyMediaResource */
+        PropertyMediaResource: {
+            id: number;
+            kind: string;
+            file: string | null;
+            url: string | null;
+            sort: number;
+            is_cover: boolean;
+        };
+        /** PropertyResource */
+        PropertyResource: {
+            id: number;
+            ref_code: string;
+            slug: string;
+            title: string;
+            title_2nd: string | null;
+            description: string | null;
+            description_2nd: string | null;
+            listing_type: string;
+            property_type_id: number;
+            location_id: number;
+            address_line: string | null;
+            lat: number | null;
+            lng: number | null;
+            price: number;
+            rent_period: string | null;
+            area: number | null;
+            area_unit: string;
+            beds: number | null;
+            baths: number | null;
+            floor: number | null;
+            total_floors: number | null;
+            facing: string | null;
+            year_built: number | null;
+            furnished: string | null;
+            status: components["schemas"]["PropertyStatus"];
+            featured: boolean;
+            agent_id: number | null;
+            project_id: number | null;
+            unit_id: number | null;
+            owner_id: number | null;
+            seo_title: string | null;
+            seo_description: string | null;
+            /** Format: date-time */
+            published_at: string | null;
+            property_type?: components["schemas"]["PropertyTypeResource"];
+            location?: components["schemas"]["LocationResource"];
+            amenity_ids?: {
+                [key: string]: unknown;
+            };
+            cover?: components["schemas"]["PropertyMediaResource"] | null;
+            media?: components["schemas"]["PropertyMediaResource"][];
+            status_history?: {
+                from_status: string | null;
+                to_status: string;
+                user_id: number | null;
+                note: string | null;
+                /** Format: date-time */
+                created_at: string;
+            }[];
+            /** Format: date-time */
+            created_at: string | null;
+            /** Format: date-time */
+            updated_at: string | null;
+        };
+        /**
+         * PropertyStatus
+         * @description Property lifecycle. Status changes only through PropertyStatusService, which enforces this table.
+         * @enum {string}
+         */
+        PropertyStatus: "draft" | "available" | "under_offer" | "sold" | "rented" | "archived";
         /** PropertyTypeResource */
         PropertyTypeResource: {
             id: number;
@@ -1648,6 +1880,68 @@ export interface components {
             is_active: boolean;
             /** Format: date-time */
             updated_at: string | null;
+        };
+        /** PublicPropertyDetailResource */
+        PublicPropertyDetailResource: {
+            id: number;
+            ref_code: string;
+            slug: string;
+            title: string;
+            title_2nd: string | null;
+            listing_type: string;
+            status: components["schemas"]["PropertyStatus"];
+            featured: boolean;
+            property_type?: components["schemas"]["PropertyTypeResource"];
+            location?: components["schemas"]["LocationResource"];
+            address_line: string | null;
+            lat: number | null;
+            lng: number | null;
+            price: number;
+            rent_period: string | null;
+            area: number | null;
+            area_unit: string;
+            beds: number | null;
+            baths: number | null;
+            furnished: string | null;
+            cover?: components["schemas"]["PropertyMediaResource"] | null;
+            /** Format: date-time */
+            published_at: string | null;
+            description: string | null;
+            description_2nd: string | null;
+            floor: number | null;
+            total_floors: number | null;
+            facing: string | null;
+            year_built: number | null;
+            seo_title: string | null;
+            seo_description: string | null;
+            amenities?: components["schemas"]["AmenityResource"][];
+            media?: components["schemas"]["PropertyMediaResource"][];
+        };
+        /** PublicPropertyResource */
+        PublicPropertyResource: {
+            id: number;
+            ref_code: string;
+            slug: string;
+            title: string;
+            title_2nd: string | null;
+            listing_type: string;
+            status: components["schemas"]["PropertyStatus"];
+            featured: boolean;
+            property_type?: components["schemas"]["PropertyTypeResource"];
+            location?: components["schemas"]["LocationResource"];
+            address_line: string | null;
+            lat: number | null;
+            lng: number | null;
+            price: number;
+            rent_period: string | null;
+            area: number | null;
+            area_unit: string;
+            beds: number | null;
+            baths: number | null;
+            furnished: string | null;
+            cover?: components["schemas"]["PropertyMediaResource"] | null;
+            /** Format: date-time */
+            published_at: string | null;
         };
         /** ReorderMenusRequest */
         ReorderMenusRequest: {
@@ -1821,6 +2115,56 @@ export interface components {
             is_featured?: boolean;
             sort_order?: number;
             is_visible?: boolean;
+        };
+        /** StorePropertyMediaRequest */
+        StorePropertyMediaRequest: {
+            /** @enum {string} */
+            kind: "image" | "floorplan" | "brochure" | "video_url";
+            /**
+             * Format: binary
+             * @description Maximum file size: 5120 kilobytes.
+             */
+            file: string;
+            url?: string;
+        };
+        /** StorePropertyRequest */
+        StorePropertyRequest: {
+            title: string;
+            description?: string | null;
+            title_2nd?: string | null;
+            description_2nd?: string | null;
+            slug?: string;
+            /** @enum {string} */
+            listing_type: "sale" | "rent";
+            property_type_id: number;
+            location_id: number;
+            address_line?: string | null;
+            /** @description No `sometimes` here: it would skip required_with when the other coordinate is sent alone. */
+            lat?: number | null;
+            lng?: number | null;
+            price: number;
+            /** @enum {string|null} */
+            rent_period?: "month" | "year" | "day" | null;
+            area?: number | null;
+            /** @enum {string} */
+            area_unit?: "sqft" | "sqm";
+            beds?: number | null;
+            baths?: number | null;
+            floor?: number | null;
+            total_floors?: number | null;
+            /** @enum {string|null} */
+            facing?: "north" | "south" | "east" | "west" | "north_east" | "north_west" | "south_east" | "south_west" | null;
+            year_built?: number | null;
+            /** @enum {string|null} */
+            furnished?: "unfurnished" | "semi_furnished" | "furnished" | null;
+            featured?: boolean;
+            agent_id?: number | null;
+            project_id?: number | null;
+            unit_id?: number | null;
+            owner_id?: number | null;
+            seo_title?: string | null;
+            seo_description?: string | null;
+            amenity_ids?: number[];
         };
         /** StorePropertyTypeRequest */
         StorePropertyTypeRequest: {
@@ -2045,6 +2389,52 @@ export interface components {
             current_password?: string;
             password?: string;
             password_confirmation?: string;
+        };
+        /** UpdatePropertyMediaRequest */
+        UpdatePropertyMediaRequest: {
+            sort?: number;
+            /** @enum {unknown} */
+            is_cover?: "yes" | "on" | "1" | 1 | "true" | true;
+        };
+        /** UpdatePropertyRequest */
+        UpdatePropertyRequest: {
+            title?: string;
+            description?: string | null;
+            title_2nd?: string | null;
+            description_2nd?: string | null;
+            slug?: string;
+            /** @enum {string} */
+            listing_type?: "sale" | "rent";
+            property_type_id?: number;
+            location_id?: number;
+            address_line?: string | null;
+            /** @description No `sometimes` here: it would skip required_with when the other coordinate is sent alone. */
+            lat?: number | null;
+            lng?: number | null;
+            price?: number;
+            /** @enum {string|null} */
+            rent_period?: "month" | "year" | "day" | null;
+            area?: number | null;
+            /** @enum {string} */
+            area_unit?: "sqft" | "sqm";
+            beds?: number | null;
+            baths?: number | null;
+            floor?: number | null;
+            total_floors?: number | null;
+            /** @enum {string|null} */
+            facing?: "north" | "south" | "east" | "west" | "north_east" | "north_west" | "south_east" | "south_west" | null;
+            year_built?: number | null;
+            /** @enum {string|null} */
+            furnished?: "unfurnished" | "semi_furnished" | "furnished" | null;
+            featured?: boolean;
+            agent_id?: number | null;
+            project_id?: number | null;
+            unit_id?: number | null;
+            owner_id?: number | null;
+            seo_title?: string | null;
+            seo_description?: string | null;
+            amenity_ids?: number[];
+            status?: string;
         };
         /** UpdatePropertyTypeRequest */
         UpdatePropertyTypeRequest: {
@@ -4024,6 +4414,395 @@ export interface operations {
             404: components["responses"]["ModelNotFoundException"];
         };
     };
+    "property.publicIndex": {
+        parameters: {
+            query?: {
+                listing_type?: "sale" | "rent";
+                property_type?: string;
+                location?: number;
+                price_min?: number;
+                price_max?: number;
+                beds_min?: number;
+                baths_min?: number;
+                area_min?: number;
+                area_max?: number;
+                "amenities[]"?: number[];
+                furnished?: "unfurnished" | "semi_furnished" | "furnished";
+                featured?: boolean;
+                status?: "available" | "under_offer";
+                q?: string;
+                lat?: number;
+                lng?: number;
+                radius_km?: number;
+                sort?: "relevance" | "newest" | "price_asc" | "price_desc" | "area_asc" | "area_desc";
+                per_page?: number;
+                page?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Paginated set of `PublicPropertyResource` */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["PublicPropertyResource"][];
+                        links: {
+                            first: string | null;
+                            last: string | null;
+                            prev: string | null;
+                            next: string | null;
+                        };
+                        meta: {
+                            current_page: number;
+                            from: number | null;
+                            last_page: number;
+                            /** @description Generated paginator links. */
+                            links: {
+                                url: string | null;
+                                label: string;
+                                active: boolean;
+                            }[];
+                            /** @description Base path for paginator generated URLs. */
+                            path: string | null;
+                            /** @description Number of items shown per page. */
+                            per_page: number;
+                            /** @description Number of the last item in the slice. */
+                            to: number | null;
+                            /** @description Total number of items being paginated. */
+                            total: number;
+                        };
+                    };
+                };
+            };
+            422: components["responses"]["ValidationException"];
+        };
+    };
+    "property.publicShow": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description `PublicPropertyDetailResource` */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["PublicPropertyDetailResource"] & Record<string, never>;
+                        related: (components["schemas"]["PublicPropertyResource"] & Record<string, never>)[];
+                    };
+                };
+            };
+        };
+    };
+    "properties.index": {
+        parameters: {
+            query?: {
+                status?: string;
+                listing_type?: string;
+                q?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Paginated set of `PropertyResource` */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: (components["schemas"]["PropertyResource"] & Record<string, never>)[];
+                        links: {
+                            first: string | null;
+                            last: string | null;
+                            prev: string | null;
+                            next: string | null;
+                        };
+                        meta: {
+                            current_page: number;
+                            from: number | null;
+                            last_page: number;
+                            /** @description Generated paginator links. */
+                            links: {
+                                url: string | null;
+                                label: string;
+                                active: boolean;
+                            }[];
+                            /** @description Base path for paginator generated URLs. */
+                            path: string | null;
+                            /** @description Number of items shown per page. */
+                            per_page: number;
+                            /** @description Number of the last item in the slice. */
+                            to: number | null;
+                            /** @description Total number of items being paginated. */
+                            total: number;
+                        };
+                    };
+                };
+            };
+            401: components["responses"]["AuthenticationException"];
+            403: components["responses"]["AuthorizationException"];
+            422: components["responses"]["ValidationException"];
+        };
+    };
+    "properties.store": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["StorePropertyRequest"];
+            };
+        };
+        responses: {
+            /** @description `PropertyResource` */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["PropertyResource"] & Record<string, never>;
+                    };
+                };
+            };
+            401: components["responses"]["AuthenticationException"];
+            403: components["responses"]["AuthorizationException"];
+            422: components["responses"]["ValidationException"];
+        };
+    };
+    "properties.show": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The property ID */
+                property: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description `PropertyResource` */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["PropertyResource"] & Record<string, never>;
+                    };
+                };
+            };
+            401: components["responses"]["AuthenticationException"];
+            403: components["responses"]["AuthorizationException"];
+            404: components["responses"]["ModelNotFoundException"];
+        };
+    };
+    "properties.update": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The property ID */
+                property: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["UpdatePropertyRequest"];
+            };
+        };
+        responses: {
+            /** @description `PropertyResource` */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["PropertyResource"] & Record<string, never>;
+                    };
+                };
+            };
+            401: components["responses"]["AuthenticationException"];
+            403: components["responses"]["AuthorizationException"];
+            404: components["responses"]["ModelNotFoundException"];
+            422: components["responses"]["ValidationException"];
+        };
+    };
+    "properties.destroy": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The property ID */
+                property: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No content */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            401: components["responses"]["AuthenticationException"];
+            403: components["responses"]["AuthorizationException"];
+            404: components["responses"]["ModelNotFoundException"];
+        };
+    };
+    "propertyMedia.store": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The property ID */
+                property: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "multipart/form-data": components["schemas"]["StorePropertyMediaRequest"];
+            };
+        };
+        responses: {
+            /** @description `PropertyMediaResource` */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["PropertyMediaResource"];
+                    };
+                };
+            };
+            401: components["responses"]["AuthenticationException"];
+            403: components["responses"]["AuthorizationException"];
+            404: components["responses"]["ModelNotFoundException"];
+            422: components["responses"]["ValidationException"];
+        };
+    };
+    "propertyMedia.destroy": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The property ID */
+                property: number;
+                /** @description The media ID */
+                media: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No content */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            401: components["responses"]["AuthenticationException"];
+            403: components["responses"]["AuthorizationException"];
+            404: components["responses"]["ModelNotFoundException"];
+        };
+    };
+    "propertyMedia.update": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The property ID */
+                property: number;
+                /** @description The media ID */
+                media: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["UpdatePropertyMediaRequest"];
+            };
+        };
+        responses: {
+            /** @description `PropertyMediaResource` */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["PropertyMediaResource"];
+                    };
+                };
+            };
+            401: components["responses"]["AuthenticationException"];
+            403: components["responses"]["AuthorizationException"];
+            404: components["responses"]["ModelNotFoundException"];
+            422: components["responses"]["ValidationException"];
+        };
+    };
+    "propertyStatus.store": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The property ID */
+                property: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ChangePropertyStatusRequest"];
+            };
+        };
+        responses: {
+            /** @description `PropertyResource` */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["PropertyResource"] & Record<string, never>;
+                    };
+                };
+            };
+            401: components["responses"]["AuthenticationException"];
+            403: components["responses"]["AuthorizationException"];
+            404: components["responses"]["ModelNotFoundException"];
+            422: components["responses"]["ValidationException"];
+        };
+    };
     "propertyType.publicIndex": {
         parameters: {
             query?: never;
@@ -4520,7 +5299,7 @@ export interface operations {
             404: components["responses"]["ModelNotFoundException"];
         };
     };
-    "v1.sectionPanel.show_24": {
+    "v1.sectionPanel.show_26": {
         parameters: {
             query?: never;
             header?: never;
@@ -4544,7 +5323,7 @@ export interface operations {
             403: components["responses"]["AuthorizationException"];
         };
     };
-    "v1.sectionPanel.update_25": {
+    "v1.sectionPanel.update_27": {
         parameters: {
             query?: never;
             header?: never;
@@ -4573,7 +5352,7 @@ export interface operations {
             422: components["responses"]["ValidationException"];
         };
     };
-    "v1.sectionPanel.storeImage_26": {
+    "v1.sectionPanel.storeImage_28": {
         parameters: {
             query?: never;
             header?: never;
@@ -4602,7 +5381,7 @@ export interface operations {
             422: components["responses"]["ValidationException"];
         };
     };
-    "v1.sectionPanel.destroyImage_27": {
+    "v1.sectionPanel.destroyImage_29": {
         parameters: {
             query?: never;
             header?: never;
@@ -4626,7 +5405,7 @@ export interface operations {
             403: components["responses"]["AuthorizationException"];
         };
     };
-    "v1.sectionPanel.show_28": {
+    "v1.sectionPanel.show_30": {
         parameters: {
             query?: never;
             header?: never;
@@ -4650,7 +5429,7 @@ export interface operations {
             403: components["responses"]["AuthorizationException"];
         };
     };
-    "v1.sectionPanel.update_29": {
+    "v1.sectionPanel.update_31": {
         parameters: {
             query?: never;
             header?: never;
@@ -4679,7 +5458,7 @@ export interface operations {
             422: components["responses"]["ValidationException"];
         };
     };
-    "v1.sectionPanel.storeImage_30": {
+    "v1.sectionPanel.storeImage_32": {
         parameters: {
             query?: never;
             header?: never;
@@ -4708,7 +5487,7 @@ export interface operations {
             422: components["responses"]["ValidationException"];
         };
     };
-    "v1.sectionPanel.destroyImage_31": {
+    "v1.sectionPanel.destroyImage_33": {
         parameters: {
             query?: never;
             header?: never;

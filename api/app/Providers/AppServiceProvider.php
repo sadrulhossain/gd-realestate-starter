@@ -10,6 +10,7 @@ use App\Models\Location;
 use App\Models\OAuthClient;
 use App\Models\Post;
 use App\Models\Pricing;
+use App\Models\Property;
 use App\Models\PropertyType;
 use App\Models\Section;
 use App\Models\Service;
@@ -50,7 +51,7 @@ class AppServiceProvider extends ServiceProvider
 
         // Public content changes -> queued signed webhook so the portal revalidates its cache.
         foreach ([
-            Amenity::class, Category::class, Faq::class, GalleryItem::class, Location::class, Post::class, PropertyType::class,
+            Amenity::class, Category::class, Faq::class, GalleryItem::class, Location::class, Post::class, Property::class, PropertyType::class,
             Pricing::class, Section::class,
             Service::class, Setting::class, TeamMember::class, Testimonial::class,
         ] as $model) {
