@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\V1\AmenityController;
 use App\Http\Controllers\Api\V1\CategoryController;
 use App\Http\Controllers\Api\V1\ContactController;
 use App\Http\Controllers\Api\V1\ContactMessageController;
@@ -9,6 +10,7 @@ use App\Http\Controllers\Api\V1\GalleryItemController;
 use App\Http\Controllers\Api\V1\GalleryItemImageController;
 use App\Http\Controllers\Api\V1\HealthController;
 use App\Http\Controllers\Api\V1\LocalesController;
+use App\Http\Controllers\Api\V1\LocationController;
 use App\Http\Controllers\Api\V1\LogoutController;
 use App\Http\Controllers\Api\V1\MeController;
 use App\Http\Controllers\Api\V1\MeMenusController;
@@ -18,6 +20,7 @@ use App\Http\Controllers\Api\V1\PostController;
 use App\Http\Controllers\Api\V1\PostImageController;
 use App\Http\Controllers\Api\V1\PricingController;
 use App\Http\Controllers\Api\V1\ProfileController;
+use App\Http\Controllers\Api\V1\PropertyTypeController;
 use App\Http\Controllers\Api\V1\RoleController;
 use App\Http\Controllers\Api\V1\SectionController;
 use App\Http\Controllers\Api\V1\SectionImageController;
@@ -52,6 +55,9 @@ Route::prefix('v1')->group(function (): void {
         Route::get('public/categories', [CategoryController::class, 'publicIndex']);
         Route::get('public/posts', [PostController::class, 'publicIndex']);
         Route::get('public/posts/{slug}', [PostController::class, 'publicShow']);
+        Route::get('public/locations', [LocationController::class, 'publicIndex']);
+        Route::get('public/property-types', [PropertyTypeController::class, 'publicIndex']);
+        Route::get('public/amenities', [AmenityController::class, 'publicIndex']);
     });
 
     // Contact form: captcha first, then the throttled submit.
@@ -117,6 +123,11 @@ Route::prefix('v1')->group(function (): void {
         Route::apiResource('posts', PostController::class);
         Route::post('posts/{post}/image', [PostImageController::class, 'store']);
         Route::delete('posts/{post}/image', [PostImageController::class, 'destroy']);
+
+        // Real estate catalogue
+        Route::apiResource('locations', LocationController::class);
+        Route::apiResource('property-types', PropertyTypeController::class)->parameters(['property-types' => 'property_type']);
+        Route::apiResource('amenities', AmenityController::class);
 
         // Contact inbox (no create/delete)
         Route::apiResource('contact-messages', ContactMessageController::class)

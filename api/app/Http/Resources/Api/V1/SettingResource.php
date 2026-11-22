@@ -20,6 +20,7 @@ class SettingResource extends JsonResource
             'tagline_2nd' => $this->tagline_2nd,
             'currency' => $this->currency,
             'currency_symbol' => $this->currency_symbol,
+            'area_unit' => $this->area_unit,
             'logo' => app(MediaService::class)->describe($this->logo),
             'favicon' => app(MediaService::class)->describe($this->favicon),
             'address' => $this->address,

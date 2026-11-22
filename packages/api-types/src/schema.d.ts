@@ -4,6 +4,63 @@
  */
 
 export interface paths {
+    "/v1/public/amenities": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List amenities (public)
+         * @description Active rows ordered by `sort_order`. No authentication.
+         */
+        get: operations["amenity.publicIndex"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/amenities": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List amenities */
+        get: operations["amenities.index"];
+        put?: never;
+        /** Create a amenity */
+        post: operations["amenities.store"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/amenities/{amenity}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Show a amenity */
+        get: operations["amenities.show"];
+        /** Update a amenity */
+        put: operations["amenities.update"];
+        post?: never;
+        /** Delete an amenity */
+        delete: operations["amenities.destroy"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/public/categories": {
         parameters: {
             query?: never;
@@ -371,6 +428,70 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/public/locations": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List active locations (public)
+         * @description A flat list ordered by `sort_order`; build the tree from `parent_id`.
+         *     A location below an inactive parent is hidden too. No authentication.
+         */
+        get: operations["location.publicIndex"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/locations": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List locations
+         * @description A flat list of every location, inactive ones included; build the tree from `parent_id`.
+         */
+        get: operations["locations.index"];
+        put?: never;
+        /** Create a location */
+        post: operations["locations.store"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/locations/{location}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Show a location */
+        get: operations["locations.show"];
+        /** Update a location */
+        put: operations["locations.update"];
+        post?: never;
+        /**
+         * Delete a location
+         * @description A location that still has children answers 409.
+         */
+        delete: operations["locations.destroy"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/logout": {
         parameters: {
             query?: never;
@@ -680,6 +801,63 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/public/property-types": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List property types (public)
+         * @description Active rows ordered by `sort_order`. No authentication.
+         */
+        get: operations["propertyType.publicIndex"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/property-types": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List property types */
+        get: operations["property-types.index"];
+        put?: never;
+        /** Create a property type */
+        post: operations["property-types.store"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/property-types/{property_type}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Show a property type */
+        get: operations["property-types.show"];
+        /** Update a property type */
+        put: operations["property-types.update"];
+        post?: never;
+        /** Delete a property type */
+        delete: operations["property-types.destroy"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/roles": {
         parameters: {
             query?: never;
@@ -837,7 +1015,7 @@ export interface paths {
          * Show a section panel
          * @description Title and text (both languages) and image of the hero or about section.
          */
-        get: operations["v1.sectionPanel.show_21"];
+        get: operations["v1.sectionPanel.show_24"];
         put?: never;
         post?: never;
         delete?: never;
@@ -847,7 +1025,7 @@ export interface paths {
          * Update a section panel
          * @description Partial update of the title and text (both languages).
          */
-        patch: operations["v1.sectionPanel.update_22"];
+        patch: operations["v1.sectionPanel.update_25"];
         trace?: never;
     };
     "/v1/hero/image": {
@@ -863,9 +1041,9 @@ export interface paths {
          * Upload the section image
          * @description Multipart field `image` (jpeg, png or webp). Replaces the current image.
          */
-        post: operations["v1.sectionPanel.storeImage_23"];
+        post: operations["v1.sectionPanel.storeImage_26"];
         /** Remove the section image */
-        delete: operations["v1.sectionPanel.destroyImage_24"];
+        delete: operations["v1.sectionPanel.destroyImage_27"];
         options?: never;
         head?: never;
         patch?: never;
@@ -882,7 +1060,7 @@ export interface paths {
          * Show a section panel
          * @description Title and text (both languages) and image of the hero or about section.
          */
-        get: operations["v1.sectionPanel.show_25"];
+        get: operations["v1.sectionPanel.show_28"];
         put?: never;
         post?: never;
         delete?: never;
@@ -892,7 +1070,7 @@ export interface paths {
          * Update a section panel
          * @description Partial update of the title and text (both languages).
          */
-        patch: operations["v1.sectionPanel.update_26"];
+        patch: operations["v1.sectionPanel.update_29"];
         trace?: never;
     };
     "/v1/about/image": {
@@ -908,9 +1086,9 @@ export interface paths {
          * Upload the section image
          * @description Multipart field `image` (jpeg, png or webp). Replaces the current image.
          */
-        post: operations["v1.sectionPanel.storeImage_27"];
+        post: operations["v1.sectionPanel.storeImage_30"];
         /** Remove the section image */
-        delete: operations["v1.sectionPanel.destroyImage_28"];
+        delete: operations["v1.sectionPanel.destroyImage_31"];
         options?: never;
         head?: never;
         patch?: never;
@@ -1324,6 +1502,18 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        /** AmenityResource */
+        AmenityResource: {
+            id: number;
+            name: string;
+            name_2nd: string | null;
+            icon: string | null;
+            group: string | null;
+            sort_order: number;
+            is_active: boolean;
+            /** Format: date-time */
+            updated_at: string | null;
+        };
         /** CategoryResource */
         CategoryResource: {
             id: number;
@@ -1369,6 +1559,20 @@ export interface components {
             image: string;
             sort_order: number;
             is_visible: boolean;
+            /** Format: date-time */
+            updated_at: string | null;
+        };
+        /** LocationResource */
+        LocationResource: {
+            id: number;
+            parent_id: number | null;
+            name: string;
+            name_2nd: string | null;
+            slug: string;
+            lat: number | null;
+            lng: number | null;
+            sort_order: number;
+            is_active: boolean;
             /** Format: date-time */
             updated_at: string | null;
         };
@@ -1433,6 +1637,18 @@ export interface components {
             /** Format: date-time */
             updated_at: string | null;
         };
+        /** PropertyTypeResource */
+        PropertyTypeResource: {
+            id: number;
+            key: string;
+            name: string;
+            name_2nd: string | null;
+            group: string;
+            sort_order: number;
+            is_active: boolean;
+            /** Format: date-time */
+            updated_at: string | null;
+        };
         /** ReorderMenusRequest */
         ReorderMenusRequest: {
             ids: number[];
@@ -1482,6 +1698,7 @@ export interface components {
             tagline_2nd: string | null;
             currency: string | null;
             currency_symbol: string | null;
+            area_unit: string;
             logo: string;
             favicon: string;
             address: string | null;
@@ -1492,6 +1709,15 @@ export interface components {
             social_links: string;
             /** Format: date-time */
             updated_at: string | null;
+        };
+        /** StoreAmenityRequest */
+        StoreAmenityRequest: {
+            name: string;
+            name_2nd?: string | null;
+            icon?: string | null;
+            group?: string | null;
+            sort_order?: number;
+            is_active?: boolean;
         };
         /** StoreCategoryRequest */
         StoreCategoryRequest: {
@@ -1541,6 +1767,17 @@ export interface components {
             sort_order?: number;
             is_visible?: boolean;
         };
+        /** StoreLocationRequest */
+        StoreLocationRequest: {
+            name: string;
+            name_2nd?: string | null;
+            parent_id?: number | null;
+            slug: string;
+            lat?: number | null;
+            lng?: number | null;
+            sort_order?: number;
+            is_active?: boolean;
+        };
         /** StorePostImageRequest */
         StorePostImageRequest: {
             /**
@@ -1584,6 +1821,16 @@ export interface components {
             is_featured?: boolean;
             sort_order?: number;
             is_visible?: boolean;
+        };
+        /** StorePropertyTypeRequest */
+        StorePropertyTypeRequest: {
+            name: string;
+            name_2nd?: string | null;
+            key: string;
+            /** @enum {string} */
+            group: "residential" | "commercial" | "land";
+            sort_order?: number;
+            is_active?: boolean;
         };
         /** StoreRoleRequest */
         StoreRoleRequest: {
@@ -1706,6 +1953,15 @@ export interface components {
             /** Format: date-time */
             updated_at: string | null;
         };
+        /** UpdateAmenityRequest */
+        UpdateAmenityRequest: {
+            name?: string;
+            name_2nd?: string | null;
+            icon?: string | null;
+            group?: string | null;
+            sort_order?: number;
+            is_active?: boolean;
+        };
         /** UpdateCategoryRequest */
         UpdateCategoryRequest: {
             name?: string;
@@ -1730,6 +1986,17 @@ export interface components {
             caption_2nd?: string | null;
             sort_order?: number;
             is_visible?: boolean;
+        };
+        /** UpdateLocationRequest */
+        UpdateLocationRequest: {
+            name?: string;
+            name_2nd?: string | null;
+            parent_id?: number | null;
+            slug?: string;
+            lat?: number | null;
+            lng?: number | null;
+            sort_order?: number;
+            is_active?: boolean;
         };
         /** UpdateMenuRequest */
         UpdateMenuRequest: {
@@ -1779,6 +2046,16 @@ export interface components {
             password?: string;
             password_confirmation?: string;
         };
+        /** UpdatePropertyTypeRequest */
+        UpdatePropertyTypeRequest: {
+            name?: string;
+            name_2nd?: string | null;
+            key?: string;
+            /** @enum {string} */
+            group?: "residential" | "commercial" | "land";
+            sort_order?: number;
+            is_active?: boolean;
+        };
         /** UpdateRoleRequest */
         UpdateRoleRequest: {
             name?: string;
@@ -1819,6 +2096,8 @@ export interface components {
             address_2nd?: string | null;
             currency?: string | null;
             currency_symbol?: string | null;
+            /** @enum {string} */
+            area_unit?: "sqft" | "sqm";
             phone?: string | null;
             /** Format: email */
             email?: string | null;
@@ -1945,6 +2224,166 @@ export interface components {
 }
 export type $defs = Record<string, never>;
 export interface operations {
+    "amenity.publicIndex": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Array of `AmenityResource` */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["AmenityResource"][];
+                    };
+                };
+            };
+        };
+    };
+    "amenities.index": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Array of `AmenityResource` */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["AmenityResource"][];
+                    };
+                };
+            };
+            401: components["responses"]["AuthenticationException"];
+            403: components["responses"]["AuthorizationException"];
+        };
+    };
+    "amenities.store": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["StoreAmenityRequest"];
+            };
+        };
+        responses: {
+            /** @description `AmenityResource` */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["AmenityResource"];
+                    };
+                };
+            };
+            401: components["responses"]["AuthenticationException"];
+            403: components["responses"]["AuthorizationException"];
+            422: components["responses"]["ValidationException"];
+        };
+    };
+    "amenities.show": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The amenity ID */
+                amenity: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description `AmenityResource` */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["AmenityResource"];
+                    };
+                };
+            };
+            401: components["responses"]["AuthenticationException"];
+            403: components["responses"]["AuthorizationException"];
+            404: components["responses"]["ModelNotFoundException"];
+        };
+    };
+    "amenities.update": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The amenity ID */
+                amenity: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["UpdateAmenityRequest"];
+            };
+        };
+        responses: {
+            /** @description `AmenityResource` */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["AmenityResource"];
+                    };
+                };
+            };
+            401: components["responses"]["AuthenticationException"];
+            403: components["responses"]["AuthorizationException"];
+            404: components["responses"]["ModelNotFoundException"];
+            422: components["responses"]["ValidationException"];
+        };
+    };
+    "amenities.destroy": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The amenity ID */
+                amenity: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No content */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            401: components["responses"]["AuthenticationException"];
+            403: components["responses"]["AuthorizationException"];
+            404: components["responses"]["ModelNotFoundException"];
+        };
+    };
     "category.publicIndex": {
         parameters: {
             query?: never;
@@ -2712,6 +3151,181 @@ export interface operations {
             };
         };
     };
+    "location.publicIndex": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Array of `LocationResource` */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["LocationResource"][];
+                    };
+                };
+            };
+        };
+    };
+    "locations.index": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Array of `LocationResource` */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["LocationResource"][];
+                    };
+                };
+            };
+            401: components["responses"]["AuthenticationException"];
+            403: components["responses"]["AuthorizationException"];
+        };
+    };
+    "locations.store": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["StoreLocationRequest"];
+            };
+        };
+        responses: {
+            /** @description `LocationResource` */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["LocationResource"];
+                    };
+                };
+            };
+            401: components["responses"]["AuthenticationException"];
+            403: components["responses"]["AuthorizationException"];
+            422: components["responses"]["ValidationException"];
+        };
+    };
+    "locations.show": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The location ID */
+                location: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description `LocationResource` */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["LocationResource"];
+                    };
+                };
+            };
+            401: components["responses"]["AuthenticationException"];
+            403: components["responses"]["AuthorizationException"];
+            404: components["responses"]["ModelNotFoundException"];
+        };
+    };
+    "locations.update": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The location ID */
+                location: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["UpdateLocationRequest"];
+            };
+        };
+        responses: {
+            /** @description `LocationResource` */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["LocationResource"];
+                    };
+                };
+            };
+            401: components["responses"]["AuthenticationException"];
+            403: components["responses"]["AuthorizationException"];
+            404: components["responses"]["ModelNotFoundException"];
+            422: components["responses"]["ValidationException"];
+        };
+    };
+    "locations.destroy": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The location ID */
+                location: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No content */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            401: components["responses"]["AuthenticationException"];
+            403: components["responses"]["AuthorizationException"];
+            404: components["responses"]["ModelNotFoundException"];
+            /** @description An error */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /**
+                         * @description Error overview.
+                         * @example Delete or move the child locations first.
+                         */
+                        message: string;
+                    };
+                };
+            };
+        };
+    };
     "v1.logout": {
         parameters: {
             query?: never;
@@ -3410,6 +4024,166 @@ export interface operations {
             404: components["responses"]["ModelNotFoundException"];
         };
     };
+    "propertyType.publicIndex": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Array of `PropertyTypeResource` */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["PropertyTypeResource"][];
+                    };
+                };
+            };
+        };
+    };
+    "property-types.index": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Array of `PropertyTypeResource` */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["PropertyTypeResource"][];
+                    };
+                };
+            };
+            401: components["responses"]["AuthenticationException"];
+            403: components["responses"]["AuthorizationException"];
+        };
+    };
+    "property-types.store": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["StorePropertyTypeRequest"];
+            };
+        };
+        responses: {
+            /** @description `PropertyTypeResource` */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["PropertyTypeResource"];
+                    };
+                };
+            };
+            401: components["responses"]["AuthenticationException"];
+            403: components["responses"]["AuthorizationException"];
+            422: components["responses"]["ValidationException"];
+        };
+    };
+    "property-types.show": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The property type ID */
+                property_type: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description `PropertyTypeResource` */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["PropertyTypeResource"];
+                    };
+                };
+            };
+            401: components["responses"]["AuthenticationException"];
+            403: components["responses"]["AuthorizationException"];
+            404: components["responses"]["ModelNotFoundException"];
+        };
+    };
+    "property-types.update": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The property type ID */
+                property_type: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["UpdatePropertyTypeRequest"];
+            };
+        };
+        responses: {
+            /** @description `PropertyTypeResource` */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["PropertyTypeResource"];
+                    };
+                };
+            };
+            401: components["responses"]["AuthenticationException"];
+            403: components["responses"]["AuthorizationException"];
+            404: components["responses"]["ModelNotFoundException"];
+            422: components["responses"]["ValidationException"];
+        };
+    };
+    "property-types.destroy": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The property type ID */
+                property_type: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No content */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            401: components["responses"]["AuthenticationException"];
+            403: components["responses"]["AuthorizationException"];
+            404: components["responses"]["ModelNotFoundException"];
+        };
+    };
     "roles.index": {
         parameters: {
             query?: never;
@@ -3746,7 +4520,7 @@ export interface operations {
             404: components["responses"]["ModelNotFoundException"];
         };
     };
-    "v1.sectionPanel.show_21": {
+    "v1.sectionPanel.show_24": {
         parameters: {
             query?: never;
             header?: never;
@@ -3770,7 +4544,7 @@ export interface operations {
             403: components["responses"]["AuthorizationException"];
         };
     };
-    "v1.sectionPanel.update_22": {
+    "v1.sectionPanel.update_25": {
         parameters: {
             query?: never;
             header?: never;
@@ -3799,7 +4573,7 @@ export interface operations {
             422: components["responses"]["ValidationException"];
         };
     };
-    "v1.sectionPanel.storeImage_23": {
+    "v1.sectionPanel.storeImage_26": {
         parameters: {
             query?: never;
             header?: never;
@@ -3828,7 +4602,7 @@ export interface operations {
             422: components["responses"]["ValidationException"];
         };
     };
-    "v1.sectionPanel.destroyImage_24": {
+    "v1.sectionPanel.destroyImage_27": {
         parameters: {
             query?: never;
             header?: never;
@@ -3852,7 +4626,7 @@ export interface operations {
             403: components["responses"]["AuthorizationException"];
         };
     };
-    "v1.sectionPanel.show_25": {
+    "v1.sectionPanel.show_28": {
         parameters: {
             query?: never;
             header?: never;
@@ -3876,7 +4650,7 @@ export interface operations {
             403: components["responses"]["AuthorizationException"];
         };
     };
-    "v1.sectionPanel.update_26": {
+    "v1.sectionPanel.update_29": {
         parameters: {
             query?: never;
             header?: never;
@@ -3905,7 +4679,7 @@ export interface operations {
             422: components["responses"]["ValidationException"];
         };
     };
-    "v1.sectionPanel.storeImage_27": {
+    "v1.sectionPanel.storeImage_30": {
         parameters: {
             query?: never;
             header?: never;
@@ -3934,7 +4708,7 @@ export interface operations {
             422: components["responses"]["ValidationException"];
         };
     };
-    "v1.sectionPanel.destroyImage_28": {
+    "v1.sectionPanel.destroyImage_31": {
         parameters: {
             query?: never;
             header?: never;
