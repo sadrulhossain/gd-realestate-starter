@@ -27,6 +27,8 @@ class DatabaseSeeder extends Seeder
             PropertyTypesModuleSeeder::class,
             AmenitiesModuleSeeder::class,
             PropertiesModuleSeeder::class,
+            DevelopersModuleSeeder::class,
+            ProjectsModuleSeeder::class,
             SettingsModuleSeeder::class,
             AccessModuleSeeder::class,
             SuperadminSeeder::class,

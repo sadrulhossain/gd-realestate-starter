@@ -920,6 +920,286 @@
                 }
             }
         },
+        "/v1/public/developers": {
+            "get": {
+                "operationId": "developer.publicIndex",
+                "description": "Active developers that have at least one active project, ordered by `sort_order`. No authentication.",
+                "summary": "List developers (public)",
+                "tags": [
+                    "Developer"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Array of `PublicDeveloperResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/PublicDeveloperResource"
+                                            }
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/v1/developers": {
+            "get": {
+                "operationId": "developers.index",
+                "summary": "List developers",
+                "tags": [
+                    "Developer"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Array of `DeveloperResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/DeveloperResource"
+                                            }
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            },
+            "post": {
+                "operationId": "developers.store",
+                "summary": "Create a developer",
+                "tags": [
+                    "Developer"
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/StoreDeveloperRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "`DeveloperResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/DeveloperResource"
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    }
+                }
+            }
+        },
+        "/v1/developers/{developer}": {
+            "get": {
+                "operationId": "developers.show",
+                "summary": "Show a developer",
+                "tags": [
+                    "Developer"
+                ],
+                "parameters": [
+                    {
+                        "name": "developer",
+                        "in": "path",
+                        "required": true,
+                        "description": "The developer ID",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "`DeveloperResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/DeveloperResource"
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            },
+            "put": {
+                "operationId": "developers.update",
+                "summary": "Update a developer",
+                "tags": [
+                    "Developer"
+                ],
+                "parameters": [
+                    {
+                        "name": "developer",
+                        "in": "path",
+                        "required": true,
+                        "description": "The developer ID",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/UpdateDeveloperRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "`DeveloperResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/DeveloperResource"
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    }
+                }
+            },
+            "delete": {
+                "operationId": "developers.destroy",
+                "description": "A developer that still has projects answers 409.",
+                "summary": "Delete a developer",
+                "tags": [
+                    "Developer"
+                ],
+                "parameters": [
+                    {
+                        "name": "developer",
+                        "in": "path",
+                        "required": true,
+                        "description": "The developer ID",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No content"
+                    },
+                    "409": {
+                        "description": "An error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "description": "Error overview.",
+                                            "examples": [
+                                                "Delete or reassign the developer's projects first."
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "message"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            }
+        },
         "/v1/public/faqs": {
             "get": {
                 "operationId": "faq.publicIndex",
@@ -3423,6 +3703,1071 @@
                 }
             }
         },
+        "/v1/public/projects": {
+            "get": {
+                "operationId": "project.publicIndex",
+                "description": "Active projects, featured first then newest. Filters: `location` (id, includes sub-locations), `developer` (id),\n`status` (upcoming, under_construction, completed). Each row carries `units_count` (units still available)\nand `from_price` (lowest available unit price, minor units). 12 per page. No authentication.",
+                "summary": "List projects (public)",
+                "tags": [
+                    "Project"
+                ],
+                "parameters": [
+                    {
+                        "name": "location",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer",
+                            "minimum": 1
+                        }
+                    },
+                    {
+                        "name": "developer",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer",
+                            "minimum": 1
+                        }
+                    },
+                    {
+                        "name": "status",
+                        "in": "query",
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "upcoming",
+                                "under_construction",
+                                "completed"
+                            ]
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Paginated set of `PublicProjectResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "allOf": [
+                                                    {
+                                                        "$ref": "#/components/schemas/PublicProjectResource"
+                                                    },
+                                                    {
+                                                        "type": "object",
+                                                        "required": [
+                                                            "developer",
+                                                            "location"
+                                                        ]
+                                                    }
+                                                ]
+                                            }
+                                        },
+                                        "links": {
+                                            "type": "object",
+                                            "properties": {
+                                                "first": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "last": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "prev": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "next": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                }
+                                            },
+                                            "required": [
+                                                "first",
+                                                "last",
+                                                "prev",
+                                                "next"
+                                            ]
+                                        },
+                                        "meta": {
+                                            "type": "object",
+                                            "properties": {
+                                                "current_page": {
+                                                    "type": "integer",
+                                                    "minimum": 1
+                                                },
+                                                "from": {
+                                                    "type": [
+                                                        "integer",
+                                                        "null"
+                                                    ],
+                                                    "minimum": 1
+                                                },
+                                                "last_page": {
+                                                    "type": "integer",
+                                                    "minimum": 1
+                                                },
+                                                "links": {
+                                                    "type": "array",
+                                                    "description": "Generated paginator links.",
+                                                    "items": {
+                                                        "type": "object",
+                                                        "properties": {
+                                                            "url": {
+                                                                "type": [
+                                                                    "string",
+                                                                    "null"
+                                                                ]
+                                                            },
+                                                            "label": {
+                                                                "type": "string"
+                                                            },
+                                                            "active": {
+                                                                "type": "boolean"
+                                                            }
+                                                        },
+                                                        "required": [
+                                                            "url",
+                                                            "label",
+                                                            "active"
+                                                        ]
+                                                    }
+                                                },
+                                                "path": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ],
+                                                    "description": "Base path for paginator generated URLs."
+                                                },
+                                                "per_page": {
+                                                    "type": "integer",
+                                                    "description": "Number of items shown per page.",
+                                                    "minimum": 0
+                                                },
+                                                "to": {
+                                                    "type": [
+                                                        "integer",
+                                                        "null"
+                                                    ],
+                                                    "description": "Number of the last item in the slice.",
+                                                    "minimum": 1
+                                                },
+                                                "total": {
+                                                    "type": "integer",
+                                                    "description": "Total number of items being paginated.",
+                                                    "minimum": 0
+                                                }
+                                            },
+                                            "required": [
+                                                "current_page",
+                                                "from",
+                                                "last_page",
+                                                "links",
+                                                "path",
+                                                "per_page",
+                                                "to",
+                                                "total"
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "data",
+                                        "links",
+                                        "meta"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    }
+                }
+            }
+        },
+        "/v1/public/projects/{slug}": {
+            "get": {
+                "operationId": "project.publicShow",
+                "description": "Active projects only (others answer 404), with the developer and all units. No authentication.",
+                "summary": "Show a project by slug (public)",
+                "tags": [
+                    "Project"
+                ],
+                "parameters": [
+                    {
+                        "name": "slug",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "`PublicProjectResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "allOf": [
+                                                {
+                                                    "$ref": "#/components/schemas/PublicProjectResource"
+                                                },
+                                                {
+                                                    "type": "object",
+                                                    "required": [
+                                                        "developer",
+                                                        "location",
+                                                        "units"
+                                                    ]
+                                                }
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/v1/projects": {
+            "get": {
+                "operationId": "projects.index",
+                "summary": "List projects",
+                "tags": [
+                    "Project"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Paginated set of `ProjectResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "allOf": [
+                                                    {
+                                                        "$ref": "#/components/schemas/ProjectResource"
+                                                    },
+                                                    {
+                                                        "type": "object",
+                                                        "required": [
+                                                            "developer",
+                                                            "location"
+                                                        ]
+                                                    }
+                                                ]
+                                            }
+                                        },
+                                        "links": {
+                                            "type": "object",
+                                            "properties": {
+                                                "first": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "last": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "prev": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "next": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                }
+                                            },
+                                            "required": [
+                                                "first",
+                                                "last",
+                                                "prev",
+                                                "next"
+                                            ]
+                                        },
+                                        "meta": {
+                                            "type": "object",
+                                            "properties": {
+                                                "current_page": {
+                                                    "type": "integer",
+                                                    "minimum": 1
+                                                },
+                                                "from": {
+                                                    "type": [
+                                                        "integer",
+                                                        "null"
+                                                    ],
+                                                    "minimum": 1
+                                                },
+                                                "last_page": {
+                                                    "type": "integer",
+                                                    "minimum": 1
+                                                },
+                                                "links": {
+                                                    "type": "array",
+                                                    "description": "Generated paginator links.",
+                                                    "items": {
+                                                        "type": "object",
+                                                        "properties": {
+                                                            "url": {
+                                                                "type": [
+                                                                    "string",
+                                                                    "null"
+                                                                ]
+                                                            },
+                                                            "label": {
+                                                                "type": "string"
+                                                            },
+                                                            "active": {
+                                                                "type": "boolean"
+                                                            }
+                                                        },
+                                                        "required": [
+                                                            "url",
+                                                            "label",
+                                                            "active"
+                                                        ]
+                                                    }
+                                                },
+                                                "path": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ],
+                                                    "description": "Base path for paginator generated URLs."
+                                                },
+                                                "per_page": {
+                                                    "type": "integer",
+                                                    "description": "Number of items shown per page.",
+                                                    "minimum": 0
+                                                },
+                                                "to": {
+                                                    "type": [
+                                                        "integer",
+                                                        "null"
+                                                    ],
+                                                    "description": "Number of the last item in the slice.",
+                                                    "minimum": 1
+                                                },
+                                                "total": {
+                                                    "type": "integer",
+                                                    "description": "Total number of items being paginated.",
+                                                    "minimum": 0
+                                                }
+                                            },
+                                            "required": [
+                                                "current_page",
+                                                "from",
+                                                "last_page",
+                                                "links",
+                                                "path",
+                                                "per_page",
+                                                "to",
+                                                "total"
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "data",
+                                        "links",
+                                        "meta"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            },
+            "post": {
+                "operationId": "projects.store",
+                "summary": "Create a project",
+                "tags": [
+                    "Project"
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/StoreProjectRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "`ProjectResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "allOf": [
+                                                {
+                                                    "$ref": "#/components/schemas/ProjectResource"
+                                                },
+                                                {
+                                                    "type": "object",
+                                                    "required": [
+                                                        "developer",
+                                                        "location"
+                                                    ]
+                                                }
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    }
+                }
+            }
+        },
+        "/v1/projects/{project}": {
+            "get": {
+                "operationId": "projects.show",
+                "summary": "Show a project with its units",
+                "tags": [
+                    "Project"
+                ],
+                "parameters": [
+                    {
+                        "name": "project",
+                        "in": "path",
+                        "required": true,
+                        "description": "The project ID",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "`ProjectResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "allOf": [
+                                                {
+                                                    "$ref": "#/components/schemas/ProjectResource"
+                                                },
+                                                {
+                                                    "type": "object",
+                                                    "required": [
+                                                        "developer",
+                                                        "location",
+                                                        "units"
+                                                    ]
+                                                }
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            },
+            "put": {
+                "operationId": "projects.update",
+                "summary": "Update a project",
+                "tags": [
+                    "Project"
+                ],
+                "parameters": [
+                    {
+                        "name": "project",
+                        "in": "path",
+                        "required": true,
+                        "description": "The project ID",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/UpdateProjectRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "`ProjectResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "allOf": [
+                                                {
+                                                    "$ref": "#/components/schemas/ProjectResource"
+                                                },
+                                                {
+                                                    "type": "object",
+                                                    "required": [
+                                                        "developer",
+                                                        "location"
+                                                    ]
+                                                }
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    }
+                }
+            },
+            "delete": {
+                "operationId": "projects.destroy",
+                "description": "A project with a property linked to it (published units or properties tagged with the project) answers 409.",
+                "summary": "Delete a project and its units",
+                "tags": [
+                    "Project"
+                ],
+                "parameters": [
+                    {
+                        "name": "project",
+                        "in": "path",
+                        "required": true,
+                        "description": "The project ID",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No content"
+                    },
+                    "409": {
+                        "description": "An error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "description": "Error overview.",
+                                            "examples": [
+                                                "Unlink or delete the properties of this project first."
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "message"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            }
+        },
+        "/v1/projects/{project}/units": {
+            "get": {
+                "operationId": "projects.units.index",
+                "summary": "List the units of a project",
+                "tags": [
+                    "ProjectUnit"
+                ],
+                "parameters": [
+                    {
+                        "name": "project",
+                        "in": "path",
+                        "required": true,
+                        "description": "The project ID",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Array of `ProjectUnitResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "allOf": [
+                                                    {
+                                                        "$ref": "#/components/schemas/ProjectUnitResource"
+                                                    },
+                                                    {
+                                                        "type": "object",
+                                                        "required": [
+                                                            "property_type",
+                                                            "property_id",
+                                                            "property_slug",
+                                                            "created_at",
+                                                            "updated_at"
+                                                        ]
+                                                    }
+                                                ]
+                                            }
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            },
+            "post": {
+                "operationId": "projects.units.store",
+                "summary": "Create a unit in a project",
+                "tags": [
+                    "ProjectUnit"
+                ],
+                "parameters": [
+                    {
+                        "name": "project",
+                        "in": "path",
+                        "required": true,
+                        "description": "The project ID",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/StoreProjectUnitRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "`ProjectUnitResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "allOf": [
+                                                {
+                                                    "$ref": "#/components/schemas/ProjectUnitResource"
+                                                },
+                                                {
+                                                    "type": "object",
+                                                    "required": [
+                                                        "property_type",
+                                                        "property_id",
+                                                        "property_slug",
+                                                        "created_at",
+                                                        "updated_at"
+                                                    ]
+                                                }
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    }
+                }
+            }
+        },
+        "/v1/units/{unit}": {
+            "get": {
+                "operationId": "units.show",
+                "summary": "Show a unit",
+                "tags": [
+                    "ProjectUnit"
+                ],
+                "parameters": [
+                    {
+                        "name": "unit",
+                        "in": "path",
+                        "required": true,
+                        "description": "The unit ID",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "`ProjectUnitResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "allOf": [
+                                                {
+                                                    "$ref": "#/components/schemas/ProjectUnitResource"
+                                                },
+                                                {
+                                                    "type": "object",
+                                                    "required": [
+                                                        "property_type",
+                                                        "property_id",
+                                                        "property_slug",
+                                                        "created_at",
+                                                        "updated_at"
+                                                    ]
+                                                }
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            },
+            "put": {
+                "operationId": "units.update",
+                "summary": "Update a unit",
+                "tags": [
+                    "ProjectUnit"
+                ],
+                "parameters": [
+                    {
+                        "name": "unit",
+                        "in": "path",
+                        "required": true,
+                        "description": "The unit ID",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/UpdateProjectUnitRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "`ProjectUnitResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "allOf": [
+                                                {
+                                                    "$ref": "#/components/schemas/ProjectUnitResource"
+                                                },
+                                                {
+                                                    "type": "object",
+                                                    "required": [
+                                                        "property_type",
+                                                        "property_id",
+                                                        "property_slug",
+                                                        "created_at",
+                                                        "updated_at"
+                                                    ]
+                                                }
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    }
+                }
+            },
+            "delete": {
+                "operationId": "units.destroy",
+                "description": "A unit that is published as a property answers 409: delete or unlink the property first.",
+                "summary": "Delete a unit",
+                "tags": [
+                    "ProjectUnit"
+                ],
+                "parameters": [
+                    {
+                        "name": "unit",
+                        "in": "path",
+                        "required": true,
+                        "description": "The unit ID",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No content"
+                    },
+                    "409": {
+                        "description": "An error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "description": "Error overview.",
+                                            "examples": [
+                                                "This unit is published as a property. Delete that property first."
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "message"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            }
+        },
+        "/v1/units/{unit}/publish": {
+            "post": {
+                "operationId": "projectUnit.publish",
+                "description": "Creates one `draft` property from the unit (title, type, price, size, beds, baths, floor) with the project's\nlocation, coordinates and developer link. Optional `listing_type` (default sale) and `rent_period`.\nA unit can be published once (422 afterwards); finish and publish the draft with the properties endpoints.",
+                "summary": "Publish a unit as a property",
+                "tags": [
+                    "ProjectUnit"
+                ],
+                "parameters": [
+                    {
+                        "name": "unit",
+                        "in": "path",
+                        "required": true,
+                        "description": "The unit ID",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/PublishProjectUnitRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "`PropertyResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "allOf": [
+                                                {
+                                                    "$ref": "#/components/schemas/PropertyResource"
+                                                },
+                                                {
+                                                    "type": "object",
+                                                    "required": [
+                                                        "property_type",
+                                                        "location",
+                                                        "amenity_ids",
+                                                        "cover",
+                                                        "media",
+                                                        "status_history"
+                                                    ]
+                                                }
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    }
+                }
+            }
+        },
         "/v1/public/properties": {
             "get": {
                 "operationId": "property.publicIndex",
@@ -5352,7 +6697,7 @@
         },
         "/v1/hero": {
             "get": {
-                "operationId": "v1.sectionPanel.show_26",
+                "operationId": "v1.sectionPanel.show_29",
                 "description": "Title and text (both languages) and image of the hero or about section.",
                 "summary": "Show a section panel",
                 "tags": [
@@ -5386,7 +6731,7 @@
                 }
             },
             "patch": {
-                "operationId": "v1.sectionPanel.update_27",
+                "operationId": "v1.sectionPanel.update_30",
                 "description": "Partial update of the title and text (both languages).",
                 "summary": "Update a section panel",
                 "tags": [
@@ -5434,7 +6779,7 @@
         },
         "/v1/hero/image": {
             "post": {
-                "operationId": "v1.sectionPanel.storeImage_28",
+                "operationId": "v1.sectionPanel.storeImage_31",
                 "description": "Multipart field `image` (jpeg, png or webp). Replaces the current image.",
                 "summary": "Upload the section image",
                 "tags": [
@@ -5481,7 +6826,7 @@
                 }
             },
             "delete": {
-                "operationId": "v1.sectionPanel.destroyImage_29",
+                "operationId": "v1.sectionPanel.destroyImage_32",
                 "summary": "Remove the section image",
                 "tags": [
                     "SectionPanel"
@@ -5516,7 +6861,7 @@
         },
         "/v1/about": {
             "get": {
-                "operationId": "v1.sectionPanel.show_30",
+                "operationId": "v1.sectionPanel.show_33",
                 "description": "Title and text (both languages) and image of the hero or about section.",
                 "summary": "Show a section panel",
                 "tags": [
@@ -5550,7 +6895,7 @@
                 }
             },
             "patch": {
-                "operationId": "v1.sectionPanel.update_31",
+                "operationId": "v1.sectionPanel.update_34",
                 "description": "Partial update of the title and text (both languages).",
                 "summary": "Update a section panel",
                 "tags": [
@@ -5598,7 +6943,7 @@
         },
         "/v1/about/image": {
             "post": {
-                "operationId": "v1.sectionPanel.storeImage_32",
+                "operationId": "v1.sectionPanel.storeImage_35",
                 "description": "Multipart field `image` (jpeg, png or webp). Replaces the current image.",
                 "summary": "Upload the section image",
                 "tags": [
@@ -5645,7 +6990,7 @@
                 }
             },
             "delete": {
-                "operationId": "v1.sectionPanel.destroyImage_33",
+                "operationId": "v1.sectionPanel.destroyImage_36",
                 "summary": "Remove the section image",
                 "tags": [
                     "SectionPanel"
@@ -7617,6 +8962,92 @@
                 ],
                 "title": "ContactMessageResource"
             },
+            "DeveloperResource": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "integer"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "name_2nd": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "slug": {
+                        "type": "string"
+                    },
+                    "description": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "description_2nd": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "website": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "email": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "phone": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "sort_order": {
+                        "type": "integer"
+                    },
+                    "is_active": {
+                        "type": "boolean"
+                    },
+                    "created_at": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "format": "date-time"
+                    },
+                    "updated_at": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "format": "date-time"
+                    }
+                },
+                "required": [
+                    "id",
+                    "name",
+                    "name_2nd",
+                    "slug",
+                    "description",
+                    "description_2nd",
+                    "website",
+                    "email",
+                    "phone",
+                    "sort_order",
+                    "is_active",
+                    "created_at",
+                    "updated_at"
+                ],
+                "title": "DeveloperResource"
+            },
             "FaqResource": {
                 "type": "object",
                 "properties": {
@@ -8101,6 +9532,265 @@
                 ],
                 "title": "PricingResource"
             },
+            "ProjectResource": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "integer"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "name_2nd": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "slug": {
+                        "type": "string"
+                    },
+                    "description": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "description_2nd": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "developer_id": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ]
+                    },
+                    "developer": {
+                        "anyOf": [
+                            {
+                                "$ref": "#/components/schemas/PublicDeveloperResource"
+                            },
+                            {
+                                "$ref": "#/components/schemas/DeveloperResource"
+                            }
+                        ]
+                    },
+                    "location_id": {
+                        "type": "integer"
+                    },
+                    "location": {
+                        "$ref": "#/components/schemas/LocationResource"
+                    },
+                    "address_line": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "lat": {
+                        "type": [
+                            "number",
+                            "null"
+                        ]
+                    },
+                    "lng": {
+                        "type": [
+                            "number",
+                            "null"
+                        ]
+                    },
+                    "status": {
+                        "type": "string"
+                    },
+                    "handover_date": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "featured": {
+                        "type": "boolean"
+                    },
+                    "seo_title": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "seo_description": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "units_count": {
+                        "type": "integer"
+                    },
+                    "from_price": {
+                        "type": "integer"
+                    },
+                    "units": {
+                        "type": "array",
+                        "items": {
+                            "anyOf": [
+                                {
+                                    "$ref": "#/components/schemas/PublicProjectUnitResource"
+                                },
+                                {
+                                    "$ref": "#/components/schemas/ProjectUnitResource"
+                                }
+                            ]
+                        }
+                    },
+                    "is_active": {
+                        "type": "boolean"
+                    },
+                    "created_at": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "format": "date-time"
+                    },
+                    "updated_at": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "format": "date-time"
+                    }
+                },
+                "required": [
+                    "id",
+                    "name",
+                    "name_2nd",
+                    "slug",
+                    "description",
+                    "description_2nd",
+                    "developer_id",
+                    "developer",
+                    "location_id",
+                    "address_line",
+                    "lat",
+                    "lng",
+                    "status",
+                    "handover_date",
+                    "featured",
+                    "seo_title",
+                    "seo_description"
+                ],
+                "title": "ProjectResource"
+            },
+            "ProjectUnitResource": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "integer"
+                    },
+                    "project_id": {
+                        "type": "integer"
+                    },
+                    "code": {
+                        "type": "string"
+                    },
+                    "name": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "name_2nd": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "property_type": {
+                        "$ref": "#/components/schemas/PropertyTypeResource"
+                    },
+                    "property_type_id": {
+                        "type": "integer"
+                    },
+                    "beds": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ]
+                    },
+                    "baths": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ]
+                    },
+                    "area": {
+                        "type": [
+                            "number",
+                            "null"
+                        ]
+                    },
+                    "area_unit": {
+                        "type": "string"
+                    },
+                    "floor": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ]
+                    },
+                    "price": {
+                        "type": "integer"
+                    },
+                    "status": {
+                        "type": "string"
+                    },
+                    "property_id": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ]
+                    },
+                    "property_slug": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "created_at": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "format": "date-time"
+                    },
+                    "updated_at": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "format": "date-time"
+                    }
+                },
+                "required": [
+                    "id",
+                    "project_id",
+                    "code",
+                    "name",
+                    "name_2nd",
+                    "property_type_id",
+                    "beds",
+                    "baths",
+                    "area",
+                    "area_unit",
+                    "floor",
+                    "price",
+                    "status"
+                ],
+                "title": "ProjectUnitResource"
+            },
             "PropertyMediaResource": {
                 "type": "object",
                 "properties": {
@@ -8488,6 +10178,242 @@
                 ],
                 "title": "PropertyTypeResource"
             },
+            "PublicDeveloperResource": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "integer"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "name_2nd": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "slug": {
+                        "type": "string"
+                    },
+                    "description": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "description_2nd": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "website": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    }
+                },
+                "required": [
+                    "id",
+                    "name",
+                    "name_2nd",
+                    "slug",
+                    "description",
+                    "description_2nd",
+                    "website"
+                ],
+                "title": "PublicDeveloperResource"
+            },
+            "PublicProjectResource": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "name_2nd": {
+                        "type": "string"
+                    },
+                    "slug": {
+                        "type": "string"
+                    },
+                    "description": {
+                        "type": "string"
+                    },
+                    "description_2nd": {
+                        "type": "string"
+                    },
+                    "developer_id": {
+                        "type": "string"
+                    },
+                    "developer": {
+                        "anyOf": [
+                            {
+                                "$ref": "#/components/schemas/PublicDeveloperResource"
+                            },
+                            {
+                                "$ref": "#/components/schemas/DeveloperResource"
+                            }
+                        ]
+                    },
+                    "location_id": {
+                        "type": "string"
+                    },
+                    "location": {
+                        "$ref": "#/components/schemas/LocationResource"
+                    },
+                    "address_line": {
+                        "type": "string"
+                    },
+                    "lat": {
+                        "type": "string"
+                    },
+                    "lng": {
+                        "type": "string"
+                    },
+                    "status": {
+                        "type": "string"
+                    },
+                    "handover_date": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "featured": {
+                        "type": "string"
+                    },
+                    "seo_title": {
+                        "type": "string"
+                    },
+                    "seo_description": {
+                        "type": "string"
+                    },
+                    "units_count": {
+                        "type": "integer"
+                    },
+                    "from_price": {
+                        "type": "integer"
+                    },
+                    "units": {
+                        "type": "string"
+                    },
+                    "is_active": {
+                        "type": "string"
+                    },
+                    "created_at": {
+                        "type": "string"
+                    },
+                    "updated_at": {
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "id",
+                    "name",
+                    "name_2nd",
+                    "slug",
+                    "description",
+                    "description_2nd",
+                    "developer_id",
+                    "developer",
+                    "location_id",
+                    "address_line",
+                    "lat",
+                    "lng",
+                    "status",
+                    "handover_date",
+                    "featured",
+                    "seo_title",
+                    "seo_description"
+                ],
+                "title": "PublicProjectResource"
+            },
+            "PublicProjectUnitResource": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string"
+                    },
+                    "project_id": {
+                        "type": "string"
+                    },
+                    "code": {
+                        "type": "string"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "name_2nd": {
+                        "type": "string"
+                    },
+                    "property_type": {
+                        "$ref": "#/components/schemas/PropertyTypeResource"
+                    },
+                    "property_type_id": {
+                        "type": "string"
+                    },
+                    "beds": {
+                        "type": "string"
+                    },
+                    "baths": {
+                        "type": "string"
+                    },
+                    "area": {
+                        "type": "string"
+                    },
+                    "area_unit": {
+                        "type": "string"
+                    },
+                    "floor": {
+                        "type": "string"
+                    },
+                    "price": {
+                        "type": "string"
+                    },
+                    "status": {
+                        "type": "string"
+                    },
+                    "property_id": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "property_slug": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "created_at": {
+                        "type": "string"
+                    },
+                    "updated_at": {
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "id",
+                    "project_id",
+                    "code",
+                    "name",
+                    "name_2nd",
+                    "property_type_id",
+                    "beds",
+                    "baths",
+                    "area",
+                    "area_unit",
+                    "floor",
+                    "price",
+                    "status"
+                ],
+                "title": "PublicProjectUnitResource"
+            },
             "PublicPropertyDetailResource": {
                 "type": "object",
                 "properties": {
@@ -8817,6 +10743,31 @@
                     "published_at"
                 ],
                 "title": "PublicPropertyResource"
+            },
+            "PublishProjectUnitRequest": {
+                "type": "object",
+                "properties": {
+                    "listing_type": {
+                        "type": "string",
+                        "enum": [
+                            "sale",
+                            "rent"
+                        ]
+                    },
+                    "rent_period": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "enum": [
+                            "month",
+                            "year",
+                            "day",
+                            null
+                        ]
+                    }
+                },
+                "title": "PublishProjectUnitRequest"
             },
             "ReorderMenusRequest": {
                 "type": "object",
@@ -9224,6 +11175,76 @@
                 ],
                 "title": "StoreContactMessageRequest"
             },
+            "StoreDeveloperRequest": {
+                "type": "object",
+                "properties": {
+                    "name": {
+                        "type": "string",
+                        "maxLength": 150
+                    },
+                    "description": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "maxLength": 5000
+                    },
+                    "name_2nd": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "maxLength": 150
+                    },
+                    "description_2nd": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "maxLength": 5000
+                    },
+                    "slug": {
+                        "type": "string",
+                        "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$",
+                        "maxLength": 160
+                    },
+                    "website": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "format": "uri",
+                        "maxLength": 255
+                    },
+                    "email": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "format": "email",
+                        "maxLength": 255
+                    },
+                    "phone": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "maxLength": 40
+                    },
+                    "sort_order": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 65535
+                    },
+                    "is_active": {
+                        "type": "boolean"
+                    }
+                },
+                "required": [
+                    "name"
+                ],
+                "title": "StoreDeveloperRequest"
+            },
             "StoreFaqRequest": {
                 "type": "object",
                 "properties": {
@@ -9580,6 +11601,197 @@
                 ],
                 "title": "StorePricingRequest"
             },
+            "StoreProjectRequest": {
+                "type": "object",
+                "properties": {
+                    "name": {
+                        "type": "string",
+                        "maxLength": 200
+                    },
+                    "description": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "maxLength": 10000
+                    },
+                    "name_2nd": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "maxLength": 200
+                    },
+                    "description_2nd": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "maxLength": 10000
+                    },
+                    "slug": {
+                        "type": "string",
+                        "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$",
+                        "maxLength": 220
+                    },
+                    "developer_id": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ]
+                    },
+                    "location_id": {
+                        "type": "integer"
+                    },
+                    "address_line": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "maxLength": 255
+                    },
+                    "lat": {
+                        "type": [
+                            "number",
+                            "null"
+                        ],
+                        "minimum": -90,
+                        "maximum": 90
+                    },
+                    "lng": {
+                        "type": [
+                            "number",
+                            "null"
+                        ],
+                        "minimum": -180,
+                        "maximum": 180
+                    },
+                    "status": {
+                        "type": "string",
+                        "enum": [
+                            "upcoming",
+                            "under_construction",
+                            "completed"
+                        ]
+                    },
+                    "handover_date": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "format": "date"
+                    },
+                    "featured": {
+                        "type": "boolean"
+                    },
+                    "is_active": {
+                        "type": "boolean"
+                    },
+                    "seo_title": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "maxLength": 255
+                    },
+                    "seo_description": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "maxLength": 320
+                    }
+                },
+                "required": [
+                    "name",
+                    "location_id"
+                ],
+                "title": "StoreProjectRequest"
+            },
+            "StoreProjectUnitRequest": {
+                "type": "object",
+                "properties": {
+                    "name": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "maxLength": 150
+                    },
+                    "name_2nd": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "maxLength": 150
+                    },
+                    "code": {
+                        "type": "string",
+                        "maxLength": 40
+                    },
+                    "property_type_id": {
+                        "type": "integer"
+                    },
+                    "beds": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ],
+                        "minimum": 0,
+                        "maximum": 99
+                    },
+                    "baths": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ],
+                        "minimum": 0,
+                        "maximum": 99
+                    },
+                    "area": {
+                        "type": [
+                            "number",
+                            "null"
+                        ],
+                        "minimum": 0,
+                        "maximum": 99999999
+                    },
+                    "area_unit": {
+                        "type": "string",
+                        "enum": [
+                            "sqft",
+                            "sqm"
+                        ]
+                    },
+                    "floor": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ],
+                        "minimum": -5,
+                        "maximum": 200
+                    },
+                    "price": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 999999999999999
+                    },
+                    "status": {
+                        "type": "string",
+                        "enum": [
+                            "available",
+                            "reserved",
+                            "sold"
+                        ]
+                    }
+                },
+                "required": [
+                    "code",
+                    "property_type_id",
+                    "price"
+                ],
+                "title": "StoreProjectUnitRequest"
+            },
             "StorePropertyMediaRequest": {
                 "type": "object",
                 "properties": {
@@ -9793,15 +12005,13 @@
                         "type": [
                             "integer",
                             "null"
-                        ],
-                        "minimum": 1
+                        ]
                     },
                     "unit_id": {
                         "type": [
                             "integer",
                             "null"
-                        ],
-                        "minimum": 1
+                        ]
                     },
                     "owner_id": {
                         "type": [
@@ -10354,6 +12564,73 @@
                 },
                 "title": "UpdateCategoryRequest"
             },
+            "UpdateDeveloperRequest": {
+                "type": "object",
+                "properties": {
+                    "name": {
+                        "type": "string",
+                        "maxLength": 150
+                    },
+                    "description": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "maxLength": 5000
+                    },
+                    "name_2nd": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "maxLength": 150
+                    },
+                    "description_2nd": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "maxLength": 5000
+                    },
+                    "slug": {
+                        "type": "string",
+                        "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$",
+                        "maxLength": 160
+                    },
+                    "website": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "format": "uri",
+                        "maxLength": 255
+                    },
+                    "email": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "format": "email",
+                        "maxLength": 255
+                    },
+                    "phone": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "maxLength": 40
+                    },
+                    "sort_order": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 65535
+                    },
+                    "is_active": {
+                        "type": "boolean"
+                    }
+                },
+                "title": "UpdateDeveloperRequest"
+            },
             "UpdateFaqRequest": {
                 "type": "object",
                 "properties": {
@@ -10703,6 +12980,188 @@
                 },
                 "title": "UpdateProfileRequest"
             },
+            "UpdateProjectRequest": {
+                "type": "object",
+                "properties": {
+                    "name": {
+                        "type": "string",
+                        "maxLength": 200
+                    },
+                    "description": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "maxLength": 10000
+                    },
+                    "name_2nd": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "maxLength": 200
+                    },
+                    "description_2nd": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "maxLength": 10000
+                    },
+                    "slug": {
+                        "type": "string",
+                        "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$",
+                        "maxLength": 220
+                    },
+                    "developer_id": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ]
+                    },
+                    "location_id": {
+                        "type": "integer"
+                    },
+                    "address_line": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "maxLength": 255
+                    },
+                    "lat": {
+                        "type": [
+                            "number",
+                            "null"
+                        ],
+                        "minimum": -90,
+                        "maximum": 90
+                    },
+                    "lng": {
+                        "type": [
+                            "number",
+                            "null"
+                        ],
+                        "minimum": -180,
+                        "maximum": 180
+                    },
+                    "status": {
+                        "type": "string",
+                        "enum": [
+                            "upcoming",
+                            "under_construction",
+                            "completed"
+                        ]
+                    },
+                    "handover_date": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "format": "date"
+                    },
+                    "featured": {
+                        "type": "boolean"
+                    },
+                    "is_active": {
+                        "type": "boolean"
+                    },
+                    "seo_title": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "maxLength": 255
+                    },
+                    "seo_description": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "maxLength": 320
+                    }
+                },
+                "title": "UpdateProjectRequest"
+            },
+            "UpdateProjectUnitRequest": {
+                "type": "object",
+                "properties": {
+                    "name": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "maxLength": 150
+                    },
+                    "name_2nd": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "maxLength": 150
+                    },
+                    "code": {
+                        "type": "string",
+                        "maxLength": 40
+                    },
+                    "property_type_id": {
+                        "type": "integer"
+                    },
+                    "beds": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ],
+                        "minimum": 0,
+                        "maximum": 99
+                    },
+                    "baths": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ],
+                        "minimum": 0,
+                        "maximum": 99
+                    },
+                    "area": {
+                        "type": [
+                            "number",
+                            "null"
+                        ],
+                        "minimum": 0,
+                        "maximum": 99999999
+                    },
+                    "area_unit": {
+                        "type": "string",
+                        "enum": [
+                            "sqft",
+                            "sqm"
+                        ]
+                    },
+                    "floor": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ],
+                        "minimum": -5,
+                        "maximum": 200
+                    },
+                    "price": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 999999999999999
+                    },
+                    "status": {
+                        "type": "string",
+                        "enum": [
+                            "available",
+                            "reserved",
+                            "sold"
+                        ]
+                    }
+                },
+                "title": "UpdateProjectUnitRequest"
+            },
             "UpdatePropertyMediaRequest": {
                 "type": "object",
                 "properties": {
@@ -10909,15 +13368,13 @@
                         "type": [
                             "integer",
                             "null"
-                        ],
-                        "minimum": 1
+                        ]
                     },
                     "unit_id": {
                         "type": [
                             "integer",
                             "null"
-                        ],
-                        "minimum": 1
+                        ]
                     },
                     "owner_id": {
                         "type": [

@@ -5,6 +5,7 @@ use App\Http\Controllers\Api\V1\CategoryController;
 use App\Http\Controllers\Api\V1\ContactController;
 use App\Http\Controllers\Api\V1\ContactMessageController;
 use App\Http\Controllers\Api\V1\DashboardController;
+use App\Http\Controllers\Api\V1\DeveloperController;
 use App\Http\Controllers\Api\V1\FaqController;
 use App\Http\Controllers\Api\V1\GalleryItemController;
 use App\Http\Controllers\Api\V1\GalleryItemImageController;
@@ -20,6 +21,8 @@ use App\Http\Controllers\Api\V1\PostController;
 use App\Http\Controllers\Api\V1\PostImageController;
 use App\Http\Controllers\Api\V1\PricingController;
 use App\Http\Controllers\Api\V1\ProfileController;
+use App\Http\Controllers\Api\V1\ProjectController;
+use App\Http\Controllers\Api\V1\ProjectUnitController;
 use App\Http\Controllers\Api\V1\PropertyController;
 use App\Http\Controllers\Api\V1\PropertyMediaController;
 use App\Http\Controllers\Api\V1\PropertyStatusController;
@@ -63,6 +66,9 @@ Route::prefix('v1')->group(function (): void {
         Route::get('public/amenities', [AmenityController::class, 'publicIndex']);
         Route::get('public/properties', [PropertyController::class, 'publicIndex']);
         Route::get('public/properties/{slug}', [PropertyController::class, 'publicShow']);
+        Route::get('public/developers', [DeveloperController::class, 'publicIndex']);
+        Route::get('public/projects', [ProjectController::class, 'publicIndex']);
+        Route::get('public/projects/{slug}', [ProjectController::class, 'publicShow']);
     });
 
     // Contact form: captcha first, then the throttled submit.
@@ -139,6 +145,12 @@ Route::prefix('v1')->group(function (): void {
         Route::post('properties/{property}/media', [PropertyMediaController::class, 'store']);
         Route::patch('properties/{property}/media/{media}', [PropertyMediaController::class, 'update']);
         Route::delete('properties/{property}/media/{media}', [PropertyMediaController::class, 'destroy']);
+
+        // Developers, projects and units
+        Route::apiResource('developers', DeveloperController::class);
+        Route::apiResource('projects', ProjectController::class);
+        Route::apiResource('projects.units', ProjectUnitController::class)->shallow()->only(['index', 'store', 'show', 'update', 'destroy']);
+        Route::post('units/{unit}/publish', [ProjectUnitController::class, 'publish']);
 
         // Contact inbox (no create/delete)
         Route::apiResource('contact-messages', ContactMessageController::class)

@@ -134,4 +134,12 @@ singleton reference: Settings. Paths below are relative to `api/app` unless note
 - Search lives in `Services/PropertySearch`: filters, `tsvector` match (`search_vector`, generated column + GIN) OR a `pg_trgm` word-similarity match on the title (threshold set to 0.4 per query), ranked by `ts_rank`; radius uses `earth_box` (GiST index on `ll_to_earth(lat, lng)`) plus `earth_distance`. New filter columns need an index in the migration. lat/lng are `double precision` so the index expression needs no casts.
 - `ref_code` comes from the `property_ref_seq` sequence, owned by `properties.id` so `migrate:fresh` drops it with the table.
 - Media (`property_media`): image/floorplan files and PDF brochures go through `MediaService` (`store`, `storeDocument`); `video_url` stores the URL in `path`. One cover per property (partial unique index); the first image becomes the cover, only an image can be the cover, removing the cover promotes the next image.
-- `agent_id`, `project_id`, `unit_id`, `owner_id` are plain columns until R3/R4 add their tables and foreign keys.
+- `agent_id` and `owner_id` are plain columns until R4 adds their tables; `project_id` and `unit_id` have foreign keys since R3 (a unit backs at most one property, unique index).
+
+## Projects and units (phase R3)
+- Developers (`developers.*`), projects (`projects.*`) and units (`project_units.*`) are separate permission prefixes. Units are shallow routes: `GET|POST projects/{project}/units`, then `GET|PATCH|DELETE units/{unit}`. Unit `code` is unique per project.
+- Visitor views are subclasses (`PublicProjectResource`, `PublicProjectUnitResource`) that flip `$public`; `PublicDeveloperResource` hides email and phone. Public projects need `is_active`; the card carries `units_count` and `from_price` of available units only.
+- `POST units/{unit}/publish` (`Services/ProjectUnitPublisher`, needs `project_units.update` and `properties.create`) copies the unit and the project's location/coordinates into one `draft` property (201). A second publish answers 422. The property then follows the normal status workflow.
+- Deleting a developer with projects, a project with linked properties, or a unit with a property answers 409. A property's `unit_id` must belong to its `project_id` (checked in `PropertyRules`).
+- Validation errors are under `error.details`; in tests use the `assertDetails([...])` macro from `ProjectsAdminTest`, not `assertJsonValidationErrors`.
+- Typography: admin tokens are one step, portal tokens two steps below the Tailwind scale (`--text-*` in `packages/tokens`); use `text-sm` etc. as usual, never fixed pixel sizes.

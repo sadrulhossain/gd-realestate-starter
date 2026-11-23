@@ -240,6 +240,66 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/public/developers": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List developers (public)
+         * @description Active developers that have at least one active project, ordered by `sort_order`. No authentication.
+         */
+        get: operations["developer.publicIndex"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/developers": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List developers */
+        get: operations["developers.index"];
+        put?: never;
+        /** Create a developer */
+        post: operations["developers.store"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/developers/{developer}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Show a developer */
+        get: operations["developers.show"];
+        /** Update a developer */
+        put: operations["developers.update"];
+        post?: never;
+        /**
+         * Delete a developer
+         * @description A developer that still has projects answers 409.
+         */
+        delete: operations["developers.destroy"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/public/faqs": {
         parameters: {
             query?: never;
@@ -801,6 +861,150 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/public/projects": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List projects (public)
+         * @description Active projects, featured first then newest. Filters: `location` (id, includes sub-locations), `developer` (id),
+         *     `status` (upcoming, under_construction, completed). Each row carries `units_count` (units still available)
+         *     and `from_price` (lowest available unit price, minor units). 12 per page. No authentication.
+         */
+        get: operations["project.publicIndex"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/public/projects/{slug}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Show a project by slug (public)
+         * @description Active projects only (others answer 404), with the developer and all units. No authentication.
+         */
+        get: operations["project.publicShow"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/projects": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List projects */
+        get: operations["projects.index"];
+        put?: never;
+        /** Create a project */
+        post: operations["projects.store"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/projects/{project}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Show a project with its units */
+        get: operations["projects.show"];
+        /** Update a project */
+        put: operations["projects.update"];
+        post?: never;
+        /**
+         * Delete a project and its units
+         * @description A project with a property linked to it (published units or properties tagged with the project) answers 409.
+         */
+        delete: operations["projects.destroy"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/projects/{project}/units": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List the units of a project */
+        get: operations["projects.units.index"];
+        put?: never;
+        /** Create a unit in a project */
+        post: operations["projects.units.store"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/units/{unit}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Show a unit */
+        get: operations["units.show"];
+        /** Update a unit */
+        put: operations["units.update"];
+        post?: never;
+        /**
+         * Delete a unit
+         * @description A unit that is published as a property answers 409: delete or unlink the property first.
+         */
+        delete: operations["units.destroy"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/units/{unit}/publish": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Publish a unit as a property
+         * @description Creates one `draft` property from the unit (title, type, price, size, beds, baths, floor) with the project's
+         *     location, coordinates and developer link. Optional `listing_type` (default sale) and `rent_period`.
+         *     A unit can be published once (422 afterwards); finish and publish the draft with the properties endpoints.
+         */
+        post: operations["projectUnit.publish"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/public/properties": {
         parameters: {
             query?: never;
@@ -1171,7 +1375,7 @@ export interface paths {
          * Show a section panel
          * @description Title and text (both languages) and image of the hero or about section.
          */
-        get: operations["v1.sectionPanel.show_26"];
+        get: operations["v1.sectionPanel.show_29"];
         put?: never;
         post?: never;
         delete?: never;
@@ -1181,7 +1385,7 @@ export interface paths {
          * Update a section panel
          * @description Partial update of the title and text (both languages).
          */
-        patch: operations["v1.sectionPanel.update_27"];
+        patch: operations["v1.sectionPanel.update_30"];
         trace?: never;
     };
     "/v1/hero/image": {
@@ -1197,9 +1401,9 @@ export interface paths {
          * Upload the section image
          * @description Multipart field `image` (jpeg, png or webp). Replaces the current image.
          */
-        post: operations["v1.sectionPanel.storeImage_28"];
+        post: operations["v1.sectionPanel.storeImage_31"];
         /** Remove the section image */
-        delete: operations["v1.sectionPanel.destroyImage_29"];
+        delete: operations["v1.sectionPanel.destroyImage_32"];
         options?: never;
         head?: never;
         patch?: never;
@@ -1216,7 +1420,7 @@ export interface paths {
          * Show a section panel
          * @description Title and text (both languages) and image of the hero or about section.
          */
-        get: operations["v1.sectionPanel.show_30"];
+        get: operations["v1.sectionPanel.show_33"];
         put?: never;
         post?: never;
         delete?: never;
@@ -1226,7 +1430,7 @@ export interface paths {
          * Update a section panel
          * @description Partial update of the title and text (both languages).
          */
-        patch: operations["v1.sectionPanel.update_31"];
+        patch: operations["v1.sectionPanel.update_34"];
         trace?: never;
     };
     "/v1/about/image": {
@@ -1242,9 +1446,9 @@ export interface paths {
          * Upload the section image
          * @description Multipart field `image` (jpeg, png or webp). Replaces the current image.
          */
-        post: operations["v1.sectionPanel.storeImage_32"];
+        post: operations["v1.sectionPanel.storeImage_35"];
         /** Remove the section image */
-        delete: operations["v1.sectionPanel.destroyImage_33"];
+        delete: operations["v1.sectionPanel.destroyImage_36"];
         options?: never;
         head?: never;
         patch?: never;
@@ -1698,6 +1902,24 @@ export interface components {
             /** Format: date-time */
             created_at: string | null;
         };
+        /** DeveloperResource */
+        DeveloperResource: {
+            id: number;
+            name: string;
+            name_2nd: string | null;
+            slug: string;
+            description: string | null;
+            description_2nd: string | null;
+            website: string | null;
+            email: string | null;
+            phone: string | null;
+            sort_order: number;
+            is_active: boolean;
+            /** Format: date-time */
+            created_at: string | null;
+            /** Format: date-time */
+            updated_at: string | null;
+        };
         /** FaqResource */
         FaqResource: {
             id: number;
@@ -1798,6 +2020,58 @@ export interface components {
             /** Format: date-time */
             updated_at: string | null;
         };
+        /** ProjectResource */
+        ProjectResource: {
+            id: number;
+            name: string;
+            name_2nd: string | null;
+            slug: string;
+            description: string | null;
+            description_2nd: string | null;
+            developer_id: number | null;
+            developer: components["schemas"]["PublicDeveloperResource"] | components["schemas"]["DeveloperResource"];
+            location_id: number;
+            location?: components["schemas"]["LocationResource"];
+            address_line: string | null;
+            lat: number | null;
+            lng: number | null;
+            status: string;
+            handover_date: string | null;
+            featured: boolean;
+            seo_title: string | null;
+            seo_description: string | null;
+            units_count?: number;
+            from_price?: number;
+            units?: (components["schemas"]["PublicProjectUnitResource"] | components["schemas"]["ProjectUnitResource"])[];
+            is_active?: boolean;
+            /** Format: date-time */
+            created_at?: string | null;
+            /** Format: date-time */
+            updated_at?: string | null;
+        };
+        /** ProjectUnitResource */
+        ProjectUnitResource: {
+            id: number;
+            project_id: number;
+            code: string;
+            name: string | null;
+            name_2nd: string | null;
+            property_type?: components["schemas"]["PropertyTypeResource"];
+            property_type_id: number;
+            beds: number | null;
+            baths: number | null;
+            area: number | null;
+            area_unit: string;
+            floor: number | null;
+            price: number;
+            status: string;
+            property_id?: number | null;
+            property_slug?: string | null;
+            /** Format: date-time */
+            created_at?: string | null;
+            /** Format: date-time */
+            updated_at?: string | null;
+        };
         /** PropertyMediaResource */
         PropertyMediaResource: {
             id: number;
@@ -1881,6 +2155,64 @@ export interface components {
             /** Format: date-time */
             updated_at: string | null;
         };
+        /** PublicDeveloperResource */
+        PublicDeveloperResource: {
+            id: number;
+            name: string;
+            name_2nd: string | null;
+            slug: string;
+            description: string | null;
+            description_2nd: string | null;
+            website: string | null;
+        };
+        /** PublicProjectResource */
+        PublicProjectResource: {
+            id: string;
+            name: string;
+            name_2nd: string;
+            slug: string;
+            description: string;
+            description_2nd: string;
+            developer_id: string;
+            developer: components["schemas"]["PublicDeveloperResource"] | components["schemas"]["DeveloperResource"];
+            location_id: string;
+            location?: components["schemas"]["LocationResource"];
+            address_line: string;
+            lat: string;
+            lng: string;
+            status: string;
+            handover_date: string | null;
+            featured: string;
+            seo_title: string;
+            seo_description: string;
+            units_count?: number;
+            from_price?: number;
+            units?: string;
+            is_active?: string;
+            created_at?: string;
+            updated_at?: string;
+        };
+        /** PublicProjectUnitResource */
+        PublicProjectUnitResource: {
+            id: string;
+            project_id: string;
+            code: string;
+            name: string;
+            name_2nd: string;
+            property_type?: components["schemas"]["PropertyTypeResource"];
+            property_type_id: string;
+            beds: string;
+            baths: string;
+            area: string;
+            area_unit: string;
+            floor: string;
+            price: string;
+            status: string;
+            property_id?: string | null;
+            property_slug?: string | null;
+            created_at?: string;
+            updated_at?: string;
+        };
         /** PublicPropertyDetailResource */
         PublicPropertyDetailResource: {
             id: number;
@@ -1942,6 +2274,13 @@ export interface components {
             cover?: components["schemas"]["PropertyMediaResource"] | null;
             /** Format: date-time */
             published_at: string | null;
+        };
+        /** PublishProjectUnitRequest */
+        PublishProjectUnitRequest: {
+            /** @enum {string} */
+            listing_type?: "sale" | "rent";
+            /** @enum {string|null} */
+            rent_period?: "month" | "year" | "day" | null;
         };
         /** ReorderMenusRequest */
         ReorderMenusRequest: {
@@ -2035,6 +2374,21 @@ export interface components {
             captcha_answer: number;
             website?: string;
         };
+        /** StoreDeveloperRequest */
+        StoreDeveloperRequest: {
+            name: string;
+            description?: string | null;
+            name_2nd?: string | null;
+            description_2nd?: string | null;
+            slug?: string;
+            /** Format: uri */
+            website?: string | null;
+            /** Format: email */
+            email?: string | null;
+            phone?: string | null;
+            sort_order?: number;
+            is_active?: boolean;
+        };
         /** StoreFaqRequest */
         StoreFaqRequest: {
             question: string;
@@ -2115,6 +2469,43 @@ export interface components {
             is_featured?: boolean;
             sort_order?: number;
             is_visible?: boolean;
+        };
+        /** StoreProjectRequest */
+        StoreProjectRequest: {
+            name: string;
+            description?: string | null;
+            name_2nd?: string | null;
+            description_2nd?: string | null;
+            slug?: string;
+            developer_id?: number | null;
+            location_id: number;
+            address_line?: string | null;
+            lat?: number | null;
+            lng?: number | null;
+            /** @enum {string} */
+            status?: "upcoming" | "under_construction" | "completed";
+            /** Format: date */
+            handover_date?: string | null;
+            featured?: boolean;
+            is_active?: boolean;
+            seo_title?: string | null;
+            seo_description?: string | null;
+        };
+        /** StoreProjectUnitRequest */
+        StoreProjectUnitRequest: {
+            name?: string | null;
+            name_2nd?: string | null;
+            code: string;
+            property_type_id: number;
+            beds?: number | null;
+            baths?: number | null;
+            area?: number | null;
+            /** @enum {string} */
+            area_unit?: "sqft" | "sqm";
+            floor?: number | null;
+            price: number;
+            /** @enum {string} */
+            status?: "available" | "reserved" | "sold";
         };
         /** StorePropertyMediaRequest */
         StorePropertyMediaRequest: {
@@ -2313,6 +2704,21 @@ export interface components {
             slug?: string;
             sort_order?: number;
         };
+        /** UpdateDeveloperRequest */
+        UpdateDeveloperRequest: {
+            name?: string;
+            description?: string | null;
+            name_2nd?: string | null;
+            description_2nd?: string | null;
+            slug?: string;
+            /** Format: uri */
+            website?: string | null;
+            /** Format: email */
+            email?: string | null;
+            phone?: string | null;
+            sort_order?: number;
+            is_active?: boolean;
+        };
         /** UpdateFaqRequest */
         UpdateFaqRequest: {
             question?: string;
@@ -2389,6 +2795,43 @@ export interface components {
             current_password?: string;
             password?: string;
             password_confirmation?: string;
+        };
+        /** UpdateProjectRequest */
+        UpdateProjectRequest: {
+            name?: string;
+            description?: string | null;
+            name_2nd?: string | null;
+            description_2nd?: string | null;
+            slug?: string;
+            developer_id?: number | null;
+            location_id?: number;
+            address_line?: string | null;
+            lat?: number | null;
+            lng?: number | null;
+            /** @enum {string} */
+            status?: "upcoming" | "under_construction" | "completed";
+            /** Format: date */
+            handover_date?: string | null;
+            featured?: boolean;
+            is_active?: boolean;
+            seo_title?: string | null;
+            seo_description?: string | null;
+        };
+        /** UpdateProjectUnitRequest */
+        UpdateProjectUnitRequest: {
+            name?: string | null;
+            name_2nd?: string | null;
+            code?: string;
+            property_type_id?: number;
+            beds?: number | null;
+            baths?: number | null;
+            area?: number | null;
+            /** @enum {string} */
+            area_unit?: "sqft" | "sqm";
+            floor?: number | null;
+            price?: number;
+            /** @enum {string} */
+            status?: "available" | "reserved" | "sold";
         };
         /** UpdatePropertyMediaRequest */
         UpdatePropertyMediaRequest: {
@@ -3114,6 +3557,181 @@ export interface operations {
             };
             401: components["responses"]["AuthenticationException"];
             403: components["responses"]["AuthorizationException"];
+        };
+    };
+    "developer.publicIndex": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Array of `PublicDeveloperResource` */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["PublicDeveloperResource"][];
+                    };
+                };
+            };
+        };
+    };
+    "developers.index": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Array of `DeveloperResource` */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["DeveloperResource"][];
+                    };
+                };
+            };
+            401: components["responses"]["AuthenticationException"];
+            403: components["responses"]["AuthorizationException"];
+        };
+    };
+    "developers.store": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["StoreDeveloperRequest"];
+            };
+        };
+        responses: {
+            /** @description `DeveloperResource` */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["DeveloperResource"];
+                    };
+                };
+            };
+            401: components["responses"]["AuthenticationException"];
+            403: components["responses"]["AuthorizationException"];
+            422: components["responses"]["ValidationException"];
+        };
+    };
+    "developers.show": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The developer ID */
+                developer: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description `DeveloperResource` */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["DeveloperResource"];
+                    };
+                };
+            };
+            401: components["responses"]["AuthenticationException"];
+            403: components["responses"]["AuthorizationException"];
+            404: components["responses"]["ModelNotFoundException"];
+        };
+    };
+    "developers.update": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The developer ID */
+                developer: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["UpdateDeveloperRequest"];
+            };
+        };
+        responses: {
+            /** @description `DeveloperResource` */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["DeveloperResource"];
+                    };
+                };
+            };
+            401: components["responses"]["AuthenticationException"];
+            403: components["responses"]["AuthorizationException"];
+            404: components["responses"]["ModelNotFoundException"];
+            422: components["responses"]["ValidationException"];
+        };
+    };
+    "developers.destroy": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The developer ID */
+                developer: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No content */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            401: components["responses"]["AuthenticationException"];
+            403: components["responses"]["AuthorizationException"];
+            404: components["responses"]["ModelNotFoundException"];
+            /** @description An error */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /**
+                         * @description Error overview.
+                         * @example Delete or reassign the developer's projects first.
+                         */
+                        message: string;
+                    };
+                };
+            };
         };
     };
     "faq.publicIndex": {
@@ -4414,6 +5032,454 @@ export interface operations {
             404: components["responses"]["ModelNotFoundException"];
         };
     };
+    "project.publicIndex": {
+        parameters: {
+            query?: {
+                location?: number;
+                developer?: number;
+                status?: "upcoming" | "under_construction" | "completed";
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Paginated set of `PublicProjectResource` */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: (components["schemas"]["PublicProjectResource"] & Record<string, never>)[];
+                        links: {
+                            first: string | null;
+                            last: string | null;
+                            prev: string | null;
+                            next: string | null;
+                        };
+                        meta: {
+                            current_page: number;
+                            from: number | null;
+                            last_page: number;
+                            /** @description Generated paginator links. */
+                            links: {
+                                url: string | null;
+                                label: string;
+                                active: boolean;
+                            }[];
+                            /** @description Base path for paginator generated URLs. */
+                            path: string | null;
+                            /** @description Number of items shown per page. */
+                            per_page: number;
+                            /** @description Number of the last item in the slice. */
+                            to: number | null;
+                            /** @description Total number of items being paginated. */
+                            total: number;
+                        };
+                    };
+                };
+            };
+            422: components["responses"]["ValidationException"];
+        };
+    };
+    "project.publicShow": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description `PublicProjectResource` */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["PublicProjectResource"] & Record<string, never>;
+                    };
+                };
+            };
+        };
+    };
+    "projects.index": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Paginated set of `ProjectResource` */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: (components["schemas"]["ProjectResource"] & Record<string, never>)[];
+                        links: {
+                            first: string | null;
+                            last: string | null;
+                            prev: string | null;
+                            next: string | null;
+                        };
+                        meta: {
+                            current_page: number;
+                            from: number | null;
+                            last_page: number;
+                            /** @description Generated paginator links. */
+                            links: {
+                                url: string | null;
+                                label: string;
+                                active: boolean;
+                            }[];
+                            /** @description Base path for paginator generated URLs. */
+                            path: string | null;
+                            /** @description Number of items shown per page. */
+                            per_page: number;
+                            /** @description Number of the last item in the slice. */
+                            to: number | null;
+                            /** @description Total number of items being paginated. */
+                            total: number;
+                        };
+                    };
+                };
+            };
+            401: components["responses"]["AuthenticationException"];
+            403: components["responses"]["AuthorizationException"];
+        };
+    };
+    "projects.store": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["StoreProjectRequest"];
+            };
+        };
+        responses: {
+            /** @description `ProjectResource` */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["ProjectResource"] & Record<string, never>;
+                    };
+                };
+            };
+            401: components["responses"]["AuthenticationException"];
+            403: components["responses"]["AuthorizationException"];
+            422: components["responses"]["ValidationException"];
+        };
+    };
+    "projects.show": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The project ID */
+                project: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description `ProjectResource` */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["ProjectResource"] & Record<string, never>;
+                    };
+                };
+            };
+            401: components["responses"]["AuthenticationException"];
+            403: components["responses"]["AuthorizationException"];
+            404: components["responses"]["ModelNotFoundException"];
+        };
+    };
+    "projects.update": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The project ID */
+                project: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["UpdateProjectRequest"];
+            };
+        };
+        responses: {
+            /** @description `ProjectResource` */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["ProjectResource"] & Record<string, never>;
+                    };
+                };
+            };
+            401: components["responses"]["AuthenticationException"];
+            403: components["responses"]["AuthorizationException"];
+            404: components["responses"]["ModelNotFoundException"];
+            422: components["responses"]["ValidationException"];
+        };
+    };
+    "projects.destroy": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The project ID */
+                project: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No content */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            401: components["responses"]["AuthenticationException"];
+            403: components["responses"]["AuthorizationException"];
+            404: components["responses"]["ModelNotFoundException"];
+            /** @description An error */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /**
+                         * @description Error overview.
+                         * @example Unlink or delete the properties of this project first.
+                         */
+                        message: string;
+                    };
+                };
+            };
+        };
+    };
+    "projects.units.index": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The project ID */
+                project: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Array of `ProjectUnitResource` */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: (components["schemas"]["ProjectUnitResource"] & Record<string, never>)[];
+                    };
+                };
+            };
+            401: components["responses"]["AuthenticationException"];
+            403: components["responses"]["AuthorizationException"];
+            404: components["responses"]["ModelNotFoundException"];
+        };
+    };
+    "projects.units.store": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The project ID */
+                project: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["StoreProjectUnitRequest"];
+            };
+        };
+        responses: {
+            /** @description `ProjectUnitResource` */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["ProjectUnitResource"] & Record<string, never>;
+                    };
+                };
+            };
+            401: components["responses"]["AuthenticationException"];
+            403: components["responses"]["AuthorizationException"];
+            404: components["responses"]["ModelNotFoundException"];
+            422: components["responses"]["ValidationException"];
+        };
+    };
+    "units.show": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The unit ID */
+                unit: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description `ProjectUnitResource` */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["ProjectUnitResource"] & Record<string, never>;
+                    };
+                };
+            };
+            401: components["responses"]["AuthenticationException"];
+            403: components["responses"]["AuthorizationException"];
+            404: components["responses"]["ModelNotFoundException"];
+        };
+    };
+    "units.update": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The unit ID */
+                unit: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["UpdateProjectUnitRequest"];
+            };
+        };
+        responses: {
+            /** @description `ProjectUnitResource` */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["ProjectUnitResource"] & Record<string, never>;
+                    };
+                };
+            };
+            401: components["responses"]["AuthenticationException"];
+            403: components["responses"]["AuthorizationException"];
+            404: components["responses"]["ModelNotFoundException"];
+            422: components["responses"]["ValidationException"];
+        };
+    };
+    "units.destroy": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The unit ID */
+                unit: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No content */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            401: components["responses"]["AuthenticationException"];
+            403: components["responses"]["AuthorizationException"];
+            404: components["responses"]["ModelNotFoundException"];
+            /** @description An error */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /**
+                         * @description Error overview.
+                         * @example This unit is published as a property. Delete that property first.
+                         */
+                        message: string;
+                    };
+                };
+            };
+        };
+    };
+    "projectUnit.publish": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The unit ID */
+                unit: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["PublishProjectUnitRequest"];
+            };
+        };
+        responses: {
+            /** @description `PropertyResource` */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["PropertyResource"] & Record<string, never>;
+                    };
+                };
+            };
+            401: components["responses"]["AuthenticationException"];
+            403: components["responses"]["AuthorizationException"];
+            404: components["responses"]["ModelNotFoundException"];
+            422: components["responses"]["ValidationException"];
+        };
+    };
     "property.publicIndex": {
         parameters: {
             query?: {
@@ -5299,7 +6365,7 @@ export interface operations {
             404: components["responses"]["ModelNotFoundException"];
         };
     };
-    "v1.sectionPanel.show_26": {
+    "v1.sectionPanel.show_29": {
         parameters: {
             query?: never;
             header?: never;
@@ -5323,7 +6389,7 @@ export interface operations {
             403: components["responses"]["AuthorizationException"];
         };
     };
-    "v1.sectionPanel.update_27": {
+    "v1.sectionPanel.update_30": {
         parameters: {
             query?: never;
             header?: never;
@@ -5352,7 +6418,7 @@ export interface operations {
             422: components["responses"]["ValidationException"];
         };
     };
-    "v1.sectionPanel.storeImage_28": {
+    "v1.sectionPanel.storeImage_31": {
         parameters: {
             query?: never;
             header?: never;
@@ -5381,7 +6447,7 @@ export interface operations {
             422: components["responses"]["ValidationException"];
         };
     };
-    "v1.sectionPanel.destroyImage_29": {
+    "v1.sectionPanel.destroyImage_32": {
         parameters: {
             query?: never;
             header?: never;
@@ -5405,7 +6471,7 @@ export interface operations {
             403: components["responses"]["AuthorizationException"];
         };
     };
-    "v1.sectionPanel.show_30": {
+    "v1.sectionPanel.show_33": {
         parameters: {
             query?: never;
             header?: never;
@@ -5429,7 +6495,7 @@ export interface operations {
             403: components["responses"]["AuthorizationException"];
         };
     };
-    "v1.sectionPanel.update_31": {
+    "v1.sectionPanel.update_34": {
         parameters: {
             query?: never;
             header?: never;
@@ -5458,7 +6524,7 @@ export interface operations {
             422: components["responses"]["ValidationException"];
         };
     };
-    "v1.sectionPanel.storeImage_32": {
+    "v1.sectionPanel.storeImage_35": {
         parameters: {
             query?: never;
             header?: never;
@@ -5487,7 +6553,7 @@ export interface operations {
             422: components["responses"]["ValidationException"];
         };
     };
-    "v1.sectionPanel.destroyImage_33": {
+    "v1.sectionPanel.destroyImage_36": {
         parameters: {
             query?: never;
             header?: never;
