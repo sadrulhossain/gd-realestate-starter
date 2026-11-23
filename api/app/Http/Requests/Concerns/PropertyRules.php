@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Concerns;
 
+use App\Models\ProjectUnit;
 use App\Models\Property;
 use App\Support\Bilingual;
 use Illuminate\Validation\Rule;
@@ -42,8 +43,8 @@ trait PropertyRules
             'furnished' => [...$opt, Rule::in(Property::FURNISHED)],
             'featured' => ['sometimes', 'boolean'],
             'agent_id' => [...$opt, 'integer', 'min:1'],
-            'project_id' => [...$opt, 'integer', 'min:1'],
-            'unit_id' => [...$opt, 'integer', 'min:1'],
+            'project_id' => [...$opt, 'integer', Rule::exists('projects', 'id')],
+            'unit_id' => [...$opt, 'integer', Rule::exists('project_units', 'id'), Rule::unique('properties', 'unit_id')->ignore($this->route('property'))],
             'owner_id' => [...$opt, 'integer', 'min:1'],
             'seo_title' => [...$opt, 'string', 'max:255'],
             'seo_description' => [...$opt, 'string', 'max:320'],
@@ -52,12 +53,31 @@ trait PropertyRules
         ];
     }
 
+    /** A linked unit must belong to the linked project. */
+    private function checkUnitBelongsToProject(Validator $validator, ?Property $current): void
+    {
+        $unitId = $this->has('unit_id') ? $this->input('unit_id') : $current?->unit_id;
+
+        if (blank($unitId)) {
+            return;
+        }
+
+        $projectId = $this->has('project_id') ? $this->input('project_id') : $current?->project_id;
+        $unitProject = ProjectUnit::query()->whereKey($unitId)->value('project_id');
+
+        if ($unitProject !== null && (int) $unitProject !== (int) $projectId) {
+            $validator->errors()->add('unit_id', 'The unit does not belong to the selected project.');
+        }
+    }
+
     /** A rent listing needs a rent period; a sale listing must not have one. */
     protected function checkRentPeriod(Validator $validator, ?Property $current): void
     {
         if ($validator->errors()->isNotEmpty()) {
             return;
         }
+
+        $this->checkUnitBelongsToProject($validator, $current);
 
         $type = $this->input('listing_type', $current?->listing_type);
         $period = $this->has('rent_period') ? $this->input('rent_period') : $current?->rent_period;
