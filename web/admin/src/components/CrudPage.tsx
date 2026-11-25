@@ -26,7 +26,9 @@ export interface CrudField {
   hint?: string
   options?: FieldOption[]
   /** Options fetched from the API instead (roles for a user, permissions for a role); `map` turns one item of `data` into an option. */
-  optionsFrom?: { endpoint: string; map: (item: never) => FieldOption }
+  optionsFrom?: { endpoint: string; map?: (item: never) => FieldOption; mapAll?: (items: never[]) => FieldOption[] }
+  /** Forms with tabs: fields sharing a `tab` name form one tab, in order of first appearance. Give every field a tab or none. */
+  tab?: string
   /** Starting value on create. */
   initial?: unknown
 }
@@ -56,12 +58,18 @@ export interface CrudConfig {
    */
   /** The rows have an image at `${endpoint}/${id}/image` (POST to replace, DELETE to remove); shown in the edit form. */
   image?: boolean
+  /** Rows are edited and deleted at `${rowEndpoint}/${id}` when that differs from the list endpoint (shallow routes). */
+  rowEndpoint?: string
+  /** Fetch the row (`GET ${rowEndpoint}/${id}`) before editing: the list omits relations the form needs (amenity ids). */
+  loadOnEdit?: boolean
+  /** Extra controls in a row's action cell (status menu, links). Render with the row; check permissions inside. */
+  rowExtra?: (row: Row) => ReactNode
   reorder?: { endpoint: string; group?: (row: Row) => unknown }
 }
 
 /** Forms with rich text or many fields get a wider dialog. */
 function formSize(fields: CrudField[]): 'md' | 'lg' | 'xl' {
-  if (fields.some((f) => f.type === 'richtext' || f.type === 'checkgroup')) return 'xl'
+  if (fields.some((f) => f.type === 'richtext' || f.type === 'checkgroup' || f.tab)) return 'xl'
 
   return fields.length > 4 ? 'lg' : 'md'
 }
@@ -105,7 +113,7 @@ export function CrudPage({ config }: { config: CrudConfig }) {
   const refresh = () => Promise.all([queryClient.invalidateQueries({ queryKey: ['crud', config.endpoint] }), queryClient.invalidateQueries({ queryKey: ['menus'] })])
 
   const remove = useMutation({
-    mutationFn: (row: Row) => api.request('DELETE', `${config.endpoint}/${row.id}`),
+    mutationFn: (row: Row) => api.request('DELETE', `${rowBase(config)}/${row.id}`),
     onSuccess: () => {
       toast.success(`${config.noun} deleted`)
       setDeleting(null)
@@ -116,7 +124,8 @@ export function CrudPage({ config }: { config: CrudConfig }) {
 
   const meta = list.data?.meta
   const actions = (row: Row): ReactNode => (
-    <span className="inline-flex gap-2">
+    <span className="inline-flex items-center gap-2">
+      {config.rowExtra?.(row)}
       {canUpdate && (
         <IconButton variant="row" icon="pencil" label="Edit" onClick={() => setEditing(row)} />
       )}
@@ -162,7 +171,7 @@ export function CrudPage({ config }: { config: CrudConfig }) {
 
       <Modal size={formSize(config.fields)} open={editing !== null} title={editing === 'new' ? `New ${config.noun.toLowerCase()}` : `Edit ${config.noun.toLowerCase()}`} onClose={() => setEditing(null)}>
         {editing !== null && (
-          <CrudForm
+          <CrudFormLoader
             key={editing === 'new' ? 'new' : editing.id}
             config={config}
             row={editing === 'new' ? null : editing}
@@ -189,23 +198,54 @@ export function CrudPage({ config }: { config: CrudConfig }) {
   )
 }
 
+/** Where one row lives: the list endpoint unless the config says otherwise. */
+const rowBase = (config: CrudConfig) => config.rowEndpoint ?? config.endpoint
+
+/** Loads the full row first when the config asks for it, then shows the form. */
+function CrudFormLoader(props: { config: CrudConfig; row: Row | null; onDone: () => void; onCancel: () => void }) {
+  const { config, row } = props
+  const detail = useQuery({
+    queryKey: ['crud-row', rowBase(config), row?.id],
+    enabled: Boolean(config.loadOnEdit && row),
+    gcTime: 0,
+    queryFn: async () => ((await api.request('GET', `${rowBase(config)}/${row!.id}`)) as { data: Row }).data,
+  })
+
+  if (config.loadOnEdit && row) {
+    if (detail.isError) return <p role="alert" className="text-danger">Could not load the {config.noun.toLowerCase()}.</p>
+    if (!detail.data) return <p className="text-ink-muted">Loading...</p>
+
+    return <CrudForm {...props} row={detail.data} />
+  }
+
+  return <CrudForm {...props} />
+}
+
 function CrudForm({ config, row, onDone, onCancel }: { config: CrudConfig; row: Row | null; onDone: () => void; onCancel: () => void }) {
   const queryClient = useQueryClient()
   const [values, setValues] = useState<Record<string, unknown>>(() => ({ ...blank(config.fields), ...(row ?? {}) }))
   const [errors, setErrors] = useState<Record<string, string>>({})
   const set = (name: string, value: unknown) => setValues((v) => ({ ...v, [name]: value }))
+  const tabs = [...new Set(config.fields.flatMap((f) => (f.tab ? [f.tab] : [])))]
+  const [tab, setTab] = useState(tabs[0])
+  // A tab is flagged when one of its fields failed validation (the error may be on a field of a tab that is not showing).
+  const tabHasError = (name: string) => config.fields.some((f) => f.tab === name && (f.bilingual ? [f.name, `${f.name}_2nd`] : [f.name]).some((n) => errors[n]))
+  const shown = tabs.length ? config.fields.filter((f) => f.tab === tab) : config.fields
 
   const save = useMutation({
     mutationFn: () =>
       row
-        ? api.request('PATCH', `${config.endpoint}/${row.id}`, { body: payload(config.fields, values) })
+        ? api.request('PATCH', `${rowBase(config)}/${row.id}`, { body: payload(config.fields, values) })
         : api.request('POST', config.endpoint, { body: payload(config.fields, values) }),
     onSuccess: () => {
       toast.success(`${config.noun} saved`)
       onDone()
     },
     onError: (error) => {
-      setErrors(fieldErrors(error))
+      const found = fieldErrors(error)
+      setErrors(found)
+      const firstBad = tabs.find((t) => config.fields.some((f) => f.tab === t && (f.bilingual ? [f.name, `${f.name}_2nd`] : [f.name]).some((n) => found[n])))
+      if (firstBad && !config.fields.some((f) => f.tab === tab && (f.bilingual ? [f.name, `${f.name}_2nd`] : [f.name]).some((n) => found[n]))) setTab(firstBad)
       toast.error(error instanceof ApiError && error.status === 422 ? 'Please fix the highlighted fields' : `Could not save the ${config.noun.toLowerCase()}`)
     },
   })
@@ -220,7 +260,24 @@ function CrudForm({ config, row, onDone, onCancel }: { config: CrudConfig; row: 
         save.mutate()
       }}
     >
-      {config.fields.map((f) =>
+      {tabs.length > 0 && (
+        <div role="tablist" aria-label={`${config.noun} sections`} className="flex flex-wrap gap-1 border-b border-line">
+          {tabs.map((t) => (
+            <button
+              key={t}
+              type="button"
+              role="tab"
+              aria-selected={t === tab}
+              onClick={() => setTab(t)}
+              className={`-mb-px border-b-2 px-3 py-2 text-sm ${t === tab ? 'border-primary-600 font-semibold text-primary-700' : 'border-transparent text-ink-muted hover:text-ink'}`}
+            >
+              {t}
+              {tabHasError(t) && <span role="img" aria-label="has errors" className="ms-1 text-danger">!</span>}
+            </button>
+          ))}
+        </div>
+      )}
+      {shown.map((f) =>
         f.bilingual ? (
           <BilingualField
             key={f.name}
@@ -238,7 +295,7 @@ function CrudForm({ config, row, onDone, onCancel }: { config: CrudConfig; row: 
       )}
       {config.image &&
         (row ? (
-          <ImagePanel endpoint={`${config.endpoint}/${row.id}/image`} image={row.image as { url: string } | null | undefined} onChange={() => void queryClient.invalidateQueries({ queryKey: ['crud', config.endpoint] })} />
+          <ImagePanel endpoint={`${rowBase(config)}/${row.id}/image`} image={row.image as { url: string } | null | undefined} onChange={() => void queryClient.invalidateQueries({ queryKey: ['crud', config.endpoint] })} />
         ) : (
           <p className="text-sm text-ink-muted">Save first, then add an image.</p>
         ))}
@@ -257,7 +314,11 @@ function OptionsField({ field, value, error, onChange }: { field: CrudField; val
     queryKey: ['options', remote?.endpoint],
     enabled: remote !== undefined,
     staleTime: 60_000,
-    queryFn: async () => ((await api.request('GET', remote!.endpoint)) as { data: never[] }).data.map(remote!.map),
+    queryFn: async () => {
+      const items = ((await api.request('GET', remote!.endpoint)) as { data: never[] }).data
+
+      return remote!.mapAll ? remote!.mapAll(items) : items.map(remote!.map!)
+    },
   })
 
   return (

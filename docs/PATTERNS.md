@@ -151,3 +151,11 @@ singleton reference: Settings. Paths below are relative to `api/app` unless note
 - Viewings: `Services/ViewingScheduler` is the only writer. An agent cannot have two scheduled/confirmed viewings that overlap (422 on `starts_at`; the agent row is locked during the check). Status moves via `POST viewings/{id}/status` (`ViewingStatus::next()`); completed, cancelled and no_show free the calendar. Max length 8 hours.
 - `properties.agent_id` has a foreign key since R4 (agent deletion with properties, leads or viewings answers 409). `owner_id` stays a plain column: there is no owners table.
 - Agents: public list/detail hide the user link and admin fields (`PublicAgentResource`); `listings_count` counts available and under-offer properties. Agents are in the revalidate webhook list (tag `agents`).
+
+## Admin: catalogue screens (phase R5)
+- New CrudPage options, each used by two or more modules: `tab` on a field (the form becomes tabs; give every field a tab; a failed save jumps to the first tab with an error), `rowEndpoint` (rows edited and deleted elsewhere than the list, for shallow routes), `loadOnEdit` (fetch the row before editing when the list omits what the form needs), `rowExtra` (extra row controls: status menu, links), `optionsFrom.mapAll` (options that need the whole list, e.g. location paths).
+- Money: the API holds integer minor units. Use field `type: 'money'` (typed in major units, sent as minor) and `<Money minor={...}/>` in columns; both read the currency from `GET /v1/public/settings`. Conversions live in `lib/money.ts`; never divide by 100 inline.
+- Status: property status is not a form field. `PropertyStatusAction` offers the moves of `lib/propertyStatus.ts` (mirror of the API enum) and posts to `/v1/properties/{id}/status`; the API stays the authority.
+- Units are not in `modules`: `unitsConfig(projectId)` (list under `/v1/projects/{id}/units`, rows at `/v1/units/{id}`) is served at `/projects/:id/units` by `pages/ProjectUnits.tsx`; projects link to it with `rowExtra`. "Publish as property" is `UnitPublishAction`.
+- Module `key` is the permission prefix, so `property_types` has path `/property-types`.
+- Admin tests run in the node container: `docker compose exec -T -w /app/web/admin node pnpm exec vitest run` (the host Node is too old for jsdom/undici).

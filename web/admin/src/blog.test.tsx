@@ -32,7 +32,7 @@ describe('posts config', () => {
   it('category options come from /v1/categories', () => {
     const field = posts.fields.find((f) => f.name === 'category_id')!
     expect(field.optionsFrom?.endpoint).toBe(categories.endpoint)
-    expect(field.optionsFrom?.map({ id: 3, name: 'News' } as never)).toEqual({ value: 3, label: 'News' })
+    expect(field.optionsFrom?.map?.({ id: 3, name: 'News' } as never)).toEqual({ value: 3, label: 'News' })
   })
 
   it('payload sends blanks as null and keeps both languages', () => {

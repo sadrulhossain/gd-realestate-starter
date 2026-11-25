@@ -19,7 +19,7 @@ describe('module configs', () => {
   it('is well formed: v1 endpoints, matching paths, unique field names, a column per header', () => {
     for (const m of modules) {
       expect(m.endpoint).toMatch(/^\/v1\//)
-      expect(m.path).toBe(`/${m.key}`)
+      expect(m.path).toBe(`/${m.key.replace(/_/g, '-')}`)
       expect(m.columns.length).toBeGreaterThan(0)
       const names = m.fields.map((f) => f.name)
       expect(new Set(names).size, m.key).toBe(names.length)

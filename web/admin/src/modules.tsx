@@ -1,5 +1,12 @@
 import type { CrudConfig } from './components/CrudPage'
+import { Link } from 'react-router'
+import { LocationPath } from './components/LocationPath'
+import { Money } from './components/Money'
+import { PropertyStatusAction } from './components/PropertyStatusAction'
 import { ToggleCell } from './components/ToggleCell'
+import { useAuth } from './auth/store'
+import { locationOptions, type LocationRow } from './lib/locations'
+import { statusLabel } from './lib/propertyStatus'
 
 /** "faqs.view" -> row "faqs", column "view". */
 export function permissionOption(name: string) {
@@ -16,6 +23,17 @@ const thumb = (r: Record<string, unknown>) => {
 }
 
 const yesNo = (value: unknown) => (value ? 'Yes' : 'No')
+
+/** Row link from a project to its units screen. */
+function ProjectUnitsLink({ row }: { row: { id: number; name?: unknown } }) {
+  const allowed = useAuth((s) => s.can)('project_units.view')
+
+  return allowed ? (
+    <Link className="text-sm text-primary-700 underline" to={`/projects/${row.id}/units`} aria-label={`Units of ${String(row.name)}`}>
+      Units
+    </Link>
+  ) : null
+}
 
 /**
  * Admin modules are data. Each entry becomes a route (`path`, gated by `${key}.view`) and a CrudPage.
@@ -283,6 +301,179 @@ export const modules: CrudConfig[] = [
     fields: [
       { name: 'title', label: 'Title', required: true },
       { name: 'icon', label: 'Icon', type: 'icon', hint: 'Shown beside the menu entry in the sidebar.' },
+    ],
+  },
+  // --- Real estate catalogue (R5) ---
+  {
+    // Flat list with parent_id (country > city > area); the Path column and the parent select show the whole chain.
+    key: 'locations',
+    path: '/locations',
+    title: 'Locations',
+    noun: 'Location',
+    endpoint: '/v1/locations',
+    rowLabel: (r) => String(r.name),
+    columns: [
+      { key: 'name', header: 'Name' },
+      { key: 'path', header: 'Path', render: (r) => <LocationPath id={r.id} /> },
+      { key: 'sort_order', header: 'Order' },
+      { key: 'is_active', header: 'Active', render: (r) => yesNo(r.is_active) },
+    ],
+    fields: [
+      { name: 'name', label: 'Name', bilingual: true, required: true },
+      { name: 'slug', label: 'Slug', required: true, hint: 'Lowercase letters, numbers and dashes. Unique among locations with the same parent.' },
+      {
+        name: 'parent_id',
+        label: 'Parent',
+        type: 'select',
+        hint: 'Empty for a country. At most three levels: country, city, area.',
+        optionsFrom: { endpoint: '/v1/locations', mapAll: (items: LocationRow[]) => locationOptions(items) as never },
+      },
+      { name: 'lat', label: 'Latitude', type: 'number' },
+      { name: 'lng', label: 'Longitude', type: 'number' },
+      { name: 'sort_order', label: 'Order', type: 'number', initial: 0 },
+      { name: 'is_active', label: 'Active', type: 'checkbox', initial: true },
+    ],
+  },
+  {
+    key: 'property_types',
+    path: '/property-types',
+    title: 'Property types',
+    noun: 'Property type',
+    endpoint: '/v1/property-types',
+    rowLabel: (r) => String(r.name),
+    columns: [
+      { key: 'name', header: 'Name' },
+      { key: 'group', header: 'Group', render: (r) => statusLabel(String(r.group)) },
+      { key: 'sort_order', header: 'Order' },
+      { key: 'is_active', header: 'Active', render: (r) => yesNo(r.is_active) },
+    ],
+    fields: [
+      { name: 'name', label: 'Name', bilingual: true, required: true },
+      { name: 'key', label: 'Key', required: true, hint: 'Lowercase letters, numbers and dashes. Used in URLs and filters.' },
+      { name: 'group', label: 'Group', type: 'select', required: true, initial: 'residential', options: ['residential', 'commercial', 'land'].map((g) => ({ value: g, label: statusLabel(g) })) },
+      { name: 'sort_order', label: 'Order', type: 'number', initial: 0 },
+      { name: 'is_active', label: 'Active', type: 'checkbox', initial: true },
+    ],
+  },
+  {
+    key: 'amenities',
+    path: '/amenities',
+    title: 'Amenities',
+    noun: 'Amenity',
+    endpoint: '/v1/amenities',
+    rowLabel: (r) => String(r.name),
+    columns: [
+      { key: 'name', header: 'Name' },
+      { key: 'group', header: 'Group' },
+      { key: 'sort_order', header: 'Order' },
+      { key: 'is_active', header: 'Active', render: (r) => yesNo(r.is_active) },
+    ],
+    fields: [
+      { name: 'name', label: 'Name', bilingual: true, required: true },
+      { name: 'group', label: 'Group', hint: 'For example Building, Security or Comfort.' },
+      { name: 'icon', label: 'Icon', type: 'icon' },
+      { name: 'sort_order', label: 'Order', type: 'number', initial: 0 },
+      { name: 'is_active', label: 'Active', type: 'checkbox', initial: true },
+    ],
+  },
+  {
+    // Status never goes through the form: the row menu uses POST /v1/properties/{id}/status.
+    key: 'properties',
+    path: '/properties',
+    title: 'Properties',
+    noun: 'Property',
+    endpoint: '/v1/properties',
+    loadOnEdit: true,
+    rowLabel: (r) => `${String(r.ref_code)} ${String(r.title)}`,
+    rowExtra: (r) => <PropertyStatusAction row={r} />,
+    columns: [
+      { key: 'ref_code', header: 'Ref' },
+      { key: 'title', header: 'Title' },
+      { key: 'listing_type', header: 'For', render: (r) => statusLabel(String(r.listing_type)) },
+      { key: 'location', header: 'Location', render: (r) => String((r.location as { name?: string } | null)?.name ?? '') },
+      { key: 'price', header: 'Price', render: (r) => <Money minor={r.price} /> },
+      { key: 'status', header: 'Status', render: (r) => statusLabel(String(r.status)) },
+    ],
+    fields: [
+      { tab: 'Basics', name: 'title', label: 'Title', bilingual: true, required: true },
+      { tab: 'Basics', name: 'listing_type', label: 'Listing type', type: 'select', required: true, initial: 'sale', options: [{ value: 'sale', label: 'For sale' }, { value: 'rent', label: 'For rent' }] },
+      { tab: 'Basics', name: 'rent_period', label: 'Rent period', type: 'select', hint: 'Required for rent listings, leave empty for sale.', options: ['month', 'year', 'day'].map((p) => ({ value: p, label: statusLabel(p) })) },
+      { tab: 'Basics', name: 'price', label: 'Price', type: 'money', required: true },
+      { tab: 'Basics', name: 'property_type_id', label: 'Property type', type: 'select', required: true, optionsFrom: { endpoint: '/v1/property-types', map: (t: { id: number; name: string }) => ({ value: t.id, label: t.name }) } },
+      { tab: 'Basics', name: 'location_id', label: 'Location', type: 'select', required: true, optionsFrom: { endpoint: '/v1/locations', mapAll: (items: LocationRow[]) => locationOptions(items) as never } },
+      { tab: 'Basics', name: 'agent_id', label: 'Agent', type: 'select', hint: 'Shows active agents.', optionsFrom: { endpoint: '/v1/public/agents', map: (a: { id: number; name: string }) => ({ value: a.id, label: a.name }) } },
+      { tab: 'Basics', name: 'featured', label: 'Featured', type: 'checkbox', initial: false },
+      { tab: 'Details', name: 'area', label: 'Area', type: 'number' },
+      { tab: 'Details', name: 'area_unit', label: 'Area unit', type: 'select', initial: 'sqft', options: [{ value: 'sqft', label: 'sq ft' }, { value: 'sqm', label: 'sq m' }] },
+      { tab: 'Details', name: 'beds', label: 'Bedrooms', type: 'number' },
+      { tab: 'Details', name: 'baths', label: 'Bathrooms', type: 'number' },
+      { tab: 'Details', name: 'floor', label: 'Floor', type: 'number' },
+      { tab: 'Details', name: 'total_floors', label: 'Floors in building', type: 'number' },
+      { tab: 'Details', name: 'facing', label: 'Facing', type: 'select', options: ['north', 'south', 'east', 'west', 'north_east', 'north_west', 'south_east', 'south_west'].map((f) => ({ value: f, label: statusLabel(f) })) },
+      { tab: 'Details', name: 'year_built', label: 'Year built', type: 'number' },
+      { tab: 'Details', name: 'furnished', label: 'Furnishing', type: 'select', options: ['unfurnished', 'semi_furnished', 'furnished'].map((f) => ({ value: f, label: statusLabel(f) })) },
+      { tab: 'Description', name: 'description', label: 'Description', type: 'textarea', bilingual: true },
+      { tab: 'Place', name: 'address_line', label: 'Address' },
+      { tab: 'Place', name: 'lat', label: 'Latitude', type: 'number', hint: 'Needs a longitude too. Powers the radius search.' },
+      { tab: 'Place', name: 'lng', label: 'Longitude', type: 'number' },
+      { tab: 'Amenities', name: 'amenity_ids', label: 'Amenities', type: 'checkgroup', optionsFrom: { endpoint: '/v1/amenities', map: (a: { id: number; name: string }) => ({ value: a.id, label: a.name }) } },
+      { tab: 'SEO', name: 'seo_title', label: 'SEO title', hint: 'Falls back to the title.' },
+      { tab: 'SEO', name: 'seo_description', label: 'SEO description', type: 'textarea', hint: 'Up to 320 characters.' },
+    ],
+  },
+  {
+    key: 'developers',
+    path: '/developers',
+    title: 'Developers',
+    noun: 'Developer',
+    endpoint: '/v1/developers',
+    rowLabel: (r) => String(r.name),
+    columns: [
+      { key: 'name', header: 'Name' },
+      { key: 'website', header: 'Website' },
+      { key: 'sort_order', header: 'Order' },
+      { key: 'is_active', header: 'Active', render: (r) => yesNo(r.is_active) },
+    ],
+    fields: [
+      { name: 'name', label: 'Name', bilingual: true, required: true },
+      { name: 'description', label: 'Description', type: 'textarea', bilingual: true },
+      { name: 'website', label: 'Website', hint: 'A full address starting with https://.' },
+      { name: 'email', label: 'Email' },
+      { name: 'phone', label: 'Phone' },
+      { name: 'sort_order', label: 'Order', type: 'number', initial: 0 },
+      { name: 'is_active', label: 'Active', type: 'checkbox', initial: true },
+    ],
+  },
+  {
+    // Units live on their own screen (/projects/:id/units, see unitsConfig); the row link opens it.
+    key: 'projects',
+    path: '/projects',
+    title: 'Projects',
+    noun: 'Project',
+    endpoint: '/v1/projects',
+    rowLabel: (r) => String(r.name),
+    rowExtra: (r) => <ProjectUnitsLink row={r} />,
+    columns: [
+      { key: 'name', header: 'Name' },
+      { key: 'developer', header: 'Developer', render: (r) => String((r.developer as { name?: string } | null)?.name ?? '') },
+      { key: 'status', header: 'Status', render: (r) => statusLabel(String(r.status)) },
+      { key: 'units_count', header: 'Units' },
+      { key: 'is_active', header: 'Active', render: (r) => yesNo(r.is_active) },
+    ],
+    fields: [
+      { tab: 'Basics', name: 'name', label: 'Name', bilingual: true, required: true },
+      { tab: 'Basics', name: 'developer_id', label: 'Developer', type: 'select', optionsFrom: { endpoint: '/v1/developers', map: (d: { id: number; name: string }) => ({ value: d.id, label: d.name }) } },
+      { tab: 'Basics', name: 'status', label: 'Status', type: 'select', initial: 'upcoming', options: ['upcoming', 'under_construction', 'completed'].map((s) => ({ value: s, label: statusLabel(s) })) },
+      { tab: 'Basics', name: 'handover_date', label: 'Handover date', type: 'date' },
+      { tab: 'Basics', name: 'featured', label: 'Featured', type: 'checkbox', initial: false },
+      { tab: 'Basics', name: 'is_active', label: 'Active', type: 'checkbox', initial: true },
+      { tab: 'Description', name: 'description', label: 'Description', type: 'textarea', bilingual: true },
+      { tab: 'Place', name: 'location_id', label: 'Location', type: 'select', required: true, optionsFrom: { endpoint: '/v1/locations', mapAll: (items: LocationRow[]) => locationOptions(items) as never } },
+      { tab: 'Place', name: 'address_line', label: 'Address' },
+      { tab: 'Place', name: 'lat', label: 'Latitude', type: 'number' },
+      { tab: 'Place', name: 'lng', label: 'Longitude', type: 'number' },
+      { tab: 'SEO', name: 'seo_title', label: 'SEO title' },
+      { tab: 'SEO', name: 'seo_description', label: 'SEO description', type: 'textarea' },
     ],
   },
 ]
