@@ -30,6 +30,7 @@ use App\Http\Controllers\Api\V1\PropertyController;
 use App\Http\Controllers\Api\V1\PropertyMediaController;
 use App\Http\Controllers\Api\V1\PropertyStatusController;
 use App\Http\Controllers\Api\V1\PropertyTypeController;
+use App\Http\Controllers\Api\V1\ReportController;
 use App\Http\Controllers\Api\V1\RoleController;
 use App\Http\Controllers\Api\V1\SectionController;
 use App\Http\Controllers\Api\V1\SectionImageController;
@@ -173,6 +174,9 @@ Route::prefix('v1')->group(function (): void {
 
         Route::apiResource('viewings', ViewingController::class);
         Route::post('viewings/{viewing}/status', [ViewingController::class, 'status']);
+
+        Route::get('reports/{report}', [ReportController::class, 'show'])->middleware('can:reports.view');
+        Route::get('reports/{report}/export', [ReportController::class, 'export'])->middleware('can:reports.view');
 
         // Contact inbox (no create/delete)
         Route::apiResource('contact-messages', ContactMessageController::class)

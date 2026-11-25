@@ -1,12 +1,16 @@
 import type { CrudConfig } from './components/CrudPage'
 import { Link } from 'react-router'
+import { LeadPanel } from './components/LeadPanel'
 import { LocationPath } from './components/LocationPath'
 import { Money } from './components/Money'
 import { PropertyStatusAction } from './components/PropertyStatusAction'
+import { RowStatusMenu } from './components/RowStatusMenu'
+import { StatusBadge } from './components/StatusBadge'
 import { ToggleCell } from './components/ToggleCell'
 import { useAuth } from './auth/store'
 import { locationOptions, type LocationRow } from './lib/locations'
 import { statusLabel } from './lib/propertyStatus'
+import { LEAD_STATUSES, nextViewingStatuses, VIEWING_STATUSES } from './lib/salesStatus'
 
 /** "faqs.view" -> row "faqs", column "view". */
 export function permissionOption(name: string) {
@@ -23,6 +27,15 @@ const thumb = (r: Record<string, unknown>) => {
 }
 
 const yesNo = (value: unknown) => (value ? 'Yes' : 'No')
+
+const LEAD_SOURCES = ['web', 'phone', 'walk_in', 'referral', 'other']
+
+/** Local YYYY-MM-DD (the agenda starts today). */
+const today = () => new Date().toLocaleDateString('en-CA')
+
+const dateOnly = (value: unknown) => (value ? new Date(String(value)).toLocaleDateString('en', { dateStyle: 'medium' }) : '')
+const dateTime = (value: unknown) => (value ? new Date(String(value)).toLocaleString('en', { dateStyle: 'medium', timeStyle: 'short' }) : '')
+const timeOnly = (value: unknown) => (value ? new Date(String(value)).toLocaleTimeString('en', { timeStyle: 'short' }) : '')
 
 /** Row link from a project to its units screen. */
 function ProjectUnitsLink({ row }: { row: { id: number; name?: unknown } }) {
@@ -474,6 +487,142 @@ export const modules: CrudConfig[] = [
       { tab: 'Place', name: 'lng', label: 'Longitude', type: 'number' },
       { tab: 'SEO', name: 'seo_title', label: 'SEO title' },
       { tab: 'SEO', name: 'seo_description', label: 'SEO description', type: 'textarea' },
+    ],
+  },
+  // --- Sales (R6) ---
+  {
+    // Staff profile shown on the portal. Linking a user turns on the own-records scope for that user.
+    key: 'agents',
+    image: true,
+    path: '/agents',
+    title: 'Agents',
+    noun: 'Agent',
+    endpoint: '/v1/agents',
+    rowLabel: (r) => String(r.name),
+    columns: [
+      { key: 'image', header: 'Photo', render: thumb },
+      { key: 'name', header: 'Name' },
+      { key: 'title', header: 'Title' },
+      { key: 'phone', header: 'Phone' },
+      { key: 'email', header: 'Email' },
+      { key: 'is_active', header: 'Active', render: (r) => yesNo(r.is_active) },
+    ],
+    fields: [
+      { name: 'name', label: 'Name', required: true },
+      { name: 'title', label: 'Job title', bilingual: true },
+      { name: 'bio', label: 'Bio', type: 'textarea', bilingual: true },
+      { name: 'email', label: 'Email' },
+      { name: 'phone', label: 'Phone' },
+      { name: 'whatsapp', label: 'WhatsApp' },
+      { name: 'license_no', label: 'Licence number' },
+      {
+        name: 'user_id',
+        label: 'Staff login',
+        type: 'select',
+        needs: 'users.view',
+        hint: 'Links this agent to a user, who then sees only their own leads and viewings. Shows the first page of users.',
+        optionsFrom: { endpoint: '/v1/users', map: (u: { id: number; name: string; email: string }) => ({ value: u.id, label: `${u.name} (${u.email})` }) },
+      },
+      { name: 'sort_order', label: 'Order', type: 'number', initial: 0 },
+      { name: 'is_active', label: 'Active', type: 'checkbox', initial: true },
+    ],
+  },
+  {
+    // Status and assignment are not form fields: the edit dialog carries the pipeline panel (LeadPanel).
+    key: 'leads',
+    path: '/leads',
+    title: 'Leads',
+    noun: 'Lead',
+    endpoint: '/v1/leads',
+    rowLabel: (r) => String(r.name),
+    filters: [
+      { name: 'q', label: 'Search', type: 'text' },
+      { name: 'status', label: 'Status', type: 'select', options: LEAD_STATUSES.map((s) => ({ value: s, label: statusLabel(s) })) },
+      { name: 'source', label: 'Source', type: 'select', options: LEAD_SOURCES.map((s) => ({ value: s, label: statusLabel(s) })) },
+      { name: 'agent_id', label: 'Agent', type: 'select', optionsFrom: { endpoint: '/v1/agents', map: (a: { id: number; name: string }) => ({ value: a.id, label: a.name }) } },
+    ],
+    columns: [
+      { key: 'name', header: 'Name' },
+      { key: 'contact', header: 'Contact', render: (r) => String(r.email ?? r.phone ?? '') },
+      { key: 'source', header: 'Source', render: (r) => statusLabel(String(r.source)) },
+      { key: 'status', header: 'Status', render: (r) => <StatusBadge status={r.status} /> },
+      { key: 'agent', header: 'Agent', render: (r) => String((r.agent as { name?: string } | null)?.name ?? '') },
+      { key: 'created_at', header: 'Received', render: (r) => dateOnly(r.created_at) },
+    ],
+    fields: [
+      { name: 'name', label: 'Name', required: true },
+      { name: 'email', label: 'Email', hint: 'An email or a phone number is required.' },
+      { name: 'phone', label: 'Phone' },
+      { name: 'message', label: 'Message', type: 'textarea' },
+      { name: 'source', label: 'Source', type: 'select', initial: 'phone', options: LEAD_SOURCES.map((s) => ({ value: s, label: statusLabel(s) })) },
+      {
+        name: 'agent_id',
+        label: 'Agent',
+        type: 'select',
+        createOnly: true,
+        needs: 'leads.assign',
+        hint: 'Empty leaves the lead unassigned. Change it later in the pipeline panel.',
+        optionsFrom: { endpoint: '/v1/agents', map: (a: { id: number; name: string }) => ({ value: a.id, label: a.name }) },
+      },
+    ],
+    editExtra: (r) => <LeadPanel leadId={r.id} />,
+  },
+  {
+    // The agenda: earliest first, from today by default. Reschedule in the edit dialog, change status from the row menu.
+    key: 'viewings',
+    path: '/viewings',
+    title: 'Viewings',
+    noun: 'Viewing',
+    endpoint: '/v1/viewings',
+    rowLabel: (r) => `${String((r.property as { title?: string } | null)?.title ?? 'viewing')} on ${dateTime(r.starts_at)}`,
+    rowExtra: (r) => (
+      <RowStatusMenu
+        label={`Change status of the viewing on ${dateTime(r.starts_at)}`}
+        endpoint={`/v1/viewings/${r.id}/status`}
+        listEndpoint="/v1/viewings"
+        permission="viewings.update"
+        moves={nextViewingStatuses(String(r.status))}
+      />
+    ),
+    filters: [
+      { name: 'from', label: 'From', type: 'date', initial: today() },
+      { name: 'to', label: 'To', type: 'date' },
+      { name: 'status', label: 'Status', type: 'select', options: VIEWING_STATUSES.map((s) => ({ value: s, label: statusLabel(s) })) },
+      { name: 'agent_id', label: 'Agent', type: 'select', optionsFrom: { endpoint: '/v1/agents', map: (a: { id: number; name: string }) => ({ value: a.id, label: a.name }) } },
+    ],
+    columns: [
+      { key: 'starts_at', header: 'When', render: (r) => `${dateTime(r.starts_at)} - ${timeOnly(r.ends_at)}` },
+      { key: 'property', header: 'Property', render: (r) => String((r.property as { ref_code?: string; title?: string } | null)?.title ?? '') },
+      { key: 'lead', header: 'Lead', render: (r) => String((r.lead as { name?: string } | null)?.name ?? '') },
+      { key: 'agent', header: 'Agent', render: (r) => String((r.agent as { name?: string } | null)?.name ?? '') },
+      { key: 'status', header: 'Status', render: (r) => <StatusBadge status={r.status} /> },
+    ],
+    fields: [
+      {
+        name: 'property_id',
+        label: 'Property',
+        required: true,
+        createOnly: true,
+        hint: 'Search by title or reference code. The property cannot be changed later: cancel and book again.',
+        lookup: { endpoint: '/v1/properties', label: (p: { ref_code: string; title: string }) => `${p.ref_code} ${p.title}` },
+      },
+      {
+        name: 'lead_id',
+        label: 'Lead',
+        lookup: { endpoint: '/v1/leads', label: (l: { name: string }) => l.name, initialLabel: (v) => (v.lead as { name?: string } | null)?.name },
+      },
+      {
+        name: 'agent_id',
+        label: 'Agent',
+        type: 'select',
+        createOnly: true,
+        needs: 'viewings.view_all',
+        hint: 'Empty uses the property agent. Agents book for themselves.',
+        optionsFrom: { endpoint: '/v1/agents', map: (a: { id: number; name: string }) => ({ value: a.id, label: a.name }) },
+      },
+      { name: 'starts_at', label: 'Starts', type: 'datetime', required: true },
+      { name: 'ends_at', label: 'Ends', type: 'datetime', required: true, hint: 'At most 8 hours after the start. The agent must be free.' },
+      { name: 'notes', label: 'Notes', type: 'textarea' },
     ],
   },
 ]
