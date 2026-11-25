@@ -5,12 +5,13 @@ import { localePath, type Messages } from '../../lib/i18n'
 import { Picture } from '../Media'
 import { FactList } from './FactList'
 import { PriceTag } from './PriceTag'
+import { CompareButton, FavouriteButton } from './SaveButtons'
 import { StatusBadge } from './StatusBadge'
 import { cardBase } from './ui'
 
 /**
- * A listing in a grid: cover photo, status and listing chips, price, title, place and key facts. The whole card is one
- * link (the title's stretched ::after), so there is a single tab stop per property. Detail pages arrive with phase R8.
+ * A listing in a grid: cover photo, status and listing chips, price, title, place and key facts. The title is a stretched
+ * link (::after covers the card), so the card is one click target; the favourite and compare buttons sit above it (z-10).
  */
 export function PropertyCard({ property: p, locale, messages, money }: { property: PropertyCardData; locale: string; messages: Messages; money: Money }) {
   const e = messages.estate
@@ -31,6 +32,8 @@ export function PropertyCard({ property: p, locale, messages, money }: { propert
           <StatusBadge status={p.status} messages={messages} />
           {p.featured && <span className="inline-block rounded-pill bg-accent-400 px-3 py-1 text-xs font-semibold text-ink">{e.card.featured}</span>}
         </div>
+        <FavouriteButton slug={p.slug} title={p.title} messages={messages} className="absolute end-3 bottom-3" />
+        <CompareButton slug={p.slug} title={p.title} messages={messages} className="absolute start-3 bottom-3" />
         <span className="absolute end-3 top-3 rounded-pill bg-night/85 px-3 py-1 text-xs font-semibold text-white">{e.listing[p.listing_type]}</span>
       </div>
       <div className="flex flex-1 flex-col gap-2 p-5">

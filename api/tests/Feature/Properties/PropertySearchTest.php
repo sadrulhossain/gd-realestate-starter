@@ -208,3 +208,17 @@ it('falls back to the default text when the second language is empty', function 
     $this->getJson("/api/v1/public/properties/{$open->slug}?lang=".config('locales.second'))
         ->assertOk()->assertJsonPath('data.title', 'Default title');
 });
+
+it('limits the list to given slugs and shows only an active agent on the detail', function () {
+    $a = Property::factory()->available()->create();
+    $b = Property::factory()->available()->create();
+    Property::factory()->available()->create();
+    $agent = Agent::factory()->create(['name' => 'Amina']);
+    $a->update(['agent_id' => $agent->id]);
+
+    $this->getJson('/api/v1/public/properties?slugs[]='.$a->slug.'&slugs[]='.$b->slug)->assertOk()->assertJsonCount(2, 'data');
+    $this->getJson("/api/v1/public/properties/{$a->slug}")->assertOk()->assertJsonPath('data.agent.name', 'Amina')->assertJsonMissingPath('data.agent.user_id');
+
+    $agent->update(['is_active' => false]);
+    $this->getJson("/api/v1/public/properties/{$a->slug}")->assertOk()->assertJsonPath('data.agent', null);
+});

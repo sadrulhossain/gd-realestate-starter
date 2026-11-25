@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-import type { Post, Settings } from './api'
+import type { Post, PropertyCardData, PropertyDetailData, Settings } from './api'
 import { defaultLocale, localePath, locales } from './i18n'
 
 /** Public origin of the portal, for canonical URLs, Open Graph, the sitemap and JSON-LD. Set SITE_URL in production. */
@@ -103,6 +103,60 @@ export function articleJsonLd(post: Post, settings: Settings, locale: string): R
     articleSection: post.category?.name,
     author: { '@type': 'Organization', name: settings.site_name },
     publisher: { '@type': 'Organization', name: settings.site_name },
+  })
+}
+
+/** The card's cover as an absolute-or-API URL for structured data and Open Graph. */
+export function coverUrl(cover: PropertyCardData['cover']): string | undefined {
+  return cover?.file?.url ?? cover?.url ?? undefined
+}
+
+/** schema.org ItemList of the listings on a results page; each entry links to its own page. */
+export function propertyListJsonLd(properties: PropertyCardData[], locale: string, name: string): Record<string, unknown> {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'ItemList',
+    name,
+    itemListElement: properties.map((p, i) => ({ '@type': 'ListItem', position: i + 1, url: absolute(localePath(locale, `/properties/${p.slug}`)), name: p.title })),
+  }
+}
+
+/**
+ * schema.org RealEstateListing for a property page: the offer carries the price in whole currency units (the API stores
+ * minor units), and sale/rent decides the availability wording. Empty fields are left out.
+ */
+export function propertyJsonLd(p: PropertyDetailData, settings: Settings, locale: string, majorPrice: number): Record<string, unknown> {
+  const url = absolute(localePath(locale, `/properties/${p.slug}`))
+  const lat = p.lat === null || p.lat === undefined ? undefined : Number(p.lat)
+  const lng = p.lng === null || p.lng === undefined ? undefined : Number(p.lng)
+
+  return clean({
+    '@context': 'https://schema.org',
+    '@type': 'RealEstateListing',
+    name: p.title,
+    description: p.seo_description ?? p.description?.slice(0, 300),
+    url,
+    image: coverUrl(p.cover),
+    datePosted: p.published_at,
+    inLanguage: locale,
+    about: clean({
+      '@type': 'Residence',
+      numberOfBedrooms: p.beds,
+      numberOfBathroomsTotal: p.baths,
+      floorSize: p.area ? { '@type': 'QuantitativeValue', value: Number(p.area), unitCode: p.area_unit === 'sqm' ? 'MTK' : 'FTK' } : undefined,
+      address: { '@type': 'PostalAddress', streetAddress: p.address_line, addressLocality: p.location?.name },
+      geo: Number.isFinite(lat) && Number.isFinite(lng) ? { '@type': 'GeoCoordinates', latitude: lat, longitude: lng } : undefined,
+    }),
+    offers: p.price
+      ? clean({
+          '@type': 'Offer',
+          price: majorPrice,
+          priceCurrency: settings.currency,
+          availability: p.status === 'available' ? 'https://schema.org/InStock' : 'https://schema.org/LimitedAvailability',
+          businessFunction: p.listing_type === 'rent' ? 'https://purl.org/goodrelations/v1#LeaseOut' : 'https://purl.org/goodrelations/v1#Sell',
+        })
+      : undefined,
+    provider: p.agent ? { '@type': 'RealEstateAgent', name: p.agent.name, telephone: p.agent.phone, email: p.agent.email } : { '@type': 'Organization', name: settings.site_name },
   })
 }
 

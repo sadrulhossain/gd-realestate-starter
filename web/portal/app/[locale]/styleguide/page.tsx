@@ -67,7 +67,7 @@ function Block({ id, title, children, doc, code }: { id: string; title: string; 
       <p className="mt-2 max-w-3xl text-ink-muted">{doc}</p>
       <div className="mt-6">{children}</div>
       {code && (
-        <pre className="mt-6 overflow-x-auto rounded-md bg-night p-4 text-sm text-brand-100">
+        <pre tabIndex={0} className="mt-6 overflow-x-auto rounded-md bg-night p-4 text-sm text-brand-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-400">
           <code>{code}</code>
         </pre>
       )}

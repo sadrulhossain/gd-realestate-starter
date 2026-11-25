@@ -20,6 +20,7 @@ const TAGS: Record<string, string> = {
   categories: 'categories',
   posts: 'posts',
   properties: 'properties',
+  amenities: 'amenities',
   'property-types': 'property_types',
   locations: 'locations',
   projects: 'projects',
@@ -261,6 +262,7 @@ export interface AgentCardData {
   name: string
   title: string | null
   phone: string | null
+  whatsapp?: string | null
   email: string | null
   image: Media | null
   listings_count?: number
@@ -286,4 +288,81 @@ export async function getProjects(locale: string): Promise<ProjectCardData[]> {
 
 export async function getAgents(locale: string): Promise<AgentCardData[]> {
   return ((await apiFor(locale).request('GET', '/v1/public/agents')) as Listing<AgentCardData>).data
+}
+
+export interface Amenity {
+  id: number
+  name: string
+  icon: string | null
+  group: string | null
+}
+
+export interface PropertyMediaItem {
+  id: number
+  kind: string
+  file: Media | null
+  url: string | null
+  is_cover: boolean
+}
+
+export interface PropertyDetailData extends PropertyCardData {
+  description: string | null
+  floor: number | null
+  total_floors: number | null
+  facing: string | null
+  year_built: number | null
+  furnished: string | null
+  lat: string | number | null
+  lng: string | number | null
+  seo_title: string | null
+  seo_description: string | null
+  published_at: string | null
+  amenities: Amenity[]
+  media: PropertyMediaItem[]
+  agent: AgentCardData | null
+}
+
+export interface PropertyPage {
+  properties: PropertyCardData[]
+  page: number
+  lastPage: number
+  total: number
+}
+
+/** One page of the public search (12 per page). `query` is already validated: see lib/search.ts. */
+export async function searchProperties(locale: string, query: URLSearchParams): Promise<PropertyPage> {
+  const qs = query.toString()
+  const body = (await apiFor(locale).request('GET', `/v1/public/properties${qs ? `?${qs}` : ''}`)) as {
+    data: PropertyCardData[]
+    meta?: { current_page: number; last_page: number; total: number }
+  }
+
+  return { properties: body.data, page: body.meta?.current_page ?? 1, lastPage: body.meta?.last_page ?? 1, total: body.meta?.total ?? body.data.length }
+}
+
+/** A property by slug with its similar listings; null when it is not public (draft, sold, rented) or gone. */
+export async function getProperty(locale: string, slug: string): Promise<{ property: PropertyDetailData; related: PropertyCardData[] } | null> {
+  try {
+    const body = (await apiFor(locale).request('GET', `/v1/public/properties/${encodeURIComponent(slug)}`)) as { data: PropertyDetailData; related?: PropertyCardData[] }
+
+    return { property: body.data, related: body.related ?? [] }
+  } catch (error) {
+    if (error instanceof ApiError && error.status === 404) return null
+    throw error
+  }
+}
+
+export async function getAmenities(locale: string): Promise<Amenity[]> {
+  return ((await apiFor(locale).request('GET', '/v1/public/amenities')) as Listing<Amenity>).data
+}
+
+/** Just these listings (saved and compared lists), in the order asked; slugs that are no longer public drop out. */
+export async function getPropertiesBySlugs(locale: string, slugs: string[]): Promise<PropertyCardData[]> {
+  const unique = [...new Set(slugs)].slice(0, 48)
+  if (unique.length === 0) return []
+
+  const qs = unique.map((s) => `slugs[]=${encodeURIComponent(s)}`).join('&')
+  const rows = ((await apiFor(locale).request('GET', `/v1/public/properties?${qs}&per_page=48`)) as Listing<PropertyCardData>).data
+
+  return unique.flatMap((slug) => rows.filter((r) => r.slug === slug))
 }

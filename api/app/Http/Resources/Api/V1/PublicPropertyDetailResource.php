@@ -27,6 +27,7 @@ class PublicPropertyDetailResource extends PublicPropertyResource
             'seo_description' => $this->seo_description,
             'amenities' => AmenityResource::collection($this->whenLoaded('amenities')),
             'media' => PropertyMediaResource::collection($this->whenLoaded('media')),
+            'agent' => PublicAgentResource::make($this->whenLoaded('agent')),
         ];
     }
 }

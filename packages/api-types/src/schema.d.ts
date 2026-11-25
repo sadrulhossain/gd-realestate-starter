@@ -1246,6 +1246,7 @@ export interface paths {
          *     `location` (id, includes its sub-locations), `price_min`/`price_max` (minor units), `beds_min`, `baths_min`,
          *     `area_min`/`area_max`, `amenities` (ids, all required), `furnished`, `featured`, `status`.
          *     `q` is a keyword search (full-text, typo tolerant); `lat`, `lng` and `radius_km` limit by distance.
+         *     `slugs` (up to 48) returns just those listings, for saved and compared lists.
          *     `sort`: relevance (default with `q`), newest (default), price_asc, price_desc, area_asc, area_desc.
          *     12 per page (`per_page` up to 48). No authentication.
          */
@@ -2677,6 +2678,7 @@ export interface components {
             seo_description: string | null;
             amenities?: components["schemas"]["AmenityResource"][];
             media?: components["schemas"]["PropertyMediaResource"][];
+            agent?: components["schemas"]["PublicAgentResource"] | null;
         };
         /** PublicPropertyResource */
         PublicPropertyResource: {
@@ -6661,6 +6663,7 @@ export interface operations {
                 featured?: boolean;
                 status?: "available" | "under_offer";
                 q?: string;
+                "slugs[]"?: string[];
                 lat?: number;
                 lng?: number;
                 radius_km?: number;
@@ -7281,6 +7284,7 @@ export interface operations {
             };
             401: components["responses"]["AuthenticationException"];
             403: components["responses"]["AuthorizationException"];
+            404: components["responses"]["ModelNotFoundException"];
         };
     };
     "report.export": {
@@ -7305,6 +7309,7 @@ export interface operations {
             };
             401: components["responses"]["AuthenticationException"];
             403: components["responses"]["AuthorizationException"];
+            404: components["responses"]["ModelNotFoundException"];
         };
     };
     "roles.index": {

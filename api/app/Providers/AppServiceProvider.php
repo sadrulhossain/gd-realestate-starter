@@ -5,13 +5,17 @@ namespace App\Providers;
 use App\Models\Agent;
 use App\Models\Amenity;
 use App\Models\Category;
+use App\Models\Developer;
 use App\Models\Faq;
 use App\Models\GalleryItem;
 use App\Models\Location;
 use App\Models\OAuthClient;
 use App\Models\Post;
 use App\Models\Pricing;
+use App\Models\Project;
+use App\Models\ProjectUnit;
 use App\Models\Property;
+use App\Models\PropertyMedia;
 use App\Models\PropertyType;
 use App\Models\Section;
 use App\Models\Service;
@@ -52,7 +56,7 @@ class AppServiceProvider extends ServiceProvider
 
         // Public content changes -> queued signed webhook so the portal revalidates its cache.
         foreach ([
-            Agent::class, Amenity::class, Category::class, Faq::class, GalleryItem::class, Location::class, Post::class, Property::class, PropertyType::class,
+            Agent::class, Amenity::class, Category::class, Developer::class, Faq::class, GalleryItem::class, Location::class, Post::class, Project::class, ProjectUnit::class, Property::class, PropertyMedia::class, PropertyType::class,
             Pricing::class, Section::class,
             Service::class, Setting::class, TeamMember::class, Testimonial::class,
         ] as $model) {

@@ -90,6 +90,12 @@ class Property extends Model
         return $this->belongsTo(Location::class);
     }
 
+    /** @return BelongsTo<Agent, $this> */
+    public function agent(): BelongsTo
+    {
+        return $this->belongsTo(Agent::class);
+    }
+
     /** @return BelongsToMany<Amenity, $this> */
     public function amenities(): BelongsToMany
     {

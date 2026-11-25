@@ -36,6 +36,7 @@ class PropertySearch
             ->when(isset($f['baths_min']), fn ($q) => $q->where('baths', '>=', $f['baths_min']))
             ->when(isset($f['area_min']), fn ($q) => $q->where('area', '>=', $f['area_min']))
             ->when(isset($f['area_max']), fn ($q) => $q->where('area', '<=', $f['area_max']))
+            ->when($f['slugs'] ?? null, fn ($q, $slugs) => $q->whereIn('slug', $slugs))
             ->when($f['furnished'] ?? null, fn ($q, $v) => $q->where('furnished', $v))
             ->when(isset($f['featured']), fn ($q) => $q->where('featured', (bool) $f['featured']))
             ->when($f['amenities'] ?? null, fn ($q, $ids) => $this->withAllAmenities($q, $ids));
