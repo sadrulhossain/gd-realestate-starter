@@ -19,6 +19,11 @@ const TAGS: Record<string, string> = {
   gallery: 'gallery_items',
   categories: 'categories',
   posts: 'posts',
+  properties: 'properties',
+  'property-types': 'property_types',
+  locations: 'locations',
+  projects: 'projects',
+  agents: 'agents',
 }
 
 export function tagFor(url: string): string[] {
@@ -199,4 +204,86 @@ export async function getPricing(locale: string, serviceId?: number | string): P
 
 export async function getList<T>(locale: string, resource: 'services' | 'testimonials' | 'team' | 'gallery' | 'faqs'): Promise<T[]> {
   return ((await apiFor(locale).request('GET', `/v1/public/${resource}`)) as Listing<T>).data
+}
+
+// --- Real estate (R7) ---
+
+export interface PropertyType {
+  id: number
+  key: string
+  name: string
+  group: string
+}
+
+export interface Location {
+  id: number
+  parent_id: number | null
+  name: string
+  slug: string
+}
+
+/** The card view of a listing (`PublicPropertyResource`): never carries owner, agent or workflow data. */
+export interface PropertyCardData {
+  id: number
+  ref_code: string
+  slug: string
+  title: string
+  listing_type: 'sale' | 'rent'
+  status: string
+  featured: boolean
+  property_type: PropertyType | null
+  location: Location | null
+  address_line: string | null
+  price: number
+  rent_period: 'month' | 'year' | 'day' | null
+  area: string | number | null
+  area_unit: string | null
+  beds: number | null
+  baths: number | null
+  /** A cover is an uploaded file (with WebP widths) or an external URL. */
+  cover: { file: Media | null; url: string | null } | null
+}
+
+export interface ProjectCardData {
+  id: number
+  slug: string
+  name: string
+  status: string
+  location: Location | null
+  developer: { name: string } | null
+  units_count?: number
+  from_price?: number
+}
+
+export interface AgentCardData {
+  id: number
+  slug: string
+  name: string
+  title: string | null
+  phone: string | null
+  email: string | null
+  image: Media | null
+  listings_count?: number
+}
+
+export async function getProperties(locale: string, query: Record<string, string | number> = {}): Promise<PropertyCardData[]> {
+  const qs = new URLSearchParams(Object.entries(query).map(([k, v]) => [k, String(v)])).toString()
+
+  return ((await apiFor(locale).request('GET', `/v1/public/properties${qs ? `?${qs}` : ''}`)) as Listing<PropertyCardData>).data
+}
+
+export async function getPropertyTypes(locale: string): Promise<PropertyType[]> {
+  return ((await apiFor(locale).request('GET', '/v1/public/property-types')) as Listing<PropertyType>).data
+}
+
+export async function getLocations(locale: string): Promise<Location[]> {
+  return ((await apiFor(locale).request('GET', '/v1/public/locations')) as Listing<Location>).data
+}
+
+export async function getProjects(locale: string): Promise<ProjectCardData[]> {
+  return ((await apiFor(locale).request('GET', '/v1/public/projects')) as Listing<ProjectCardData>).data
+}
+
+export async function getAgents(locale: string): Promise<AgentCardData[]> {
+  return ((await apiFor(locale).request('GET', '/v1/public/agents')) as Listing<AgentCardData>).data
 }

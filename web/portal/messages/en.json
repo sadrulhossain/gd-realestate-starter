@@ -147,5 +147,65 @@
     "empty": "Prices will be announced soon.",
     "forService": "Pricing for this service",
     "viewService": "View service"
+  },
+  "estate": {
+    "search": {
+      "label": "Property search",
+      "buy": "Buy",
+      "rent": "Rent",
+      "listing": "I want to",
+      "type": "Property type",
+      "anyType": "Any type",
+      "location": "Location",
+      "anyLocation": "Any location",
+      "keyword": "Keyword",
+      "keywordPlaceholder": "Area, title or reference",
+      "submit": "Search"
+    },
+    "status": {
+      "available": "Available",
+      "under_offer": "Under offer",
+      "sold": "Sold",
+      "rented": "Rented"
+    },
+    "listing": {
+      "sale": "For sale",
+      "rent": "For rent"
+    },
+    "period": {
+      "month": "/ month",
+      "year": "/ year",
+      "day": "/ day"
+    },
+    "units": {
+      "sqft": "sq ft",
+      "sqm": "sq m"
+    },
+    "facts": {
+      "beds": "Beds",
+      "baths": "Baths",
+      "area": "Area"
+    },
+    "card": {
+      "featured": "Featured",
+      "noPhoto": "No photo yet",
+      "priceOnRequest": "Price on request"
+    },
+    "home": {
+      "viewAll": "View all properties",
+      "browseType": "Browse {name}",
+      "browseLocation": "Properties in {name}",
+      "emptyProperties": "New listings are coming soon.",
+      "projectFrom": "From",
+      "projectUnits": "{count} units available",
+      "agentListings": "{count} listings",
+      "viewProjects": "View all projects",
+      "meetAgents": "Meet all agents"
+    },
+    "project": {
+      "upcoming": "Upcoming",
+      "under_construction": "Under construction",
+      "completed": "Completed"
+    }
   }
 }

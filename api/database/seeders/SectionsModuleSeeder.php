@@ -9,8 +9,13 @@ class SectionsModuleSeeder extends ModuleSeeder
     /** key => [title, visible]. Core sections are on, optional ones off until an admin enables them. */
     private const DEFAULTS = [
         'hero' => ['Welcome', true],
+        'featured_properties' => ['Featured properties', true],
+        'property_types' => ['Browse by type', true],
+        'locations' => ['Popular locations', true],
+        'projects' => ['New developments', true],
         'about' => ['About us', true],
         'services' => ['Our services', true],
+        'agents' => ['Our agents', true],
         'pricing' => ['Pricing', false],
         'contact' => ['Contact us', true],
         'testimonials' => ['Testimonials', false],

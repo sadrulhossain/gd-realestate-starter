@@ -1,5 +1,6 @@
 @import 'tailwindcss';
 @import '@gd/tokens/portal.css';
+@import '@gd/tokens/estate.css';
 
 /* Blog post body (sanitised HTML from the API): Tailwind's reset removes list and heading styling. Logical properties only. */
 .post-body > * + * { margin-block-start: 1rem; }

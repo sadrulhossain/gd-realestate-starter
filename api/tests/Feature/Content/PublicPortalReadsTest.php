@@ -16,7 +16,7 @@ it('serves only visible sections in order, and collapses languages with ?lang', 
     Section::where('key', 'hero')->update(['title_2nd' => 'স্বাগতম']);
 
     $keys = collect($this->getJson('/api/v1/public/sections')->assertOk()->json('data'))->pluck('key');
-    expect($keys->all())->toBe(['hero', 'services', 'contact'])->and($keys)->not->toContain('about');
+    expect($keys->all())->toBe(['hero', 'featured_properties', 'property_types', 'locations', 'projects', 'services', 'agents', 'contact'])->and($keys)->not->toContain('about');
 
     config(['locales.supported' => ['en', 'bn'], 'locales.second' => 'bn']);
     $this->getJson('/api/v1/public/sections?lang=bn')->assertJsonPath('data.0.title', 'স্বাগতম')->assertJsonMissingPath('data.0.title_2nd');

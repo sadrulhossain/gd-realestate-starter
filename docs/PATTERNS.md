@@ -166,3 +166,12 @@ singleton reference: Settings. Paths below are relative to `api/app` unless note
 - Leads: status, assignment and notes are not form fields. `LeadPanel` posts to `leads/{id}/status|assign|notes`; the timeline is `lead_notes`.
 - Reports (`reports.view`, admin role only, counts every record): `GET reports/{leads|viewings|properties}?from&to` returns `{key,title,columns,rows}`; `.../export` is the same table as CSV (cells starting with `= + - @` get a leading apostrophe). Tables are built in `Services/SalesReports`; add a report there and to `KEYS`. The admin page fetches the CSV with the token and saves the blob.
 - Dashboard: `new_leads` and `upcoming_viewings` follow the own-records scope; `properties` and `agents` need their `.view`.
+
+## Portal: estate design system (phase R7)
+- Tokens: `packages/tokens/estate.css` is imported by `web/portal/app/globals.css` after `portal.css` and re-points `brand` (harbour blue), `accent` (gold) and the neutrals; it adds `status-*`, `radius-card`, `radius-pill`, `shadow-card(-hover)`. The admin theme never imports it, so admin screens are unchanged. Utility names stay the same, so old pages pick the theme up.
+- Components live in `web/portal/components/estate/` (`PropertyCard`, `ProjectCard`, `AgentCard`, `Tile`, `SearchBar`, `StatusBadge`, `PriceTag`, `FactList`, class recipes in `ui.ts`). They take plain data (`lib/api.ts` card types) plus `messages` and `money`; text comes from `messages.estate`. Logical utilities only.
+- Prices are minor units: format with `lib/format.ts` (`formatPrice`, `formatArea`). A property cover is `{ file, url }`: use `file` when present, else the external `url`.
+- Home sections are normal sections keyed `featured_properties`, `property_types`, `locations`, `projects`, `agents` (`components/sections/estate.tsx`, seeded in `SectionsModuleSeeder`). Shared `Frame`, `Arrow`, `Ctx` moved to `sections/frame.tsx`. Sections with no data render nothing.
+- The search bar is a plain GET form to `/properties` (`listing_type`, `property_type`, `location`, `q`); the results page comes in R8.
+- `/styleguide` (`app/[locale]/styleguide`) lists every component with sample data; it returns 404 when `NODE_ENV` is production and is noindex. Add new components there.
+- E2E: `e2e/estate.spec.ts` runs at 390 and 1280 px (search, no horizontal scroll, axe).
