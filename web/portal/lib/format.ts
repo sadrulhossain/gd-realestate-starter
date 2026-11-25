@@ -35,3 +35,6 @@ export function formatArea(area: string | number | null | undefined, unit: strin
 
   return `${value} ${labels[unit ?? ''] ?? unit ?? ''}`.trim()
 }
+
+/** Decimal places of a currency code, exported for scaling typed prices to minor units. */
+export const currencyDigits = digits

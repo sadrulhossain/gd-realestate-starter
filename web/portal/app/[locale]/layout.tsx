@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import type { ReactNode } from 'react'
+import { CompareTray } from '../../components/estate/CompareTray'
 import { Footer } from '../../components/Footer'
 import { Header } from '../../components/Header'
 import { getSections, getSettings } from '../../lib/api'
@@ -49,6 +50,7 @@ export default async function LocaleLayout({ children, params }: { children: Rea
           {children}
         </main>
         <Footer locale={locale} settings={settings} messages={messages} />
+        <CompareTray locale={locale} messages={messages} />
       </body>
     </html>
   )

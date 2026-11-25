@@ -31,6 +31,7 @@ class PropertyController extends Controller
      * `location` (id, includes its sub-locations), `price_min`/`price_max` (minor units), `beds_min`, `baths_min`,
      * `area_min`/`area_max`, `amenities` (ids, all required), `furnished`, `featured`, `status`.
      * `q` is a keyword search (full-text, typo tolerant); `lat`, `lng` and `radius_km` limit by distance.
+     * `slugs` (up to 48) returns just those listings, for saved and compared lists.
      * `sort`: relevance (default with `q`), newest (default), price_asc, price_desc, area_asc, area_desc.
      * 12 per page (`per_page` up to 48). No authentication.
      */
@@ -53,6 +54,7 @@ class PropertyController extends Controller
     {
         $property = Property::query()->public()->where('slug', $slug)
             ->with([...self::CARD, 'amenities', 'media'])->firstOrFail();
+        $property->setRelation('agent', $property->agent()->where('is_active', true)->first());
 
         $related = Property::query()->public()->with(self::CARD)
             ->whereKeyNot($property->id)

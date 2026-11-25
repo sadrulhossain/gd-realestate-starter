@@ -175,3 +175,15 @@ singleton reference: Settings. Paths below are relative to `api/app` unless note
 - The search bar is a plain GET form to `/properties` (`listing_type`, `property_type`, `location`, `q`); the results page comes in R8.
 - `/styleguide` (`app/[locale]/styleguide`) lists every component with sample data; it returns 404 when `NODE_ENV` is production and is noindex. Add new components there.
 - E2E: `e2e/estate.spec.ts` runs at 390 and 1280 px (search, no horizontal scroll, axe).
+
+## Portal: search, detail, favourites, compare (phase R8)
+- The search state is the URL: `/properties?listing_type=&property_type=&location=&q=&price_min=&price_max=&beds_min=&baths_min=&furnished=&amenities=&sort=&page=`. `lib/search.ts` parses it (unknown keys and bad values are dropped, never an error) and builds both the portal URL and the API query. Typed prices are whole currency units; `toApiQuery` scales them to minor units. Filtered and later pages are `noindex` with the plain list as canonical.
+- `FilterForm` and `SearchBar` are plain GET forms (no client JavaScript). Results are 12 per page via `searchProperties` (`lib/api.ts`), with `Pagination`.
+- Detail `/properties/[slug]`: `getProperty` returns the property and up to four related listings; sold, rented, draft and unknown slugs are 404 (the API decides). ISR like the blog: `generateStaticParams` returns `[]`. The agent shows only when active. The map link is an OpenStreetMap URL from lat/lng (no embedded map, no third-party script).
+- JSON-LD: `propertyListJsonLd` (ItemList on the results page) and `propertyJsonLd` (RealEstateListing with the offer in whole currency units) in `lib/seo.ts`.
+- Favourites and compare: slugs in localStorage (`lib/saved.ts`, `useSyncExternalStore`, guarded against blocked storage), compare capped at 3. The buttons are client components in `SaveButtons.tsx`; the `CompareTray` sits in the locale layout. `/favourites` and `/compare` fetch their cards from the portal route `GET /api/properties?locale=&slugs=a,b` (the browser cannot reach the API). Both pages are `noindex`. Slugs that are no longer public are removed from storage.
+- API: `GET /v1/public/properties?slugs[]=` returns just those listings. The detail resource now includes `agent` (active agents only).
+- Revalidation: `ContentObserver` also fires for `Project`, `ProjectUnit`, `Developer` and `PropertyMedia`. Child rows add their parent's tag (`property_media` -> `properties`, `project_units` and `developers` -> `projects`). Portal fetches are tagged per resource in `lib/api.ts` (`TAGS`).
+- Header: Properties and Favourites links; sections that only make sense on the home page (`HOME_ONLY` in `Header.tsx`) get no menu entry.
+- Existing installs: `db:seed --class=SectionsModuleSeeder` adds the new section rows, but `firstOrCreate` keeps old rows' sort order, so reorder them in Admin > Sections (fresh installs get the intended order).
+- E2E: `e2e/properties.spec.ts` at 390 and 1280 px (filters in the URL, junk query, 404, axe, favourite and compare, detail). Listing checks skip on an empty catalogue.

@@ -2,6 +2,7 @@
 
 use App\Jobs\SendRevalidateWebhook;
 use App\Models\ContactMessage;
+use App\Models\Developer;
 use App\Models\Faq;
 use App\Models\Post;
 use Illuminate\Http\Client\Request;
@@ -62,4 +63,11 @@ it('retries with backoff and is unique per tag set', function () {
     expect($job->tries)->toBe(5)
         ->and($job->backoff)->not->toBeEmpty()
         ->and($job->uniqueId())->toBe('faqs,posts');
+});
+
+it('also revalidates the parent resource when a child row changes', function () {
+    Http::fake();
+    Developer::create(['name' => 'Acme', 'slug' => 'acme']);
+
+    Http::assertSent(fn (Request $request) => $request['tags'] === ['developers', 'projects']);
 });

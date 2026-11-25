@@ -5984,7 +5984,7 @@
         "/v1/public/properties": {
             "get": {
                 "operationId": "property.publicIndex",
-                "description": "Only `available` and `under_offer` properties. Filters: `listing_type`, `property_type` (key or id),\n`location` (id, includes its sub-locations), `price_min`/`price_max` (minor units), `beds_min`, `baths_min`,\n`area_min`/`area_max`, `amenities` (ids, all required), `furnished`, `featured`, `status`.\n`q` is a keyword search (full-text, typo tolerant); `lat`, `lng` and `radius_km` limit by distance.\n`sort`: relevance (default with `q`), newest (default), price_asc, price_desc, area_asc, area_desc.\n12 per page (`per_page` up to 48). No authentication.",
+                "description": "Only `available` and `under_offer` properties. Filters: `listing_type`, `property_type` (key or id),\n`location` (id, includes its sub-locations), `price_min`/`price_max` (minor units), `beds_min`, `baths_min`,\n`area_min`/`area_max`, `amenities` (ids, all required), `furnished`, `featured`, `status`.\n`q` is a keyword search (full-text, typo tolerant); `lat`, `lng` and `radius_km` limit by distance.\n`slugs` (up to 48) returns just those listings, for saved and compared lists.\n`sort`: relevance (default with `q`), newest (default), price_asc, price_desc, area_asc, area_desc.\n12 per page (`per_page` up to 48). No authentication.",
                 "summary": "Search properties (public)",
                 "tags": [
                     "Property"
@@ -6115,6 +6115,18 @@
                         "schema": {
                             "type": "string",
                             "maxLength": 100
+                        }
+                    },
+                    {
+                        "name": "slugs[]",
+                        "in": "query",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "string",
+                                "maxLength": 160
+                            },
+                            "maxItems": 48
                         }
                     },
                     {
@@ -7662,6 +7674,9 @@
                             }
                         }
                     },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
                     "403": {
                         "$ref": "#/components/responses/AuthorizationException"
                     },
@@ -7711,6 +7726,9 @@
                                 }
                             }
                         }
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
                     },
                     "403": {
                         "$ref": "#/components/responses/AuthorizationException"
@@ -13472,6 +13490,16 @@
                         "items": {
                             "$ref": "#/components/schemas/PropertyMediaResource"
                         }
+                    },
+                    "agent": {
+                        "anyOf": [
+                            {
+                                "$ref": "#/components/schemas/PublicAgentResource"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ]
                     }
                 },
                 "required": [

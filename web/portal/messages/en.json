@@ -5,7 +5,8 @@
     "skip": "Skip to content",
     "blog": "Blog",
     "contact": "Contact",
-    "explore": "Explore"
+    "explore": "Explore",
+    "properties": "Properties"
   },
   "language": {
     "label": "Language"
@@ -206,6 +207,108 @@
       "upcoming": "Upcoming",
       "under_construction": "Under construction",
       "completed": "Completed"
+    },
+    "list": {
+      "title": "Properties",
+      "intro": "Search homes, apartments and commercial space for sale and to rent.",
+      "count": "{count} properties",
+      "countOne": "1 property",
+      "filters": "Filters",
+      "apply": "Show results",
+      "clear": "Clear all",
+      "empty": "No properties match these filters.",
+      "emptyHint": "Try removing a filter or searching a wider area.",
+      "minPrice": "Min price",
+      "maxPrice": "Max price",
+      "beds": "Bedrooms",
+      "baths": "Bathrooms",
+      "any": "Any",
+      "orMore": "{n}+",
+      "furnished": "Furnishing",
+      "amenities": "Amenities",
+      "sort": "Sort by",
+      "pagination": "Pagination",
+      "previous": "Previous",
+      "next": "Next",
+      "pageOf": "Page {page} of {last}",
+      "results": "Search results"
+    },
+    "sort": {
+      "newest": "Newest",
+      "price_asc": "Price: low to high",
+      "price_desc": "Price: high to low",
+      "area_desc": "Largest area"
+    },
+    "furnishing": {
+      "furnished": "Furnished",
+      "semi_furnished": "Semi-furnished",
+      "unfurnished": "Unfurnished"
+    },
+    "detail": {
+      "back": "All properties",
+      "gallery": "Photo gallery",
+      "photo": "Photo {n} of {total}",
+      "overview": "Overview",
+      "description": "About this property",
+      "details": "Details",
+      "ref": "Reference",
+      "type": "Type",
+      "floor": "Floor",
+      "floorOf": "{floor} of {total}",
+      "facing": "Facing",
+      "year": "Year built",
+      "furnishing": "Furnishing",
+      "amenities": "Amenities",
+      "location": "Location",
+      "map": "View on map",
+      "agent": "Listed by",
+      "callAgent": "Call",
+      "emailAgent": "Email",
+      "whatsapp": "WhatsApp",
+      "related": "Similar properties",
+      "published": "Listed on {date}",
+      "opensNew": "opens in a new tab",
+      "files": {
+        "floorplan": "Floor plan",
+        "brochure": "Brochure",
+        "video_url": "Video tour"
+      }
+    },
+    "saved": {
+      "save": "Save",
+      "saved": "Saved",
+      "saveLabel": "Save {title} to favourites",
+      "savedLabel": "Remove {title} from favourites",
+      "compare": "Compare",
+      "comparing": "In compare",
+      "compareLabel": "Add {title} to compare",
+      "comparingLabel": "Remove {title} from compare",
+      "compareFull": "You can compare up to 3 properties.",
+      "favouritesTitle": "Your favourites",
+      "favouritesIntro": "Saved on this device only. Clear your browser data and they are gone.",
+      "favouritesEmpty": "You have not saved any properties yet.",
+      "browse": "Browse properties",
+      "nav": "Favourites",
+      "compareTitle": "Compare properties",
+      "compareIntro": "Up to 3 properties side by side.",
+      "compareEmpty": "Pick two or three properties to compare.",
+      "compareTray": "Compare ({count})",
+      "openCompare": "Compare now",
+      "clear": "Clear",
+      "remove": "Remove",
+      "loading": "Loading...",
+      "unavailable": "Some saved properties are no longer available and were removed.",
+      "row": {
+        "price": "Price",
+        "type": "Type",
+        "location": "Location",
+        "beds": "Beds",
+        "baths": "Baths",
+        "area": "Area",
+        "status": "Status",
+        "listing": "Listing"
+      },
+      "failed": "Could not load your list. Please try again."
     }
   }
 }

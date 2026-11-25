@@ -7,15 +7,20 @@ import { MobileNav } from './MobileNav'
 import { NavDropdown } from './NavDropdown'
 import { SiteLogo } from './SiteLogo'
 
+/** Sections that only make sense as part of the home page (their content is not a page of its own): no menu entry. */
+const HOME_ONLY = new Set(['featured_properties', 'property_types', 'locations', 'projects', 'agents'])
+
 /** Sticky glass header: logo, one link per visible section (the hero is the page top, contact has its own button), Blog, Contact. */
 export function Header({ locale, settings, sections, messages }: { locale: string; settings: Settings; sections: Section[]; messages: Messages }) {
   const home = localePath(locale)
   const links = [
     ...sections
-      .filter((s) => s.key !== 'hero' && s.key !== 'contact')
+      .filter((s) => s.key !== 'hero' && s.key !== 'contact' && !HOME_ONLY.has(s.key))
       .map((s) => ({ key: s.key, label: s.title, href: SECTION_PAGES[s.key] ? localePath(locale, SECTION_PAGES[s.key]) : `${home}#${s.key}` })),
   ]
   const blog = localePath(locale, '/blog')
+  const properties = localePath(locale, '/properties')
+  const favourites = localePath(locale, '/favourites')
   const contact = localePath(locale, '/contact')
   const switcher = locales.length > 1 && <LanguageSwitcher current={locale} label={messages.language.label} locales={locales} unprefixed={defaultLocale} />
 
@@ -41,8 +46,14 @@ export function Header({ locale, settings, sections, messages }: { locale: strin
               ))}
             </NavDropdown>
           )}
+          <Link href={properties} className="rounded-full px-3 py-2 text-[0.95rem] font-medium text-ink-muted transition-colors hover:bg-brand-50 hover:text-brand-700">
+            {messages.nav.properties}
+          </Link>
           <Link href={blog} className="rounded-full px-3 py-2 text-[0.95rem] font-medium text-ink-muted transition-colors hover:bg-brand-50 hover:text-brand-700">
             {messages.nav.blog}
+          </Link>
+          <Link href={favourites} className="rounded-full px-3 py-2 text-[0.95rem] font-medium text-ink-muted transition-colors hover:bg-brand-50 hover:text-brand-700">
+            {messages.estate.saved.nav}
           </Link>
           {switcher}
           <Link href={contact} className="ms-2 rounded-full bg-brand-600 px-5 py-2.5 text-[0.95rem] font-semibold text-white shadow-soft transition hover:-translate-y-0.5 hover:bg-brand-700 hover:shadow-lift">
@@ -61,8 +72,14 @@ export function Header({ locale, settings, sections, messages }: { locale: strin
                 {l.label}
               </Link>
             ))}
+            <Link href={properties} className="rounded-md px-4 py-3 text-lg font-medium text-ink hover:bg-brand-50">
+              {messages.nav.properties}
+            </Link>
             <Link href={blog} className="rounded-md px-4 py-3 text-lg font-medium text-ink hover:bg-brand-50">
               {messages.nav.blog}
+            </Link>
+            <Link href={favourites} className="rounded-md px-4 py-3 text-lg font-medium text-ink hover:bg-brand-50">
+              {messages.estate.saved.nav}
             </Link>
             <Link href={contact} className="mt-2 rounded-full bg-brand-600 px-5 py-3 text-center text-lg font-semibold text-white">
               {messages.nav.contact}
