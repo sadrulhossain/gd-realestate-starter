@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Models\Agent;
 use App\Models\Amenity;
 use App\Models\Category;
 use App\Models\Faq;
@@ -51,7 +52,7 @@ class AppServiceProvider extends ServiceProvider
 
         // Public content changes -> queued signed webhook so the portal revalidates its cache.
         foreach ([
-            Amenity::class, Category::class, Faq::class, GalleryItem::class, Location::class, Post::class, Property::class, PropertyType::class,
+            Agent::class, Amenity::class, Category::class, Faq::class, GalleryItem::class, Location::class, Post::class, Property::class, PropertyType::class,
             Pricing::class, Section::class,
             Service::class, Setting::class, TeamMember::class, Testimonial::class,
         ] as $model) {
@@ -60,6 +61,7 @@ class AppServiceProvider extends ServiceProvider
 
         RateLimiter::for('login', fn (Request $request) => Limit::perMinute(10)->by($request->ip().'|'.strtolower((string) $request->input('email'))));
         RateLimiter::for('contact', fn (Request $request) => Limit::perMinute(config('contact.per_minute'))->by($request->ip()));
+        RateLimiter::for('leads', fn (Request $request) => Limit::perMinute(config('contact.per_minute'))->by($request->ip()));
 
         Gate::policy(Role::class, RolePolicy::class);
 

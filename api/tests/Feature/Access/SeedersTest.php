@@ -21,7 +21,7 @@ beforeEach(function () {
 it('seeds roles, the dashboard module, the superadmin and the admin client', function () {
     $this->seed(DatabaseSeeder::class);
 
-    expect(Role::pluck('name')->sort()->values()->all())->toBe(['admin', 'superadmin']);
+    expect(Role::pluck('name')->sort()->values()->all())->toBe(['admin', 'agent', 'superadmin']);
     expect(Menu::where('permission_name', 'dashboard.view')->exists())->toBeTrue();
     expect(Role::findByName('admin', 'api')->hasPermissionTo('dashboard.view'))->toBeTrue();
 

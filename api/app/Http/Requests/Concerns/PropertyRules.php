@@ -42,7 +42,7 @@ trait PropertyRules
             'year_built' => [...$opt, 'integer', 'min:1800', 'max:'.((int) date('Y') + 10)],
             'furnished' => [...$opt, Rule::in(Property::FURNISHED)],
             'featured' => ['sometimes', 'boolean'],
-            'agent_id' => [...$opt, 'integer', 'min:1'],
+            'agent_id' => [...$opt, 'integer', Rule::exists('agents', 'id')],
             'project_id' => [...$opt, 'integer', Rule::exists('projects', 'id')],
             'unit_id' => [...$opt, 'integer', Rule::exists('project_units', 'id'), Rule::unique('properties', 'unit_id')->ignore($this->route('property'))],
             'owner_id' => [...$opt, 'integer', 'min:1'],

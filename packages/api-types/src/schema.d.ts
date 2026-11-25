@@ -4,6 +4,108 @@
  */
 
 export interface paths {
+    "/v1/public/agents": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List agents (public)
+         * @description Active agents by sort order, each with `listings_count` (their available or under-offer properties). No authentication.
+         */
+        get: operations["agent.publicIndex"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/public/agents/{slug}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Show an agent by slug (public)
+         * @description Active agents only (others answer 404). No authentication.
+         */
+        get: operations["agent.publicShow"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/agents": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List agents */
+        get: operations["agents.index"];
+        put?: never;
+        /** Create an agent */
+        post: operations["agents.store"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/agents/{agent}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Show an agent */
+        get: operations["agents.show"];
+        /** Update an agent */
+        put: operations["agents.update"];
+        post?: never;
+        /**
+         * Delete an agent
+         * @description An agent with properties, leads or viewings answers 409: reassign or deactivate (`is_active`) instead.
+         */
+        delete: operations["agents.destroy"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/agents/{agent}/image": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Upload an agent photo
+         * @description Multipart field `image` (jpeg, png or webp). Replaces the current photo;
+         *     WebP variants are generated in the background.
+         */
+        post: operations["agentImage.store"];
+        /** Remove the agent photo */
+        delete: operations["agentImage.destroy"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/public/amenities": {
         parameters: {
             query?: never;
@@ -462,6 +564,132 @@ export interface paths {
         get: operations["v1.health"];
         put?: never;
         post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/public/leads": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Send an enquiry (public)
+         * @description Needs a captcha from `public/captcha`. The `website` field is a honeypot and must be left out or empty.
+         *     Throttled per IP. The lead goes to the property's agent when it has one, and that agent (or the site owner)
+         *     is notified by queued email.
+         */
+        post: operations["lead.publicStore"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/leads": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List leads
+         * @description Newest first, 20 per page. Filters: `status`, `agent_id`, `source`, `property_id`, `project_id`,
+         *     `q` (name, email or phone). Without `leads.view_all` only the leads assigned to your own agent profile are listed.
+         */
+        get: operations["leads.index"];
+        put?: never;
+        /**
+         * Create a lead
+         * @description For enquiries that came in by phone, walk-in or referral. The status starts at `new`. Only users who can assign
+         *     leads may set `agent_id`; for everyone else the lead goes to their own agent profile.
+         */
+        post: operations["leads.store"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/leads/{lead}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Show a lead with its timeline */
+        get: operations["leads.show"];
+        /** Update a lead (contact details and links; status and agent have their own endpoints) */
+        put: operations["leads.update"];
+        post?: never;
+        /** Delete a lead and its timeline */
+        delete: operations["leads.destroy"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/leads/{lead}/status": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Move a lead through the pipeline
+         * @description Allowed moves: new to contacted or lost; contacted to qualified or lost; qualified to viewing, negotiation or lost;
+         *     viewing to qualified, negotiation or lost; negotiation to viewing, won or lost; lost to new (reopen); won is final.
+         *     `lost_reason` is required when moving to lost. Each change is written to the timeline.
+         */
+        post: operations["lead.status"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/leads/{lead}/assign": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Assign a lead to an agent
+         * @description Send `agent_id` (an active agent) or null to unassign. The new agent is notified by queued email.
+         */
+        post: operations["lead.assign"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/leads/{lead}/notes": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Add a note to a lead's timeline */
+        post: operations["lead.note"];
         delete?: never;
         options?: never;
         head?: never;
@@ -1375,7 +1603,7 @@ export interface paths {
          * Show a section panel
          * @description Title and text (both languages) and image of the hero or about section.
          */
-        get: operations["v1.sectionPanel.show_29"];
+        get: operations["v1.sectionPanel.show_32"];
         put?: never;
         post?: never;
         delete?: never;
@@ -1385,7 +1613,7 @@ export interface paths {
          * Update a section panel
          * @description Partial update of the title and text (both languages).
          */
-        patch: operations["v1.sectionPanel.update_30"];
+        patch: operations["v1.sectionPanel.update_33"];
         trace?: never;
     };
     "/v1/hero/image": {
@@ -1401,9 +1629,9 @@ export interface paths {
          * Upload the section image
          * @description Multipart field `image` (jpeg, png or webp). Replaces the current image.
          */
-        post: operations["v1.sectionPanel.storeImage_31"];
+        post: operations["v1.sectionPanel.storeImage_34"];
         /** Remove the section image */
-        delete: operations["v1.sectionPanel.destroyImage_32"];
+        delete: operations["v1.sectionPanel.destroyImage_35"];
         options?: never;
         head?: never;
         patch?: never;
@@ -1420,7 +1648,7 @@ export interface paths {
          * Show a section panel
          * @description Title and text (both languages) and image of the hero or about section.
          */
-        get: operations["v1.sectionPanel.show_33"];
+        get: operations["v1.sectionPanel.show_36"];
         put?: never;
         post?: never;
         delete?: never;
@@ -1430,7 +1658,7 @@ export interface paths {
          * Update a section panel
          * @description Partial update of the title and text (both languages).
          */
-        patch: operations["v1.sectionPanel.update_34"];
+        patch: operations["v1.sectionPanel.update_37"];
         trace?: never;
     };
     "/v1/about/image": {
@@ -1446,9 +1674,9 @@ export interface paths {
          * Upload the section image
          * @description Multipart field `image` (jpeg, png or webp). Replaces the current image.
          */
-        post: operations["v1.sectionPanel.storeImage_35"];
+        post: operations["v1.sectionPanel.storeImage_38"];
         /** Remove the section image */
-        delete: operations["v1.sectionPanel.destroyImage_36"];
+        delete: operations["v1.sectionPanel.destroyImage_39"];
         options?: never;
         head?: never;
         patch?: never;
@@ -1858,10 +2086,95 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/viewings": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List viewings
+         * @description Agenda order (earliest first), 50 per page. Filters: `from` and `to` (dates, on the start time), `agent_id`,
+         *     `status`, `property_id`, `lead_id`. Without `viewings.view_all` only your own agent profile's viewings are listed.
+         */
+        get: operations["viewings.index"];
+        put?: never;
+        /**
+         * Book a viewing
+         * @description The agent is `agent_id` (needs `viewings.view_all`), otherwise the property's agent; without `viewings.view_all`
+         *     it is always your own agent profile. Answers 422 on `starts_at` when the agent already has a scheduled or
+         *     confirmed viewing that overlaps. The agent and the lead (when it has an email) are notified by queued email.
+         */
+        post: operations["viewings.store"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/viewings/{viewing}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Show a viewing */
+        get: operations["viewings.show"];
+        /** Reschedule or edit a viewing (times are re-checked for conflicts; status has its own endpoint) */
+        put: operations["viewings.update"];
+        post?: never;
+        /** Delete a viewing */
+        delete: operations["viewings.destroy"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/viewings/{viewing}/status": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Change a viewing's status
+         * @description Allowed moves: scheduled to confirmed, cancelled or no_show; confirmed to completed, cancelled or no_show.
+         *     Completed, cancelled and no_show are final and free the agent's calendar.
+         */
+        post: operations["viewing.status"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        /** AgentResource */
+        AgentResource: {
+            id: number | unknown;
+            name: string | unknown;
+            slug: string | unknown;
+            title: (string | null) | unknown;
+            title_2nd: (string | null) | unknown;
+            bio: (string | null) | unknown;
+            bio_2nd: (string | null) | unknown;
+            email: (string | null) | unknown;
+            phone: (string | null) | unknown;
+            whatsapp: (string | null) | unknown;
+            license_no: (string | null) | unknown;
+            image: string | unknown;
+            listings_count?: number | unknown;
+        } & {
+            [key: string]: unknown;
+        };
         /** AmenityResource */
         AmenityResource: {
             id: number;
@@ -1874,6 +2187,10 @@ export interface components {
             /** Format: date-time */
             updated_at: string | null;
         };
+        /** AssignLeadRequest */
+        AssignLeadRequest: {
+            agent_id: number | null;
+        };
         /** CategoryResource */
         CategoryResource: {
             id: number;
@@ -1884,10 +2201,19 @@ export interface components {
             /** Format: date-time */
             updated_at: string | null;
         };
+        /** ChangeLeadStatusRequest */
+        ChangeLeadStatusRequest: {
+            status: components["schemas"]["LeadStatus"];
+            lost_reason?: string | null;
+        };
         /** ChangePropertyStatusRequest */
         ChangePropertyStatusRequest: {
             status: components["schemas"]["PropertyStatus"];
             note?: string | null;
+        };
+        /** ChangeViewingStatusRequest */
+        ChangeViewingStatusRequest: {
+            status: components["schemas"]["ViewingStatus"];
         };
         /** ContactMessageResource */
         ContactMessageResource: {
@@ -1945,6 +2271,58 @@ export interface components {
             /** Format: date-time */
             updated_at: string | null;
         };
+        /** LeadResource */
+        LeadResource: {
+            id: number;
+            name: string;
+            email: string | null;
+            phone: string | null;
+            message: string | null;
+            source: string;
+            status: components["schemas"]["LeadStatus"];
+            lost_reason: string | null;
+            property_id: number | null;
+            property?: {
+                id: number;
+                ref_code: string;
+                title: string;
+                slug: string;
+            } | null;
+            project_id: number | null;
+            project?: {
+                id: number;
+                name: string;
+                slug: string;
+            } | null;
+            agent_id: number | null;
+            agent?: {
+                id: number;
+                name: string;
+            } | null;
+            /** Format: date-time */
+            last_contacted_at: string | null;
+            notes?: {
+                id: number;
+                kind: string;
+                body: string;
+                user: {
+                    id: number;
+                    name: string;
+                } | null;
+                /** Format: date-time */
+                created_at: string | null;
+            }[];
+            /** Format: date-time */
+            created_at: string | null;
+            /** Format: date-time */
+            updated_at: string | null;
+        };
+        /**
+         * LeadStatus
+         * @description Lead pipeline. Status changes only through LeadStatusService, which enforces this table.
+         * @enum {string}
+         */
+        LeadStatus: "new" | "contacted" | "qualified" | "viewing" | "negotiation" | "won" | "lost";
         /** LocationResource */
         LocationResource: {
             id: number;
@@ -2022,55 +2400,48 @@ export interface components {
         };
         /** ProjectResource */
         ProjectResource: {
-            id: number;
-            name: string;
-            name_2nd: string | null;
-            slug: string;
-            description: string | null;
-            description_2nd: string | null;
-            developer_id: number | null;
-            developer: components["schemas"]["PublicDeveloperResource"] | components["schemas"]["DeveloperResource"];
-            location_id: number;
-            location?: components["schemas"]["LocationResource"];
-            address_line: string | null;
-            lat: number | null;
-            lng: number | null;
-            status: string;
-            handover_date: string | null;
-            featured: boolean;
-            seo_title: string | null;
-            seo_description: string | null;
-            units_count?: number;
-            from_price?: number;
-            units?: (components["schemas"]["PublicProjectUnitResource"] | components["schemas"]["ProjectUnitResource"])[];
-            is_active?: boolean;
-            /** Format: date-time */
-            created_at?: string | null;
-            /** Format: date-time */
-            updated_at?: string | null;
+            id: number | unknown;
+            name: string | unknown;
+            name_2nd: (string | null) | unknown;
+            slug: string | unknown;
+            description: (string | null) | unknown;
+            description_2nd: (string | null) | unknown;
+            developer_id: (number | null) | unknown;
+            developer: (components["schemas"]["PublicDeveloperResource"] | components["schemas"]["DeveloperResource"]) | unknown;
+            location_id: number | unknown;
+            location?: components["schemas"]["LocationResource"] | unknown;
+            address_line: (string | null) | unknown;
+            lat: (number | null) | unknown;
+            lng: (number | null) | unknown;
+            status: string | unknown;
+            handover_date: (string | null) | unknown;
+            featured: boolean | unknown;
+            seo_title: (string | null) | unknown;
+            seo_description: (string | null) | unknown;
+            units_count?: number | unknown;
+            from_price?: number | unknown;
+            units?: (components["schemas"]["PublicProjectUnitResource"] | components["schemas"]["ProjectUnitResource"])[] | unknown;
+        } & {
+            [key: string]: unknown;
         };
         /** ProjectUnitResource */
         ProjectUnitResource: {
-            id: number;
-            project_id: number;
-            code: string;
-            name: string | null;
-            name_2nd: string | null;
-            property_type?: components["schemas"]["PropertyTypeResource"];
-            property_type_id: number;
-            beds: number | null;
-            baths: number | null;
-            area: number | null;
-            area_unit: string;
-            floor: number | null;
-            price: number;
-            status: string;
-            property_id?: number | null;
-            property_slug?: string | null;
-            /** Format: date-time */
-            created_at?: string | null;
-            /** Format: date-time */
-            updated_at?: string | null;
+            id: number | unknown;
+            project_id: number | unknown;
+            code: string | unknown;
+            name: (string | null) | unknown;
+            name_2nd: (string | null) | unknown;
+            property_type?: components["schemas"]["PropertyTypeResource"] | unknown;
+            property_type_id: number | unknown;
+            beds: (number | null) | unknown;
+            baths: (number | null) | unknown;
+            area: (number | null) | unknown;
+            area_unit: string | unknown;
+            floor: (number | null) | unknown;
+            price: number | unknown;
+            status: string | unknown;
+        } & {
+            [key: string]: unknown;
         };
         /** PropertyMediaResource */
         PropertyMediaResource: {
@@ -2155,6 +2526,24 @@ export interface components {
             /** Format: date-time */
             updated_at: string | null;
         };
+        /** PublicAgentResource */
+        PublicAgentResource: {
+            id: string | unknown;
+            name: string | unknown;
+            slug: string | unknown;
+            title: string | unknown;
+            title_2nd: string | unknown;
+            bio: string | unknown;
+            bio_2nd: string | unknown;
+            email: string | unknown;
+            phone: string | unknown;
+            whatsapp: string | unknown;
+            license_no: string | unknown;
+            image: string | unknown;
+            listings_count?: number | unknown;
+        } & {
+            [key: string]: unknown;
+        };
         /** PublicDeveloperResource */
         PublicDeveloperResource: {
             id: number;
@@ -2167,51 +2556,48 @@ export interface components {
         };
         /** PublicProjectResource */
         PublicProjectResource: {
-            id: string;
-            name: string;
-            name_2nd: string;
-            slug: string;
-            description: string;
-            description_2nd: string;
-            developer_id: string;
-            developer: components["schemas"]["PublicDeveloperResource"] | components["schemas"]["DeveloperResource"];
-            location_id: string;
-            location?: components["schemas"]["LocationResource"];
-            address_line: string;
-            lat: string;
-            lng: string;
-            status: string;
-            handover_date: string | null;
-            featured: string;
-            seo_title: string;
-            seo_description: string;
-            units_count?: number;
-            from_price?: number;
-            units?: string;
-            is_active?: string;
-            created_at?: string;
-            updated_at?: string;
+            id: string | unknown;
+            name: string | unknown;
+            name_2nd: string | unknown;
+            slug: string | unknown;
+            description: string | unknown;
+            description_2nd: string | unknown;
+            developer_id: string | unknown;
+            developer: (components["schemas"]["PublicDeveloperResource"] | components["schemas"]["DeveloperResource"]) | unknown;
+            location_id: string | unknown;
+            location?: components["schemas"]["LocationResource"] | unknown;
+            address_line: string | unknown;
+            lat: string | unknown;
+            lng: string | unknown;
+            status: string | unknown;
+            handover_date: (string | null) | unknown;
+            featured: string | unknown;
+            seo_title: string | unknown;
+            seo_description: string | unknown;
+            units_count?: number | unknown;
+            from_price?: number | unknown;
+            units?: string | unknown;
+        } & {
+            [key: string]: unknown;
         };
         /** PublicProjectUnitResource */
         PublicProjectUnitResource: {
-            id: string;
-            project_id: string;
-            code: string;
-            name: string;
-            name_2nd: string;
-            property_type?: components["schemas"]["PropertyTypeResource"];
-            property_type_id: string;
-            beds: string;
-            baths: string;
-            area: string;
-            area_unit: string;
-            floor: string;
-            price: string;
-            status: string;
-            property_id?: string | null;
-            property_slug?: string | null;
-            created_at?: string;
-            updated_at?: string;
+            id: string | unknown;
+            project_id: string | unknown;
+            code: string | unknown;
+            name: string | unknown;
+            name_2nd: string | unknown;
+            property_type?: components["schemas"]["PropertyTypeResource"] | unknown;
+            property_type_id: string | unknown;
+            beds: string | unknown;
+            baths: string | unknown;
+            area: string | unknown;
+            area_unit: string | unknown;
+            floor: string | unknown;
+            price: string | unknown;
+            status: string | unknown;
+        } & {
+            [key: string]: unknown;
         };
         /** PublicPropertyDetailResource */
         PublicPropertyDetailResource: {
@@ -2343,6 +2729,31 @@ export interface components {
             /** Format: date-time */
             updated_at: string | null;
         };
+        /** StoreAgentImageRequest */
+        StoreAgentImageRequest: {
+            /**
+             * Format: binary
+             * @description Maximum file size: 5120 kilobytes.
+             */
+            image: string;
+        };
+        /** StoreAgentRequest */
+        StoreAgentRequest: {
+            title?: string | null;
+            bio?: string | null;
+            title_2nd?: string | null;
+            bio_2nd?: string | null;
+            name: string;
+            slug?: string;
+            user_id?: number | null;
+            /** Format: email */
+            email?: string | null;
+            phone?: string | null;
+            whatsapp?: string | null;
+            license_no?: string | null;
+            sort_order?: number;
+            is_active?: boolean;
+        };
         /** StoreAmenityRequest */
         StoreAmenityRequest: {
             name: string;
@@ -2414,6 +2825,25 @@ export interface components {
             caption_2nd?: string | null;
             sort_order?: number;
             is_visible?: boolean;
+        };
+        /** StoreLeadNoteRequest */
+        StoreLeadNoteRequest: {
+            body: string;
+        };
+        /** StoreLeadRequest */
+        StoreLeadRequest: {
+            name: string;
+            /** Format: email */
+            email?: string | null;
+            phone?: string | null;
+            message?: string | null;
+            /** @enum {string} */
+            source?: "web" | "phone" | "walk_in" | "referral" | "other";
+            property_id?: number | null;
+            project_id?: number | null;
+            status?: string;
+            /** @description Only people who can assign leads choose the agent; everyone else's lead goes to their own profile. */
+            agent_id?: string;
         };
         /** StoreLocationRequest */
         StoreLocationRequest: {
@@ -2567,6 +2997,22 @@ export interface components {
             sort_order?: number;
             is_active?: boolean;
         };
+        /**
+         * StorePublicLeadRequest
+         * @description Public enquiry form. `website` is the honeypot: real visitors never see or fill it.
+         */
+        StorePublicLeadRequest: {
+            name: string;
+            /** Format: email */
+            email?: string | null;
+            phone?: string | null;
+            message?: string | null;
+            property_id?: number | null;
+            project_id?: number | null;
+            captcha_id: string;
+            captcha_answer: number;
+            website?: string;
+        };
         /** StoreRoleRequest */
         StoreRoleRequest: {
             name: string;
@@ -2660,6 +3106,19 @@ export interface components {
             password: string;
             roles?: string[];
         };
+        /** StoreViewingRequest */
+        StoreViewingRequest: {
+            property_id: number;
+            lead_id?: number | null;
+            /** Format: date-time */
+            starts_at: string;
+            /** Format: date-time */
+            ends_at: string;
+            notes?: string | null;
+            status?: string;
+            /** @description Without `viewings.view_all` the viewing always belongs to the user's own agent profile. */
+            agent_id?: string;
+        };
         /** TeamMemberResource */
         TeamMemberResource: {
             id: number;
@@ -2687,6 +3146,23 @@ export interface components {
             is_visible: boolean;
             /** Format: date-time */
             updated_at: string | null;
+        };
+        /** UpdateAgentRequest */
+        UpdateAgentRequest: {
+            title?: string | null;
+            bio?: string | null;
+            title_2nd?: string | null;
+            bio_2nd?: string | null;
+            name?: string;
+            slug?: string;
+            user_id?: number | null;
+            /** Format: email */
+            email?: string | null;
+            phone?: string | null;
+            whatsapp?: string | null;
+            license_no?: string | null;
+            sort_order?: number;
+            is_active?: boolean;
         };
         /** UpdateAmenityRequest */
         UpdateAmenityRequest: {
@@ -2736,6 +3212,20 @@ export interface components {
             caption_2nd?: string | null;
             sort_order?: number;
             is_visible?: boolean;
+        };
+        /** UpdateLeadRequest */
+        UpdateLeadRequest: {
+            name?: string;
+            /** Format: email */
+            email?: string | null;
+            phone?: string | null;
+            message?: string | null;
+            /** @enum {string} */
+            source?: "web" | "phone" | "walk_in" | "referral" | "other";
+            property_id?: number | null;
+            project_id?: number | null;
+            status?: string;
+            agent_id?: string;
         };
         /** UpdateLocationRequest */
         UpdateLocationRequest: {
@@ -2984,6 +3474,17 @@ export interface components {
             password?: string | null;
             roles?: string[];
         };
+        /** UpdateViewingRequest */
+        UpdateViewingRequest: {
+            property_id?: number;
+            lead_id?: number | null;
+            /** Format: date-time */
+            starts_at?: string;
+            /** Format: date-time */
+            ends_at?: string;
+            notes?: string | null;
+            status?: string;
+        };
         /** UserResource */
         UserResource: {
             id: number;
@@ -2995,6 +3496,43 @@ export interface components {
             /** Format: date-time */
             created_at: string | null;
         };
+        /** ViewingResource */
+        ViewingResource: {
+            id: number;
+            property_id: number;
+            property?: {
+                id: number;
+                ref_code: string;
+                title: string;
+                slug: string;
+            };
+            lead_id: number | null;
+            lead?: {
+                id: number;
+                name: string;
+            } | null;
+            agent_id: number;
+            agent?: {
+                id: number;
+                name: string;
+            };
+            /** Format: date-time */
+            starts_at: string;
+            /** Format: date-time */
+            ends_at: string;
+            status: components["schemas"]["ViewingStatus"];
+            notes: string | null;
+            /** Format: date-time */
+            created_at: string | null;
+            /** Format: date-time */
+            updated_at: string | null;
+        };
+        /**
+         * ViewingStatus
+         * @description Viewing lifecycle. Scheduled and confirmed viewings block the agent calendar.
+         * @enum {string}
+         */
+        ViewingStatus: "scheduled" | "confirmed" | "completed" | "cancelled" | "no_show";
     };
     responses: {
         /** @description Not found */
@@ -3057,6 +3595,291 @@ export interface components {
 }
 export type $defs = Record<string, never>;
 export interface operations {
+    "agent.publicIndex": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Array of `PublicAgentResource` */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["PublicAgentResource"][];
+                    };
+                };
+            };
+        };
+    };
+    "agent.publicShow": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description `PublicAgentResource` */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["PublicAgentResource"];
+                    };
+                };
+            };
+        };
+    };
+    "agents.index": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Paginated set of `AgentResource` */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["AgentResource"][];
+                        links: {
+                            first: string | null;
+                            last: string | null;
+                            prev: string | null;
+                            next: string | null;
+                        };
+                        meta: {
+                            current_page: number;
+                            from: number | null;
+                            last_page: number;
+                            /** @description Generated paginator links. */
+                            links: {
+                                url: string | null;
+                                label: string;
+                                active: boolean;
+                            }[];
+                            /** @description Base path for paginator generated URLs. */
+                            path: string | null;
+                            /** @description Number of items shown per page. */
+                            per_page: number;
+                            /** @description Number of the last item in the slice. */
+                            to: number | null;
+                            /** @description Total number of items being paginated. */
+                            total: number;
+                        };
+                    };
+                };
+            };
+            401: components["responses"]["AuthenticationException"];
+            403: components["responses"]["AuthorizationException"];
+        };
+    };
+    "agents.store": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["StoreAgentRequest"];
+            };
+        };
+        responses: {
+            /** @description `AgentResource` */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["AgentResource"];
+                    };
+                };
+            };
+            401: components["responses"]["AuthenticationException"];
+            403: components["responses"]["AuthorizationException"];
+            422: components["responses"]["ValidationException"];
+        };
+    };
+    "agents.show": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The agent ID */
+                agent: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description `AgentResource` */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["AgentResource"];
+                    };
+                };
+            };
+            401: components["responses"]["AuthenticationException"];
+            403: components["responses"]["AuthorizationException"];
+            404: components["responses"]["ModelNotFoundException"];
+        };
+    };
+    "agents.update": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The agent ID */
+                agent: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["UpdateAgentRequest"];
+            };
+        };
+        responses: {
+            /** @description `AgentResource` */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["AgentResource"];
+                    };
+                };
+            };
+            401: components["responses"]["AuthenticationException"];
+            403: components["responses"]["AuthorizationException"];
+            404: components["responses"]["ModelNotFoundException"];
+            422: components["responses"]["ValidationException"];
+        };
+    };
+    "agents.destroy": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The agent ID */
+                agent: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No content */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            401: components["responses"]["AuthenticationException"];
+            403: components["responses"]["AuthorizationException"];
+            404: components["responses"]["ModelNotFoundException"];
+            /** @description An error */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /**
+                         * @description Error overview.
+                         * @example This agent still has properties, leads or viewings. Reassign them or deactivate the agent.
+                         */
+                        message: string;
+                    };
+                };
+            };
+        };
+    };
+    "agentImage.store": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The agent ID */
+                agent: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "multipart/form-data": components["schemas"]["StoreAgentImageRequest"];
+            };
+        };
+        responses: {
+            /** @description `AgentResource` */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["AgentResource"];
+                    };
+                };
+            };
+            401: components["responses"]["AuthenticationException"];
+            403: components["responses"]["AuthorizationException"];
+            404: components["responses"]["ModelNotFoundException"];
+            422: components["responses"]["ValidationException"];
+        };
+    };
+    "agentImage.destroy": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The agent ID */
+                agent: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description `AgentResource` */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["AgentResource"];
+                    };
+                };
+            };
+            401: components["responses"]["AuthenticationException"];
+            403: components["responses"]["AuthorizationException"];
+            404: components["responses"]["ModelNotFoundException"];
+        };
+    };
     "amenity.publicIndex": {
         parameters: {
             query?: never;
@@ -4132,6 +4955,304 @@ export interface operations {
                     "application/json": string;
                 };
             };
+        };
+    };
+    "lead.publicStore": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["StorePublicLeadRequest"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: {
+                            received: boolean;
+                        };
+                    };
+                };
+            };
+            422: components["responses"]["ValidationException"];
+        };
+    };
+    "leads.index": {
+        parameters: {
+            query?: {
+                status?: components["schemas"]["LeadStatus"];
+                agent_id?: number;
+                source?: "web" | "phone" | "walk_in" | "referral" | "other";
+                property_id?: number;
+                project_id?: number;
+                q?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Paginated set of `LeadResource` */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["LeadResource"][];
+                        links: {
+                            first: string | null;
+                            last: string | null;
+                            prev: string | null;
+                            next: string | null;
+                        };
+                        meta: {
+                            current_page: number;
+                            from: number | null;
+                            last_page: number;
+                            /** @description Generated paginator links. */
+                            links: {
+                                url: string | null;
+                                label: string;
+                                active: boolean;
+                            }[];
+                            /** @description Base path for paginator generated URLs. */
+                            path: string | null;
+                            /** @description Number of items shown per page. */
+                            per_page: number;
+                            /** @description Number of the last item in the slice. */
+                            to: number | null;
+                            /** @description Total number of items being paginated. */
+                            total: number;
+                        };
+                    };
+                };
+            };
+            401: components["responses"]["AuthenticationException"];
+            403: components["responses"]["AuthorizationException"];
+            422: components["responses"]["ValidationException"];
+        };
+    };
+    "leads.store": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["StoreLeadRequest"];
+            };
+        };
+        responses: {
+            /** @description `LeadResource` */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["LeadResource"];
+                    };
+                };
+            };
+            401: components["responses"]["AuthenticationException"];
+            403: components["responses"]["AuthorizationException"];
+            422: components["responses"]["ValidationException"];
+        };
+    };
+    "leads.show": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The lead ID */
+                lead: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description `LeadResource` */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["LeadResource"] & Record<string, never>;
+                    };
+                };
+            };
+            401: components["responses"]["AuthenticationException"];
+            403: components["responses"]["AuthorizationException"];
+            404: components["responses"]["ModelNotFoundException"];
+        };
+    };
+    "leads.update": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The lead ID */
+                lead: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["UpdateLeadRequest"];
+            };
+        };
+        responses: {
+            /** @description `LeadResource` */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["LeadResource"];
+                    };
+                };
+            };
+            401: components["responses"]["AuthenticationException"];
+            403: components["responses"]["AuthorizationException"];
+            404: components["responses"]["ModelNotFoundException"];
+            422: components["responses"]["ValidationException"];
+        };
+    };
+    "leads.destroy": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The lead ID */
+                lead: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No content */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            401: components["responses"]["AuthenticationException"];
+            403: components["responses"]["AuthorizationException"];
+            404: components["responses"]["ModelNotFoundException"];
+        };
+    };
+    "lead.status": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The lead ID */
+                lead: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ChangeLeadStatusRequest"];
+            };
+        };
+        responses: {
+            /** @description `LeadResource` */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["LeadResource"] & Record<string, never>;
+                    };
+                };
+            };
+            401: components["responses"]["AuthenticationException"];
+            403: components["responses"]["AuthorizationException"];
+            404: components["responses"]["ModelNotFoundException"];
+            422: components["responses"]["ValidationException"];
+        };
+    };
+    "lead.assign": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The lead ID */
+                lead: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AssignLeadRequest"];
+            };
+        };
+        responses: {
+            /** @description `LeadResource` */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["LeadResource"] & Record<string, never>;
+                    };
+                };
+            };
+            401: components["responses"]["AuthenticationException"];
+            403: components["responses"]["AuthorizationException"];
+            404: components["responses"]["ModelNotFoundException"];
+            422: components["responses"]["ValidationException"];
+        };
+    };
+    "lead.note": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The lead ID */
+                lead: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["StoreLeadNoteRequest"];
+            };
+        };
+        responses: {
+            /** @description `LeadResource` */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["LeadResource"] & Record<string, never>;
+                    };
+                };
+            };
+            401: components["responses"]["AuthenticationException"];
+            403: components["responses"]["AuthorizationException"];
+            404: components["responses"]["ModelNotFoundException"];
+            422: components["responses"]["ValidationException"];
         };
     };
     "v1.locales": {
@@ -6365,7 +7486,7 @@ export interface operations {
             404: components["responses"]["ModelNotFoundException"];
         };
     };
-    "v1.sectionPanel.show_29": {
+    "v1.sectionPanel.show_32": {
         parameters: {
             query?: never;
             header?: never;
@@ -6389,7 +7510,7 @@ export interface operations {
             403: components["responses"]["AuthorizationException"];
         };
     };
-    "v1.sectionPanel.update_30": {
+    "v1.sectionPanel.update_33": {
         parameters: {
             query?: never;
             header?: never;
@@ -6418,7 +7539,7 @@ export interface operations {
             422: components["responses"]["ValidationException"];
         };
     };
-    "v1.sectionPanel.storeImage_31": {
+    "v1.sectionPanel.storeImage_34": {
         parameters: {
             query?: never;
             header?: never;
@@ -6447,7 +7568,7 @@ export interface operations {
             422: components["responses"]["ValidationException"];
         };
     };
-    "v1.sectionPanel.destroyImage_32": {
+    "v1.sectionPanel.destroyImage_35": {
         parameters: {
             query?: never;
             header?: never;
@@ -6471,7 +7592,7 @@ export interface operations {
             403: components["responses"]["AuthorizationException"];
         };
     };
-    "v1.sectionPanel.show_33": {
+    "v1.sectionPanel.show_36": {
         parameters: {
             query?: never;
             header?: never;
@@ -6495,7 +7616,7 @@ export interface operations {
             403: components["responses"]["AuthorizationException"];
         };
     };
-    "v1.sectionPanel.update_34": {
+    "v1.sectionPanel.update_37": {
         parameters: {
             query?: never;
             header?: never;
@@ -6524,7 +7645,7 @@ export interface operations {
             422: components["responses"]["ValidationException"];
         };
     };
-    "v1.sectionPanel.storeImage_35": {
+    "v1.sectionPanel.storeImage_38": {
         parameters: {
             query?: never;
             header?: never;
@@ -6553,7 +7674,7 @@ export interface operations {
             422: components["responses"]["ValidationException"];
         };
     };
-    "v1.sectionPanel.destroyImage_36": {
+    "v1.sectionPanel.destroyImage_39": {
         parameters: {
             query?: never;
             header?: never;
@@ -7608,6 +8729,211 @@ export interface operations {
             401: components["responses"]["AuthenticationException"];
             403: components["responses"]["AuthorizationException"];
             404: components["responses"]["ModelNotFoundException"];
+        };
+    };
+    "viewings.index": {
+        parameters: {
+            query?: {
+                from?: string;
+                to?: string;
+                agent_id?: number;
+                status?: components["schemas"]["ViewingStatus"];
+                property_id?: number;
+                lead_id?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Paginated set of `ViewingResource` */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["ViewingResource"][];
+                        links: {
+                            first: string | null;
+                            last: string | null;
+                            prev: string | null;
+                            next: string | null;
+                        };
+                        meta: {
+                            current_page: number;
+                            from: number | null;
+                            last_page: number;
+                            /** @description Generated paginator links. */
+                            links: {
+                                url: string | null;
+                                label: string;
+                                active: boolean;
+                            }[];
+                            /** @description Base path for paginator generated URLs. */
+                            path: string | null;
+                            /** @description Number of items shown per page. */
+                            per_page: number;
+                            /** @description Number of the last item in the slice. */
+                            to: number | null;
+                            /** @description Total number of items being paginated. */
+                            total: number;
+                        };
+                    };
+                };
+            };
+            401: components["responses"]["AuthenticationException"];
+            403: components["responses"]["AuthorizationException"];
+            422: components["responses"]["ValidationException"];
+        };
+    };
+    "viewings.store": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["StoreViewingRequest"];
+            };
+        };
+        responses: {
+            /** @description `ViewingResource` */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["ViewingResource"];
+                    };
+                };
+            };
+            401: components["responses"]["AuthenticationException"];
+            403: components["responses"]["AuthorizationException"];
+            404: components["responses"]["ModelNotFoundException"];
+            422: components["responses"]["ValidationException"];
+        };
+    };
+    "viewings.show": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The viewing ID */
+                viewing: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description `ViewingResource` */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["ViewingResource"];
+                    };
+                };
+            };
+            401: components["responses"]["AuthenticationException"];
+            403: components["responses"]["AuthorizationException"];
+            404: components["responses"]["ModelNotFoundException"];
+        };
+    };
+    "viewings.update": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The viewing ID */
+                viewing: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["UpdateViewingRequest"];
+            };
+        };
+        responses: {
+            /** @description `ViewingResource` */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["ViewingResource"];
+                    };
+                };
+            };
+            401: components["responses"]["AuthenticationException"];
+            403: components["responses"]["AuthorizationException"];
+            404: components["responses"]["ModelNotFoundException"];
+            422: components["responses"]["ValidationException"];
+        };
+    };
+    "viewings.destroy": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The viewing ID */
+                viewing: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No content */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            401: components["responses"]["AuthenticationException"];
+            403: components["responses"]["AuthorizationException"];
+            404: components["responses"]["ModelNotFoundException"];
+        };
+    };
+    "viewing.status": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The viewing ID */
+                viewing: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ChangeViewingStatusRequest"];
+            };
+        };
+        responses: {
+            /** @description `ViewingResource` */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["ViewingResource"];
+                    };
+                };
+            };
+            401: components["responses"]["AuthenticationException"];
+            403: components["responses"]["AuthorizationException"];
+            404: components["responses"]["ModelNotFoundException"];
+            422: components["responses"]["ValidationException"];
         };
     };
 }

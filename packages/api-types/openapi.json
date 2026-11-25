@@ -10,6 +10,554 @@
         }
     ],
     "paths": {
+        "/v1/public/agents": {
+            "get": {
+                "operationId": "agent.publicIndex",
+                "description": "Active agents by sort order, each with `listings_count` (their available or under-offer properties). No authentication.",
+                "summary": "List agents (public)",
+                "tags": [
+                    "Agent"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Array of `PublicAgentResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/PublicAgentResource"
+                                            }
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/v1/public/agents/{slug}": {
+            "get": {
+                "operationId": "agent.publicShow",
+                "description": "Active agents only (others answer 404). No authentication.",
+                "summary": "Show an agent by slug (public)",
+                "tags": [
+                    "Agent"
+                ],
+                "parameters": [
+                    {
+                        "name": "slug",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "`PublicAgentResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/PublicAgentResource"
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/v1/agents": {
+            "get": {
+                "operationId": "agents.index",
+                "summary": "List agents",
+                "tags": [
+                    "Agent"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Paginated set of `AgentResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/AgentResource"
+                                            }
+                                        },
+                                        "links": {
+                                            "type": "object",
+                                            "properties": {
+                                                "first": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "last": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "prev": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "next": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                }
+                                            },
+                                            "required": [
+                                                "first",
+                                                "last",
+                                                "prev",
+                                                "next"
+                                            ]
+                                        },
+                                        "meta": {
+                                            "type": "object",
+                                            "properties": {
+                                                "current_page": {
+                                                    "type": "integer",
+                                                    "minimum": 1
+                                                },
+                                                "from": {
+                                                    "type": [
+                                                        "integer",
+                                                        "null"
+                                                    ],
+                                                    "minimum": 1
+                                                },
+                                                "last_page": {
+                                                    "type": "integer",
+                                                    "minimum": 1
+                                                },
+                                                "links": {
+                                                    "type": "array",
+                                                    "description": "Generated paginator links.",
+                                                    "items": {
+                                                        "type": "object",
+                                                        "properties": {
+                                                            "url": {
+                                                                "type": [
+                                                                    "string",
+                                                                    "null"
+                                                                ]
+                                                            },
+                                                            "label": {
+                                                                "type": "string"
+                                                            },
+                                                            "active": {
+                                                                "type": "boolean"
+                                                            }
+                                                        },
+                                                        "required": [
+                                                            "url",
+                                                            "label",
+                                                            "active"
+                                                        ]
+                                                    }
+                                                },
+                                                "path": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ],
+                                                    "description": "Base path for paginator generated URLs."
+                                                },
+                                                "per_page": {
+                                                    "type": "integer",
+                                                    "description": "Number of items shown per page.",
+                                                    "minimum": 0
+                                                },
+                                                "to": {
+                                                    "type": [
+                                                        "integer",
+                                                        "null"
+                                                    ],
+                                                    "description": "Number of the last item in the slice.",
+                                                    "minimum": 1
+                                                },
+                                                "total": {
+                                                    "type": "integer",
+                                                    "description": "Total number of items being paginated.",
+                                                    "minimum": 0
+                                                }
+                                            },
+                                            "required": [
+                                                "current_page",
+                                                "from",
+                                                "last_page",
+                                                "links",
+                                                "path",
+                                                "per_page",
+                                                "to",
+                                                "total"
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "data",
+                                        "links",
+                                        "meta"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            },
+            "post": {
+                "operationId": "agents.store",
+                "summary": "Create an agent",
+                "tags": [
+                    "Agent"
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/StoreAgentRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "`AgentResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/AgentResource"
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    }
+                }
+            }
+        },
+        "/v1/agents/{agent}": {
+            "get": {
+                "operationId": "agents.show",
+                "summary": "Show an agent",
+                "tags": [
+                    "Agent"
+                ],
+                "parameters": [
+                    {
+                        "name": "agent",
+                        "in": "path",
+                        "required": true,
+                        "description": "The agent ID",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "`AgentResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/AgentResource"
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            },
+            "put": {
+                "operationId": "agents.update",
+                "summary": "Update an agent",
+                "tags": [
+                    "Agent"
+                ],
+                "parameters": [
+                    {
+                        "name": "agent",
+                        "in": "path",
+                        "required": true,
+                        "description": "The agent ID",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/UpdateAgentRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "`AgentResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/AgentResource"
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    }
+                }
+            },
+            "delete": {
+                "operationId": "agents.destroy",
+                "description": "An agent with properties, leads or viewings answers 409: reassign or deactivate (`is_active`) instead.",
+                "summary": "Delete an agent",
+                "tags": [
+                    "Agent"
+                ],
+                "parameters": [
+                    {
+                        "name": "agent",
+                        "in": "path",
+                        "required": true,
+                        "description": "The agent ID",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No content"
+                    },
+                    "409": {
+                        "description": "An error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "description": "Error overview.",
+                                            "examples": [
+                                                "This agent still has properties, leads or viewings. Reassign them or deactivate the agent."
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "message"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            }
+        },
+        "/v1/agents/{agent}/image": {
+            "post": {
+                "operationId": "agentImage.store",
+                "description": "Multipart field `image` (jpeg, png or webp). Replaces the current photo;\nWebP variants are generated in the background.",
+                "summary": "Upload an agent photo",
+                "tags": [
+                    "AgentImage"
+                ],
+                "parameters": [
+                    {
+                        "name": "agent",
+                        "in": "path",
+                        "required": true,
+                        "description": "The agent ID",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "$ref": "#/components/schemas/StoreAgentImageRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "`AgentResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/AgentResource"
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    }
+                }
+            },
+            "delete": {
+                "operationId": "agentImage.destroy",
+                "summary": "Remove the agent photo",
+                "tags": [
+                    "AgentImage"
+                ],
+                "parameters": [
+                    {
+                        "name": "agent",
+                        "in": "path",
+                        "required": true,
+                        "description": "The agent ID",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "`AgentResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/AgentResource"
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            }
+        },
         "/v1/public/amenities": {
             "get": {
                 "operationId": "amenity.publicIndex",
@@ -1845,6 +2393,687 @@
                                 }
                             }
                         }
+                    }
+                }
+            }
+        },
+        "/v1/public/leads": {
+            "post": {
+                "operationId": "lead.publicStore",
+                "description": "Needs a captcha from `public/captcha`. The `website` field is a honeypot and must be left out or empty.\nThrottled per IP. The lead goes to the property's agent when it has one, and that agent (or the site owner)\nis notified by queued email.",
+                "summary": "Send an enquiry (public)",
+                "tags": [
+                    "Lead"
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/StorePublicLeadRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "object",
+                                            "properties": {
+                                                "received": {
+                                                    "type": "boolean"
+                                                }
+                                            },
+                                            "required": [
+                                                "received"
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    }
+                }
+            }
+        },
+        "/v1/leads": {
+            "get": {
+                "operationId": "leads.index",
+                "description": "Newest first, 20 per page. Filters: `status`, `agent_id`, `source`, `property_id`, `project_id`,\n`q` (name, email or phone). Without `leads.view_all` only the leads assigned to your own agent profile are listed.",
+                "summary": "List leads",
+                "tags": [
+                    "Lead"
+                ],
+                "parameters": [
+                    {
+                        "name": "status",
+                        "in": "query",
+                        "schema": {
+                            "$ref": "#/components/schemas/LeadStatus"
+                        }
+                    },
+                    {
+                        "name": "agent_id",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer",
+                            "minimum": 1
+                        }
+                    },
+                    {
+                        "name": "source",
+                        "in": "query",
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "web",
+                                "phone",
+                                "walk_in",
+                                "referral",
+                                "other"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "property_id",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer",
+                            "minimum": 1
+                        }
+                    },
+                    {
+                        "name": "project_id",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer",
+                            "minimum": 1
+                        }
+                    },
+                    {
+                        "name": "q",
+                        "in": "query",
+                        "schema": {
+                            "type": "string",
+                            "maxLength": 100
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Paginated set of `LeadResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/LeadResource"
+                                            }
+                                        },
+                                        "links": {
+                                            "type": "object",
+                                            "properties": {
+                                                "first": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "last": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "prev": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "next": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                }
+                                            },
+                                            "required": [
+                                                "first",
+                                                "last",
+                                                "prev",
+                                                "next"
+                                            ]
+                                        },
+                                        "meta": {
+                                            "type": "object",
+                                            "properties": {
+                                                "current_page": {
+                                                    "type": "integer",
+                                                    "minimum": 1
+                                                },
+                                                "from": {
+                                                    "type": [
+                                                        "integer",
+                                                        "null"
+                                                    ],
+                                                    "minimum": 1
+                                                },
+                                                "last_page": {
+                                                    "type": "integer",
+                                                    "minimum": 1
+                                                },
+                                                "links": {
+                                                    "type": "array",
+                                                    "description": "Generated paginator links.",
+                                                    "items": {
+                                                        "type": "object",
+                                                        "properties": {
+                                                            "url": {
+                                                                "type": [
+                                                                    "string",
+                                                                    "null"
+                                                                ]
+                                                            },
+                                                            "label": {
+                                                                "type": "string"
+                                                            },
+                                                            "active": {
+                                                                "type": "boolean"
+                                                            }
+                                                        },
+                                                        "required": [
+                                                            "url",
+                                                            "label",
+                                                            "active"
+                                                        ]
+                                                    }
+                                                },
+                                                "path": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ],
+                                                    "description": "Base path for paginator generated URLs."
+                                                },
+                                                "per_page": {
+                                                    "type": "integer",
+                                                    "description": "Number of items shown per page.",
+                                                    "minimum": 0
+                                                },
+                                                "to": {
+                                                    "type": [
+                                                        "integer",
+                                                        "null"
+                                                    ],
+                                                    "description": "Number of the last item in the slice.",
+                                                    "minimum": 1
+                                                },
+                                                "total": {
+                                                    "type": "integer",
+                                                    "description": "Total number of items being paginated.",
+                                                    "minimum": 0
+                                                }
+                                            },
+                                            "required": [
+                                                "current_page",
+                                                "from",
+                                                "last_page",
+                                                "links",
+                                                "path",
+                                                "per_page",
+                                                "to",
+                                                "total"
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "data",
+                                        "links",
+                                        "meta"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            },
+            "post": {
+                "operationId": "leads.store",
+                "description": "For enquiries that came in by phone, walk-in or referral. The status starts at `new`. Only users who can assign\nleads may set `agent_id`; for everyone else the lead goes to their own agent profile.",
+                "summary": "Create a lead",
+                "tags": [
+                    "Lead"
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/StoreLeadRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "`LeadResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/LeadResource"
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    }
+                }
+            }
+        },
+        "/v1/leads/{lead}": {
+            "get": {
+                "operationId": "leads.show",
+                "summary": "Show a lead with its timeline",
+                "tags": [
+                    "Lead"
+                ],
+                "parameters": [
+                    {
+                        "name": "lead",
+                        "in": "path",
+                        "required": true,
+                        "description": "The lead ID",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "`LeadResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "allOf": [
+                                                {
+                                                    "$ref": "#/components/schemas/LeadResource"
+                                                },
+                                                {
+                                                    "type": "object",
+                                                    "required": [
+                                                        "notes"
+                                                    ]
+                                                }
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            },
+            "put": {
+                "operationId": "leads.update",
+                "summary": "Update a lead (contact details and links; status and agent have their own endpoints)",
+                "tags": [
+                    "Lead"
+                ],
+                "parameters": [
+                    {
+                        "name": "lead",
+                        "in": "path",
+                        "required": true,
+                        "description": "The lead ID",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/UpdateLeadRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "`LeadResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/LeadResource"
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    }
+                }
+            },
+            "delete": {
+                "operationId": "leads.destroy",
+                "summary": "Delete a lead and its timeline",
+                "tags": [
+                    "Lead"
+                ],
+                "parameters": [
+                    {
+                        "name": "lead",
+                        "in": "path",
+                        "required": true,
+                        "description": "The lead ID",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No content"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            }
+        },
+        "/v1/leads/{lead}/status": {
+            "post": {
+                "operationId": "lead.status",
+                "description": "Allowed moves: new to contacted or lost; contacted to qualified or lost; qualified to viewing, negotiation or lost;\nviewing to qualified, negotiation or lost; negotiation to viewing, won or lost; lost to new (reopen); won is final.\n`lost_reason` is required when moving to lost. Each change is written to the timeline.",
+                "summary": "Move a lead through the pipeline",
+                "tags": [
+                    "Lead"
+                ],
+                "parameters": [
+                    {
+                        "name": "lead",
+                        "in": "path",
+                        "required": true,
+                        "description": "The lead ID",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ChangeLeadStatusRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "`LeadResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "allOf": [
+                                                {
+                                                    "$ref": "#/components/schemas/LeadResource"
+                                                },
+                                                {
+                                                    "type": "object",
+                                                    "required": [
+                                                        "notes"
+                                                    ]
+                                                }
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    }
+                }
+            }
+        },
+        "/v1/leads/{lead}/assign": {
+            "post": {
+                "operationId": "lead.assign",
+                "description": "Send `agent_id` (an active agent) or null to unassign. The new agent is notified by queued email.",
+                "summary": "Assign a lead to an agent",
+                "tags": [
+                    "Lead"
+                ],
+                "parameters": [
+                    {
+                        "name": "lead",
+                        "in": "path",
+                        "required": true,
+                        "description": "The lead ID",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/AssignLeadRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "`LeadResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "allOf": [
+                                                {
+                                                    "$ref": "#/components/schemas/LeadResource"
+                                                },
+                                                {
+                                                    "type": "object",
+                                                    "required": [
+                                                        "notes"
+                                                    ]
+                                                }
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    }
+                }
+            }
+        },
+        "/v1/leads/{lead}/notes": {
+            "post": {
+                "operationId": "lead.note",
+                "summary": "Add a note to a lead's timeline",
+                "tags": [
+                    "Lead"
+                ],
+                "parameters": [
+                    {
+                        "name": "lead",
+                        "in": "path",
+                        "required": true,
+                        "description": "The lead ID",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/StoreLeadNoteRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "`LeadResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "allOf": [
+                                                {
+                                                    "$ref": "#/components/schemas/LeadResource"
+                                                },
+                                                {
+                                                    "type": "object",
+                                                    "required": [
+                                                        "notes"
+                                                    ]
+                                                }
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
                     }
                 }
             }
@@ -4396,11 +5625,7 @@
                                                     {
                                                         "type": "object",
                                                         "required": [
-                                                            "property_type",
-                                                            "property_id",
-                                                            "property_slug",
-                                                            "created_at",
-                                                            "updated_at"
+                                                            "property_type"
                                                         ]
                                                     }
                                                 ]
@@ -4468,11 +5693,7 @@
                                                 {
                                                     "type": "object",
                                                     "required": [
-                                                        "property_type",
-                                                        "property_id",
-                                                        "property_slug",
-                                                        "created_at",
-                                                        "updated_at"
+                                                        "property_type"
                                                     ]
                                                 }
                                             ]
@@ -4534,11 +5755,7 @@
                                                 {
                                                     "type": "object",
                                                     "required": [
-                                                        "property_type",
-                                                        "property_id",
-                                                        "property_slug",
-                                                        "created_at",
-                                                        "updated_at"
+                                                        "property_type"
                                                     ]
                                                 }
                                             ]
@@ -4604,11 +5821,7 @@
                                                 {
                                                     "type": "object",
                                                     "required": [
-                                                        "property_type",
-                                                        "property_id",
-                                                        "property_slug",
-                                                        "created_at",
-                                                        "updated_at"
+                                                        "property_type"
                                                     ]
                                                 }
                                             ]
@@ -6697,7 +7910,7 @@
         },
         "/v1/hero": {
             "get": {
-                "operationId": "v1.sectionPanel.show_29",
+                "operationId": "v1.sectionPanel.show_32",
                 "description": "Title and text (both languages) and image of the hero or about section.",
                 "summary": "Show a section panel",
                 "tags": [
@@ -6731,7 +7944,7 @@
                 }
             },
             "patch": {
-                "operationId": "v1.sectionPanel.update_30",
+                "operationId": "v1.sectionPanel.update_33",
                 "description": "Partial update of the title and text (both languages).",
                 "summary": "Update a section panel",
                 "tags": [
@@ -6779,7 +7992,7 @@
         },
         "/v1/hero/image": {
             "post": {
-                "operationId": "v1.sectionPanel.storeImage_31",
+                "operationId": "v1.sectionPanel.storeImage_34",
                 "description": "Multipart field `image` (jpeg, png or webp). Replaces the current image.",
                 "summary": "Upload the section image",
                 "tags": [
@@ -6826,7 +8039,7 @@
                 }
             },
             "delete": {
-                "operationId": "v1.sectionPanel.destroyImage_32",
+                "operationId": "v1.sectionPanel.destroyImage_35",
                 "summary": "Remove the section image",
                 "tags": [
                     "SectionPanel"
@@ -6861,7 +8074,7 @@
         },
         "/v1/about": {
             "get": {
-                "operationId": "v1.sectionPanel.show_33",
+                "operationId": "v1.sectionPanel.show_36",
                 "description": "Title and text (both languages) and image of the hero or about section.",
                 "summary": "Show a section panel",
                 "tags": [
@@ -6895,7 +8108,7 @@
                 }
             },
             "patch": {
-                "operationId": "v1.sectionPanel.update_34",
+                "operationId": "v1.sectionPanel.update_37",
                 "description": "Partial update of the title and text (both languages).",
                 "summary": "Update a section panel",
                 "tags": [
@@ -6943,7 +8156,7 @@
         },
         "/v1/about/image": {
             "post": {
-                "operationId": "v1.sectionPanel.storeImage_35",
+                "operationId": "v1.sectionPanel.storeImage_38",
                 "description": "Multipart field `image` (jpeg, png or webp). Replaces the current image.",
                 "summary": "Upload the section image",
                 "tags": [
@@ -6990,7 +8203,7 @@
                 }
             },
             "delete": {
-                "operationId": "v1.sectionPanel.destroyImage_36",
+                "operationId": "v1.sectionPanel.destroyImage_39",
                 "summary": "Remove the section image",
                 "tags": [
                     "SectionPanel"
@@ -8793,10 +10006,621 @@
                     }
                 }
             }
+        },
+        "/v1/viewings": {
+            "get": {
+                "operationId": "viewings.index",
+                "description": "Agenda order (earliest first), 50 per page. Filters: `from` and `to` (dates, on the start time), `agent_id`,\n`status`, `property_id`, `lead_id`. Without `viewings.view_all` only your own agent profile's viewings are listed.",
+                "summary": "List viewings",
+                "tags": [
+                    "Viewing"
+                ],
+                "parameters": [
+                    {
+                        "name": "from",
+                        "in": "query",
+                        "schema": {
+                            "type": "string",
+                            "format": "date-time"
+                        }
+                    },
+                    {
+                        "name": "to",
+                        "in": "query",
+                        "schema": {
+                            "type": "string",
+                            "format": "date-time"
+                        }
+                    },
+                    {
+                        "name": "agent_id",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer",
+                            "minimum": 1
+                        }
+                    },
+                    {
+                        "name": "status",
+                        "in": "query",
+                        "schema": {
+                            "$ref": "#/components/schemas/ViewingStatus"
+                        }
+                    },
+                    {
+                        "name": "property_id",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer",
+                            "minimum": 1
+                        }
+                    },
+                    {
+                        "name": "lead_id",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer",
+                            "minimum": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Paginated set of `ViewingResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/ViewingResource"
+                                            }
+                                        },
+                                        "links": {
+                                            "type": "object",
+                                            "properties": {
+                                                "first": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "last": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "prev": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "next": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                }
+                                            },
+                                            "required": [
+                                                "first",
+                                                "last",
+                                                "prev",
+                                                "next"
+                                            ]
+                                        },
+                                        "meta": {
+                                            "type": "object",
+                                            "properties": {
+                                                "current_page": {
+                                                    "type": "integer",
+                                                    "minimum": 1
+                                                },
+                                                "from": {
+                                                    "type": [
+                                                        "integer",
+                                                        "null"
+                                                    ],
+                                                    "minimum": 1
+                                                },
+                                                "last_page": {
+                                                    "type": "integer",
+                                                    "minimum": 1
+                                                },
+                                                "links": {
+                                                    "type": "array",
+                                                    "description": "Generated paginator links.",
+                                                    "items": {
+                                                        "type": "object",
+                                                        "properties": {
+                                                            "url": {
+                                                                "type": [
+                                                                    "string",
+                                                                    "null"
+                                                                ]
+                                                            },
+                                                            "label": {
+                                                                "type": "string"
+                                                            },
+                                                            "active": {
+                                                                "type": "boolean"
+                                                            }
+                                                        },
+                                                        "required": [
+                                                            "url",
+                                                            "label",
+                                                            "active"
+                                                        ]
+                                                    }
+                                                },
+                                                "path": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ],
+                                                    "description": "Base path for paginator generated URLs."
+                                                },
+                                                "per_page": {
+                                                    "type": "integer",
+                                                    "description": "Number of items shown per page.",
+                                                    "minimum": 0
+                                                },
+                                                "to": {
+                                                    "type": [
+                                                        "integer",
+                                                        "null"
+                                                    ],
+                                                    "description": "Number of the last item in the slice.",
+                                                    "minimum": 1
+                                                },
+                                                "total": {
+                                                    "type": "integer",
+                                                    "description": "Total number of items being paginated.",
+                                                    "minimum": 0
+                                                }
+                                            },
+                                            "required": [
+                                                "current_page",
+                                                "from",
+                                                "last_page",
+                                                "links",
+                                                "path",
+                                                "per_page",
+                                                "to",
+                                                "total"
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "data",
+                                        "links",
+                                        "meta"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            },
+            "post": {
+                "operationId": "viewings.store",
+                "description": "The agent is `agent_id` (needs `viewings.view_all`), otherwise the property's agent; without `viewings.view_all`\nit is always your own agent profile. Answers 422 on `starts_at` when the agent already has a scheduled or\nconfirmed viewing that overlaps. The agent and the lead (when it has an email) are notified by queued email.",
+                "summary": "Book a viewing",
+                "tags": [
+                    "Viewing"
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/StoreViewingRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "`ViewingResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/ViewingResource"
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    }
+                }
+            }
+        },
+        "/v1/viewings/{viewing}": {
+            "get": {
+                "operationId": "viewings.show",
+                "summary": "Show a viewing",
+                "tags": [
+                    "Viewing"
+                ],
+                "parameters": [
+                    {
+                        "name": "viewing",
+                        "in": "path",
+                        "required": true,
+                        "description": "The viewing ID",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "`ViewingResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/ViewingResource"
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            },
+            "put": {
+                "operationId": "viewings.update",
+                "summary": "Reschedule or edit a viewing (times are re-checked for conflicts; status has its own endpoint)",
+                "tags": [
+                    "Viewing"
+                ],
+                "parameters": [
+                    {
+                        "name": "viewing",
+                        "in": "path",
+                        "required": true,
+                        "description": "The viewing ID",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/UpdateViewingRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "`ViewingResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/ViewingResource"
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    }
+                }
+            },
+            "delete": {
+                "operationId": "viewings.destroy",
+                "summary": "Delete a viewing",
+                "tags": [
+                    "Viewing"
+                ],
+                "parameters": [
+                    {
+                        "name": "viewing",
+                        "in": "path",
+                        "required": true,
+                        "description": "The viewing ID",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No content"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            }
+        },
+        "/v1/viewings/{viewing}/status": {
+            "post": {
+                "operationId": "viewing.status",
+                "description": "Allowed moves: scheduled to confirmed, cancelled or no_show; confirmed to completed, cancelled or no_show.\nCompleted, cancelled and no_show are final and free the agent's calendar.",
+                "summary": "Change a viewing's status",
+                "tags": [
+                    "Viewing"
+                ],
+                "parameters": [
+                    {
+                        "name": "viewing",
+                        "in": "path",
+                        "required": true,
+                        "description": "The viewing ID",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ChangeViewingStatusRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "`ViewingResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/ViewingResource"
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    }
+                }
+            }
         }
     },
     "components": {
         "schemas": {
+            "AgentResource": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "anyOf": [
+                            {
+                                "type": "integer"
+                            },
+                            {}
+                        ]
+                    },
+                    "name": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {}
+                        ]
+                    },
+                    "slug": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {}
+                        ]
+                    },
+                    "title": {
+                        "anyOf": [
+                            {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ]
+                            },
+                            {}
+                        ]
+                    },
+                    "title_2nd": {
+                        "anyOf": [
+                            {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ]
+                            },
+                            {}
+                        ]
+                    },
+                    "bio": {
+                        "anyOf": [
+                            {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ]
+                            },
+                            {}
+                        ]
+                    },
+                    "bio_2nd": {
+                        "anyOf": [
+                            {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ]
+                            },
+                            {}
+                        ]
+                    },
+                    "email": {
+                        "anyOf": [
+                            {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ]
+                            },
+                            {}
+                        ]
+                    },
+                    "phone": {
+                        "anyOf": [
+                            {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ]
+                            },
+                            {}
+                        ]
+                    },
+                    "whatsapp": {
+                        "anyOf": [
+                            {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ]
+                            },
+                            {}
+                        ]
+                    },
+                    "license_no": {
+                        "anyOf": [
+                            {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ]
+                            },
+                            {}
+                        ]
+                    },
+                    "image": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {}
+                        ]
+                    },
+                    "listings_count": {
+                        "anyOf": [
+                            {
+                                "type": "integer"
+                            },
+                            {}
+                        ]
+                    }
+                },
+                "required": [
+                    "id",
+                    "name",
+                    "slug",
+                    "title",
+                    "title_2nd",
+                    "bio",
+                    "bio_2nd",
+                    "email",
+                    "phone",
+                    "whatsapp",
+                    "license_no",
+                    "image"
+                ],
+                "additionalProperties": {},
+                "title": "AgentResource"
+            },
             "AmenityResource": {
                 "type": "object",
                 "properties": {
@@ -8850,6 +10674,21 @@
                 ],
                 "title": "AmenityResource"
             },
+            "AssignLeadRequest": {
+                "type": "object",
+                "properties": {
+                    "agent_id": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ]
+                    }
+                },
+                "required": [
+                    "agent_id"
+                ],
+                "title": "AssignLeadRequest"
+            },
             "CategoryResource": {
                 "type": "object",
                 "properties": {
@@ -8889,6 +10728,25 @@
                 ],
                 "title": "CategoryResource"
             },
+            "ChangeLeadStatusRequest": {
+                "type": "object",
+                "properties": {
+                    "status": {
+                        "$ref": "#/components/schemas/LeadStatus"
+                    },
+                    "lost_reason": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "maxLength": 255
+                    }
+                },
+                "required": [
+                    "status"
+                ],
+                "title": "ChangeLeadStatusRequest"
+            },
             "ChangePropertyStatusRequest": {
                 "type": "object",
                 "properties": {
@@ -8907,6 +10765,18 @@
                     "status"
                 ],
                 "title": "ChangePropertyStatusRequest"
+            },
+            "ChangeViewingStatusRequest": {
+                "type": "object",
+                "properties": {
+                    "status": {
+                        "$ref": "#/components/schemas/ViewingStatus"
+                    }
+                },
+                "required": [
+                    "status"
+                ],
+                "title": "ChangeViewingStatusRequest"
             },
             "ContactMessageResource": {
                 "type": "object",
@@ -9157,6 +11027,232 @@
                     "updated_at"
                 ],
                 "title": "GalleryItemResource"
+            },
+            "LeadResource": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "integer"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "email": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "phone": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "message": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "source": {
+                        "type": "string"
+                    },
+                    "status": {
+                        "$ref": "#/components/schemas/LeadStatus"
+                    },
+                    "lost_reason": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "property_id": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ]
+                    },
+                    "property": {
+                        "type": [
+                            "object",
+                            "null"
+                        ],
+                        "properties": {
+                            "id": {
+                                "type": "integer"
+                            },
+                            "ref_code": {
+                                "type": "string"
+                            },
+                            "title": {
+                                "type": "string"
+                            },
+                            "slug": {
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "id",
+                            "ref_code",
+                            "title",
+                            "slug"
+                        ]
+                    },
+                    "project_id": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ]
+                    },
+                    "project": {
+                        "type": [
+                            "object",
+                            "null"
+                        ],
+                        "properties": {
+                            "id": {
+                                "type": "integer"
+                            },
+                            "name": {
+                                "type": "string"
+                            },
+                            "slug": {
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "id",
+                            "name",
+                            "slug"
+                        ]
+                    },
+                    "agent_id": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ]
+                    },
+                    "agent": {
+                        "type": [
+                            "object",
+                            "null"
+                        ],
+                        "properties": {
+                            "id": {
+                                "type": "integer"
+                            },
+                            "name": {
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "id",
+                            "name"
+                        ]
+                    },
+                    "last_contacted_at": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "format": "date-time"
+                    },
+                    "notes": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "id": {
+                                    "type": "integer"
+                                },
+                                "kind": {
+                                    "type": "string"
+                                },
+                                "body": {
+                                    "type": "string"
+                                },
+                                "user": {
+                                    "type": [
+                                        "object",
+                                        "null"
+                                    ],
+                                    "properties": {
+                                        "id": {
+                                            "type": "integer"
+                                        },
+                                        "name": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "required": [
+                                        "id",
+                                        "name"
+                                    ]
+                                },
+                                "created_at": {
+                                    "type": [
+                                        "string",
+                                        "null"
+                                    ],
+                                    "format": "date-time"
+                                }
+                            },
+                            "required": [
+                                "id",
+                                "kind",
+                                "body",
+                                "user",
+                                "created_at"
+                            ]
+                        }
+                    },
+                    "created_at": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "format": "date-time"
+                    },
+                    "updated_at": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "format": "date-time"
+                    }
+                },
+                "required": [
+                    "id",
+                    "name",
+                    "email",
+                    "phone",
+                    "message",
+                    "source",
+                    "status",
+                    "lost_reason",
+                    "property_id",
+                    "project_id",
+                    "agent_id",
+                    "last_contacted_at",
+                    "created_at",
+                    "updated_at"
+                ],
+                "title": "LeadResource"
+            },
+            "LeadStatus": {
+                "type": "string",
+                "description": "Lead pipeline. Status changes only through LeadStatusService, which enforces this table.\n",
+                "enum": [
+                    "new",
+                    "contacted",
+                    "qualified",
+                    "viewing",
+                    "negotiation",
+                    "won",
+                    "lost"
+                ],
+                "title": "LeadStatus"
             },
             "LocationResource": {
                 "type": "object",
@@ -9536,131 +11632,219 @@
                 "type": "object",
                 "properties": {
                     "id": {
-                        "type": "integer"
+                        "anyOf": [
+                            {
+                                "type": "integer"
+                            },
+                            {}
+                        ]
                     },
                     "name": {
-                        "type": "string"
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {}
+                        ]
                     },
                     "name_2nd": {
-                        "type": [
-                            "string",
-                            "null"
+                        "anyOf": [
+                            {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ]
+                            },
+                            {}
                         ]
                     },
                     "slug": {
-                        "type": "string"
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {}
+                        ]
                     },
                     "description": {
-                        "type": [
-                            "string",
-                            "null"
+                        "anyOf": [
+                            {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ]
+                            },
+                            {}
                         ]
                     },
                     "description_2nd": {
-                        "type": [
-                            "string",
-                            "null"
+                        "anyOf": [
+                            {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ]
+                            },
+                            {}
                         ]
                     },
                     "developer_id": {
-                        "type": [
-                            "integer",
-                            "null"
+                        "anyOf": [
+                            {
+                                "type": [
+                                    "integer",
+                                    "null"
+                                ]
+                            },
+                            {}
                         ]
                     },
                     "developer": {
                         "anyOf": [
                             {
-                                "$ref": "#/components/schemas/PublicDeveloperResource"
+                                "anyOf": [
+                                    {
+                                        "$ref": "#/components/schemas/PublicDeveloperResource"
+                                    },
+                                    {
+                                        "$ref": "#/components/schemas/DeveloperResource"
+                                    }
+                                ]
                             },
-                            {
-                                "$ref": "#/components/schemas/DeveloperResource"
-                            }
+                            {}
                         ]
                     },
                     "location_id": {
-                        "type": "integer"
+                        "anyOf": [
+                            {
+                                "type": "integer"
+                            },
+                            {}
+                        ]
                     },
                     "location": {
-                        "$ref": "#/components/schemas/LocationResource"
+                        "anyOf": [
+                            {
+                                "$ref": "#/components/schemas/LocationResource"
+                            },
+                            {}
+                        ]
                     },
                     "address_line": {
-                        "type": [
-                            "string",
-                            "null"
+                        "anyOf": [
+                            {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ]
+                            },
+                            {}
                         ]
                     },
                     "lat": {
-                        "type": [
-                            "number",
-                            "null"
+                        "anyOf": [
+                            {
+                                "type": [
+                                    "number",
+                                    "null"
+                                ]
+                            },
+                            {}
                         ]
                     },
                     "lng": {
-                        "type": [
-                            "number",
-                            "null"
+                        "anyOf": [
+                            {
+                                "type": [
+                                    "number",
+                                    "null"
+                                ]
+                            },
+                            {}
                         ]
                     },
                     "status": {
-                        "type": "string"
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {}
+                        ]
                     },
                     "handover_date": {
-                        "type": [
-                            "string",
-                            "null"
+                        "anyOf": [
+                            {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ]
+                            },
+                            {}
                         ]
                     },
                     "featured": {
-                        "type": "boolean"
+                        "anyOf": [
+                            {
+                                "type": "boolean"
+                            },
+                            {}
+                        ]
                     },
                     "seo_title": {
-                        "type": [
-                            "string",
-                            "null"
+                        "anyOf": [
+                            {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ]
+                            },
+                            {}
                         ]
                     },
                     "seo_description": {
-                        "type": [
-                            "string",
-                            "null"
+                        "anyOf": [
+                            {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ]
+                            },
+                            {}
                         ]
                     },
                     "units_count": {
-                        "type": "integer"
+                        "anyOf": [
+                            {
+                                "type": "integer"
+                            },
+                            {}
+                        ]
                     },
                     "from_price": {
-                        "type": "integer"
+                        "anyOf": [
+                            {
+                                "type": "integer"
+                            },
+                            {}
+                        ]
                     },
                     "units": {
-                        "type": "array",
-                        "items": {
-                            "anyOf": [
-                                {
-                                    "$ref": "#/components/schemas/PublicProjectUnitResource"
-                                },
-                                {
-                                    "$ref": "#/components/schemas/ProjectUnitResource"
+                        "anyOf": [
+                            {
+                                "type": "array",
+                                "items": {
+                                    "anyOf": [
+                                        {
+                                            "$ref": "#/components/schemas/PublicProjectUnitResource"
+                                        },
+                                        {
+                                            "$ref": "#/components/schemas/ProjectUnitResource"
+                                        }
+                                    ]
                                 }
-                            ]
-                        }
-                    },
-                    "is_active": {
-                        "type": "boolean"
-                    },
-                    "created_at": {
-                        "type": [
-                            "string",
-                            "null"
-                        ],
-                        "format": "date-time"
-                    },
-                    "updated_at": {
-                        "type": [
-                            "string",
-                            "null"
-                        ],
-                        "format": "date-time"
+                            },
+                            {}
+                        ]
                     }
                 },
                 "required": [
@@ -9682,96 +11866,141 @@
                     "seo_title",
                     "seo_description"
                 ],
+                "additionalProperties": {},
                 "title": "ProjectResource"
             },
             "ProjectUnitResource": {
                 "type": "object",
                 "properties": {
                     "id": {
-                        "type": "integer"
+                        "anyOf": [
+                            {
+                                "type": "integer"
+                            },
+                            {}
+                        ]
                     },
                     "project_id": {
-                        "type": "integer"
+                        "anyOf": [
+                            {
+                                "type": "integer"
+                            },
+                            {}
+                        ]
                     },
                     "code": {
-                        "type": "string"
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {}
+                        ]
                     },
                     "name": {
-                        "type": [
-                            "string",
-                            "null"
+                        "anyOf": [
+                            {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ]
+                            },
+                            {}
                         ]
                     },
                     "name_2nd": {
-                        "type": [
-                            "string",
-                            "null"
+                        "anyOf": [
+                            {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ]
+                            },
+                            {}
                         ]
                     },
                     "property_type": {
-                        "$ref": "#/components/schemas/PropertyTypeResource"
+                        "anyOf": [
+                            {
+                                "$ref": "#/components/schemas/PropertyTypeResource"
+                            },
+                            {}
+                        ]
                     },
                     "property_type_id": {
-                        "type": "integer"
+                        "anyOf": [
+                            {
+                                "type": "integer"
+                            },
+                            {}
+                        ]
                     },
                     "beds": {
-                        "type": [
-                            "integer",
-                            "null"
+                        "anyOf": [
+                            {
+                                "type": [
+                                    "integer",
+                                    "null"
+                                ]
+                            },
+                            {}
                         ]
                     },
                     "baths": {
-                        "type": [
-                            "integer",
-                            "null"
+                        "anyOf": [
+                            {
+                                "type": [
+                                    "integer",
+                                    "null"
+                                ]
+                            },
+                            {}
                         ]
                     },
                     "area": {
-                        "type": [
-                            "number",
-                            "null"
+                        "anyOf": [
+                            {
+                                "type": [
+                                    "number",
+                                    "null"
+                                ]
+                            },
+                            {}
                         ]
                     },
                     "area_unit": {
-                        "type": "string"
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {}
+                        ]
                     },
                     "floor": {
-                        "type": [
-                            "integer",
-                            "null"
+                        "anyOf": [
+                            {
+                                "type": [
+                                    "integer",
+                                    "null"
+                                ]
+                            },
+                            {}
                         ]
                     },
                     "price": {
-                        "type": "integer"
+                        "anyOf": [
+                            {
+                                "type": "integer"
+                            },
+                            {}
+                        ]
                     },
                     "status": {
-                        "type": "string"
-                    },
-                    "property_id": {
-                        "type": [
-                            "integer",
-                            "null"
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {}
                         ]
-                    },
-                    "property_slug": {
-                        "type": [
-                            "string",
-                            "null"
-                        ]
-                    },
-                    "created_at": {
-                        "type": [
-                            "string",
-                            "null"
-                        ],
-                        "format": "date-time"
-                    },
-                    "updated_at": {
-                        "type": [
-                            "string",
-                            "null"
-                        ],
-                        "format": "date-time"
                     }
                 },
                 "required": [
@@ -9789,6 +12018,7 @@
                     "price",
                     "status"
                 ],
+                "additionalProperties": {},
                 "title": "ProjectUnitResource"
             },
             "PropertyMediaResource": {
@@ -10178,6 +12408,131 @@
                 ],
                 "title": "PropertyTypeResource"
             },
+            "PublicAgentResource": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {}
+                        ]
+                    },
+                    "name": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {}
+                        ]
+                    },
+                    "slug": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {}
+                        ]
+                    },
+                    "title": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {}
+                        ]
+                    },
+                    "title_2nd": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {}
+                        ]
+                    },
+                    "bio": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {}
+                        ]
+                    },
+                    "bio_2nd": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {}
+                        ]
+                    },
+                    "email": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {}
+                        ]
+                    },
+                    "phone": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {}
+                        ]
+                    },
+                    "whatsapp": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {}
+                        ]
+                    },
+                    "license_no": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {}
+                        ]
+                    },
+                    "image": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {}
+                        ]
+                    },
+                    "listings_count": {
+                        "anyOf": [
+                            {
+                                "type": "integer"
+                            },
+                            {}
+                        ]
+                    }
+                },
+                "required": [
+                    "id",
+                    "name",
+                    "slug",
+                    "title",
+                    "title_2nd",
+                    "bio",
+                    "bio_2nd",
+                    "email",
+                    "phone",
+                    "whatsapp",
+                    "license_no",
+                    "image"
+                ],
+                "additionalProperties": {},
+                "title": "PublicAgentResource"
+            },
             "PublicDeveloperResource": {
                 "type": "object",
                 "properties": {
@@ -10230,86 +12585,182 @@
                 "type": "object",
                 "properties": {
                     "id": {
-                        "type": "string"
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {}
+                        ]
                     },
                     "name": {
-                        "type": "string"
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {}
+                        ]
                     },
                     "name_2nd": {
-                        "type": "string"
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {}
+                        ]
                     },
                     "slug": {
-                        "type": "string"
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {}
+                        ]
                     },
                     "description": {
-                        "type": "string"
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {}
+                        ]
                     },
                     "description_2nd": {
-                        "type": "string"
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {}
+                        ]
                     },
                     "developer_id": {
-                        "type": "string"
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {}
+                        ]
                     },
                     "developer": {
                         "anyOf": [
                             {
-                                "$ref": "#/components/schemas/PublicDeveloperResource"
+                                "anyOf": [
+                                    {
+                                        "$ref": "#/components/schemas/PublicDeveloperResource"
+                                    },
+                                    {
+                                        "$ref": "#/components/schemas/DeveloperResource"
+                                    }
+                                ]
                             },
-                            {
-                                "$ref": "#/components/schemas/DeveloperResource"
-                            }
+                            {}
                         ]
                     },
                     "location_id": {
-                        "type": "string"
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {}
+                        ]
                     },
                     "location": {
-                        "$ref": "#/components/schemas/LocationResource"
+                        "anyOf": [
+                            {
+                                "$ref": "#/components/schemas/LocationResource"
+                            },
+                            {}
+                        ]
                     },
                     "address_line": {
-                        "type": "string"
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {}
+                        ]
                     },
                     "lat": {
-                        "type": "string"
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {}
+                        ]
                     },
                     "lng": {
-                        "type": "string"
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {}
+                        ]
                     },
                     "status": {
-                        "type": "string"
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {}
+                        ]
                     },
                     "handover_date": {
-                        "type": [
-                            "string",
-                            "null"
+                        "anyOf": [
+                            {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ]
+                            },
+                            {}
                         ]
                     },
                     "featured": {
-                        "type": "string"
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {}
+                        ]
                     },
                     "seo_title": {
-                        "type": "string"
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {}
+                        ]
                     },
                     "seo_description": {
-                        "type": "string"
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {}
+                        ]
                     },
                     "units_count": {
-                        "type": "integer"
+                        "anyOf": [
+                            {
+                                "type": "integer"
+                            },
+                            {}
+                        ]
                     },
                     "from_price": {
-                        "type": "integer"
+                        "anyOf": [
+                            {
+                                "type": "integer"
+                            },
+                            {}
+                        ]
                     },
                     "units": {
-                        "type": "string"
-                    },
-                    "is_active": {
-                        "type": "string"
-                    },
-                    "created_at": {
-                        "type": "string"
-                    },
-                    "updated_at": {
-                        "type": "string"
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {}
+                        ]
                     }
                 },
                 "required": [
@@ -10331,70 +12782,123 @@
                     "seo_title",
                     "seo_description"
                 ],
+                "additionalProperties": {},
                 "title": "PublicProjectResource"
             },
             "PublicProjectUnitResource": {
                 "type": "object",
                 "properties": {
                     "id": {
-                        "type": "string"
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {}
+                        ]
                     },
                     "project_id": {
-                        "type": "string"
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {}
+                        ]
                     },
                     "code": {
-                        "type": "string"
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {}
+                        ]
                     },
                     "name": {
-                        "type": "string"
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {}
+                        ]
                     },
                     "name_2nd": {
-                        "type": "string"
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {}
+                        ]
                     },
                     "property_type": {
-                        "$ref": "#/components/schemas/PropertyTypeResource"
+                        "anyOf": [
+                            {
+                                "$ref": "#/components/schemas/PropertyTypeResource"
+                            },
+                            {}
+                        ]
                     },
                     "property_type_id": {
-                        "type": "string"
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {}
+                        ]
                     },
                     "beds": {
-                        "type": "string"
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {}
+                        ]
                     },
                     "baths": {
-                        "type": "string"
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {}
+                        ]
                     },
                     "area": {
-                        "type": "string"
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {}
+                        ]
                     },
                     "area_unit": {
-                        "type": "string"
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {}
+                        ]
                     },
                     "floor": {
-                        "type": "string"
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {}
+                        ]
                     },
                     "price": {
-                        "type": "string"
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {}
+                        ]
                     },
                     "status": {
-                        "type": "string"
-                    },
-                    "property_id": {
-                        "type": [
-                            "string",
-                            "null"
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {}
                         ]
-                    },
-                    "property_slug": {
-                        "type": [
-                            "string",
-                            "null"
-                        ]
-                    },
-                    "created_at": {
-                        "type": "string"
-                    },
-                    "updated_at": {
-                        "type": "string"
                     }
                 },
                 "required": [
@@ -10412,6 +12916,7 @@
                     "price",
                     "status"
                 ],
+                "additionalProperties": {},
                 "title": "PublicProjectUnitResource"
             },
             "PublicPropertyDetailResource": {
@@ -11051,6 +13556,110 @@
                 ],
                 "title": "SettingResource"
             },
+            "StoreAgentImageRequest": {
+                "type": "object",
+                "properties": {
+                    "image": {
+                        "type": "string",
+                        "format": "binary",
+                        "contentMediaType": "application/octet-stream",
+                        "description": "Maximum file size: 5120 kilobytes."
+                    }
+                },
+                "required": [
+                    "image"
+                ],
+                "title": "StoreAgentImageRequest"
+            },
+            "StoreAgentRequest": {
+                "type": "object",
+                "properties": {
+                    "title": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "maxLength": 150
+                    },
+                    "bio": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "maxLength": 5000
+                    },
+                    "title_2nd": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "maxLength": 150
+                    },
+                    "bio_2nd": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "maxLength": 5000
+                    },
+                    "name": {
+                        "type": "string",
+                        "maxLength": 150
+                    },
+                    "slug": {
+                        "type": "string",
+                        "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$",
+                        "maxLength": 160
+                    },
+                    "user_id": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ]
+                    },
+                    "email": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "format": "email",
+                        "maxLength": 150
+                    },
+                    "phone": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "maxLength": 40
+                    },
+                    "whatsapp": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "maxLength": 40
+                    },
+                    "license_no": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "maxLength": 60
+                    },
+                    "sort_order": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 65535
+                    },
+                    "is_active": {
+                        "type": "boolean"
+                    }
+                },
+                "required": [
+                    "name"
+                ],
+                "title": "StoreAgentRequest"
+            },
             "StoreAmenityRequest": {
                 "type": "object",
                 "properties": {
@@ -11341,6 +13950,83 @@
                     }
                 },
                 "title": "StoreGalleryItemRequest"
+            },
+            "StoreLeadNoteRequest": {
+                "type": "object",
+                "properties": {
+                    "body": {
+                        "type": "string",
+                        "maxLength": 2000
+                    }
+                },
+                "required": [
+                    "body"
+                ],
+                "title": "StoreLeadNoteRequest"
+            },
+            "StoreLeadRequest": {
+                "type": "object",
+                "properties": {
+                    "name": {
+                        "type": "string",
+                        "maxLength": 100
+                    },
+                    "email": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "format": "email",
+                        "maxLength": 150
+                    },
+                    "phone": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "maxLength": 30
+                    },
+                    "message": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "maxLength": 5000
+                    },
+                    "source": {
+                        "type": "string",
+                        "enum": [
+                            "web",
+                            "phone",
+                            "walk_in",
+                            "referral",
+                            "other"
+                        ]
+                    },
+                    "property_id": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ]
+                    },
+                    "project_id": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ]
+                    },
+                    "status": {
+                        "type": "string"
+                    },
+                    "agent_id": {
+                        "type": "string",
+                        "description": "Only people who can assign leads choose the agent; everyone else's lead goes to their own profile."
+                    }
+                },
+                "required": [
+                    "name"
+                ],
+                "title": "StoreLeadRequest"
             },
             "StoreLocationRequest": {
                 "type": "object",
@@ -11998,8 +14684,7 @@
                         "type": [
                             "integer",
                             "null"
-                        ],
-                        "minimum": 1
+                        ]
                     },
                     "project_id": {
                         "type": [
@@ -12094,6 +14779,66 @@
                     "group"
                 ],
                 "title": "StorePropertyTypeRequest"
+            },
+            "StorePublicLeadRequest": {
+                "type": "object",
+                "description": "Public enquiry form. `website` is the honeypot: real visitors never see or fill it.",
+                "properties": {
+                    "name": {
+                        "type": "string",
+                        "maxLength": 100
+                    },
+                    "email": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "format": "email",
+                        "maxLength": 150
+                    },
+                    "phone": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "maxLength": 30
+                    },
+                    "message": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "maxLength": 5000
+                    },
+                    "property_id": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ]
+                    },
+                    "project_id": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ]
+                    },
+                    "captcha_id": {
+                        "type": "string",
+                        "maxLength": 64
+                    },
+                    "captcha_answer": {
+                        "type": "integer"
+                    },
+                    "website": {
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "name",
+                    "captcha_id",
+                    "captcha_answer"
+                ],
+                "title": "StorePublicLeadRequest"
             },
             "StoreRoleRequest": {
                 "type": "object",
@@ -12376,6 +15121,48 @@
                 ],
                 "title": "StoreUserRequest"
             },
+            "StoreViewingRequest": {
+                "type": "object",
+                "properties": {
+                    "property_id": {
+                        "type": "integer"
+                    },
+                    "lead_id": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ]
+                    },
+                    "starts_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "ends_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "notes": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "maxLength": 2000
+                    },
+                    "status": {
+                        "type": "string"
+                    },
+                    "agent_id": {
+                        "type": "string",
+                        "description": "Without `viewings.view_all` the viewing always belongs to the user's own agent profile."
+                    }
+                },
+                "required": [
+                    "property_id",
+                    "starts_at",
+                    "ends_at"
+                ],
+                "title": "StoreViewingRequest"
+            },
             "TeamMemberResource": {
                 "type": "object",
                 "properties": {
@@ -12497,6 +15284,92 @@
                     "updated_at"
                 ],
                 "title": "TestimonialResource"
+            },
+            "UpdateAgentRequest": {
+                "type": "object",
+                "properties": {
+                    "title": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "maxLength": 150
+                    },
+                    "bio": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "maxLength": 5000
+                    },
+                    "title_2nd": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "maxLength": 150
+                    },
+                    "bio_2nd": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "maxLength": 5000
+                    },
+                    "name": {
+                        "type": "string",
+                        "maxLength": 150
+                    },
+                    "slug": {
+                        "type": "string",
+                        "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$",
+                        "maxLength": 160
+                    },
+                    "user_id": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ]
+                    },
+                    "email": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "format": "email",
+                        "maxLength": 150
+                    },
+                    "phone": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "maxLength": 40
+                    },
+                    "whatsapp": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "maxLength": 40
+                    },
+                    "license_no": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "maxLength": 60
+                    },
+                    "sort_order": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 65535
+                    },
+                    "is_active": {
+                        "type": "boolean"
+                    }
+                },
+                "title": "UpdateAgentRequest"
             },
             "UpdateAmenityRequest": {
                 "type": "object",
@@ -12708,6 +15581,66 @@
                     }
                 },
                 "title": "UpdateGalleryItemRequest"
+            },
+            "UpdateLeadRequest": {
+                "type": "object",
+                "properties": {
+                    "name": {
+                        "type": "string",
+                        "maxLength": 100
+                    },
+                    "email": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "format": "email",
+                        "maxLength": 150
+                    },
+                    "phone": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "maxLength": 30
+                    },
+                    "message": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "maxLength": 5000
+                    },
+                    "source": {
+                        "type": "string",
+                        "enum": [
+                            "web",
+                            "phone",
+                            "walk_in",
+                            "referral",
+                            "other"
+                        ]
+                    },
+                    "property_id": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ]
+                    },
+                    "project_id": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ]
+                    },
+                    "status": {
+                        "type": "string"
+                    },
+                    "agent_id": {
+                        "type": "string"
+                    }
+                },
+                "title": "UpdateLeadRequest"
             },
             "UpdateLocationRequest": {
                 "type": "object",
@@ -13361,8 +16294,7 @@
                         "type": [
                             "integer",
                             "null"
-                        ],
-                        "minimum": 1
+                        ]
                     },
                     "project_id": {
                         "type": [
@@ -13861,6 +16793,39 @@
                 },
                 "title": "UpdateUserRequest"
             },
+            "UpdateViewingRequest": {
+                "type": "object",
+                "properties": {
+                    "property_id": {
+                        "type": "integer"
+                    },
+                    "lead_id": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ]
+                    },
+                    "starts_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "ends_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "notes": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "maxLength": 2000
+                    },
+                    "status": {
+                        "type": "string"
+                    }
+                },
+                "title": "UpdateViewingRequest"
+            },
             "UserResource": {
                 "type": "object",
                 "properties": {
@@ -13898,6 +16863,138 @@
                     "created_at"
                 ],
                 "title": "UserResource"
+            },
+            "ViewingResource": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "integer"
+                    },
+                    "property_id": {
+                        "type": "integer"
+                    },
+                    "property": {
+                        "type": "object",
+                        "properties": {
+                            "id": {
+                                "type": "integer"
+                            },
+                            "ref_code": {
+                                "type": "string"
+                            },
+                            "title": {
+                                "type": "string"
+                            },
+                            "slug": {
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "id",
+                            "ref_code",
+                            "title",
+                            "slug"
+                        ]
+                    },
+                    "lead_id": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ]
+                    },
+                    "lead": {
+                        "type": [
+                            "object",
+                            "null"
+                        ],
+                        "properties": {
+                            "id": {
+                                "type": "integer"
+                            },
+                            "name": {
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "id",
+                            "name"
+                        ]
+                    },
+                    "agent_id": {
+                        "type": "integer"
+                    },
+                    "agent": {
+                        "type": "object",
+                        "properties": {
+                            "id": {
+                                "type": "integer"
+                            },
+                            "name": {
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "id",
+                            "name"
+                        ]
+                    },
+                    "starts_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "ends_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "status": {
+                        "$ref": "#/components/schemas/ViewingStatus"
+                    },
+                    "notes": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "created_at": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "format": "date-time"
+                    },
+                    "updated_at": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "format": "date-time"
+                    }
+                },
+                "required": [
+                    "id",
+                    "property_id",
+                    "lead_id",
+                    "agent_id",
+                    "starts_at",
+                    "ends_at",
+                    "status",
+                    "notes",
+                    "created_at",
+                    "updated_at"
+                ],
+                "title": "ViewingResource"
+            },
+            "ViewingStatus": {
+                "type": "string",
+                "description": "Viewing lifecycle. Scheduled and confirmed viewings block the agent calendar.\n",
+                "enum": [
+                    "scheduled",
+                    "confirmed",
+                    "completed",
+                    "cancelled",
+                    "no_show"
+                ],
+                "title": "ViewingStatus"
             }
         },
         "responses": {
