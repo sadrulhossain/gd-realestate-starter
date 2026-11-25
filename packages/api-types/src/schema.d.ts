@@ -330,8 +330,8 @@ export interface paths {
         };
         /**
          * Dashboard counts
-         * @description Row counts for every module the user may view, plus unread contact messages.
-         *     Modules the user cannot view are left out.
+         * @description Row counts for every module the user may view, plus unread contact messages, new leads and upcoming
+         *     viewings (your own unless you can see all). Modules the user cannot view are left out.
          */
         get: operations["v1.dashboard"];
         put?: never;
@@ -1441,6 +1441,49 @@ export interface paths {
         post?: never;
         /** Delete a property type */
         delete: operations["property-types.destroy"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/reports/{report}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Show a sales report
+         * @description `report` is `leads` (per agent and status, by creation date), `viewings` (per agent and status, by start time)
+         *     or `properties` (by status and listing type; the dates do not apply). Optional `from` and `to` (dates, inclusive).
+         *     Needs `reports.view`. Counts cover every record, not just your own.
+         */
+        get: operations["report.show"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/reports/{report}/export": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Download a sales report as CSV
+         * @description The same table as `reports/{report}`, one header row then the data rows. Cells that could be read as a
+         *     spreadsheet formula are prefixed with an apostrophe.
+         */
+        get: operations["report.export"];
+        put?: never;
+        post?: never;
+        delete?: never;
         options?: never;
         head?: never;
         patch?: never;
@@ -7148,6 +7191,120 @@ export interface operations {
             401: components["responses"]["AuthenticationException"];
             403: components["responses"]["AuthorizationException"];
             404: components["responses"]["ModelNotFoundException"];
+        };
+    };
+    "report.show": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                report: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: {
+                            /** @constant */
+                            key: "leads";
+                            /** @constant */
+                            title: "Leads by agent";
+                            columns: [
+                                "Agent",
+                                "Leads",
+                                unknown[],
+                                "Won %"
+                            ];
+                            rows: ([
+                                string,
+                                number,
+                                unknown[],
+                                string
+                            ] | [
+                                "Total",
+                                number,
+                                unknown[],
+                                string
+                            ])[];
+                        } | {
+                            /** @constant */
+                            key: "viewings";
+                            /** @constant */
+                            title: "Viewings by agent";
+                            columns: [
+                                "Agent",
+                                "Viewings",
+                                unknown[]
+                            ];
+                            rows: ([
+                                string,
+                                number,
+                                unknown[],
+                                string
+                            ] | [
+                                "Total",
+                                number,
+                                unknown[],
+                                string
+                            ])[];
+                        } | {
+                            /** @constant */
+                            key: "properties";
+                            /** @constant */
+                            title: "Properties by status";
+                            columns: [
+                                "Status",
+                                "For sale",
+                                "For rent",
+                                "Total"
+                            ];
+                            rows: ([
+                                string,
+                                string | 0,
+                                string | 0,
+                                number | unknown[]
+                            ] | [
+                                "Total",
+                                0,
+                                0,
+                                0
+                            ])[];
+                        };
+                    };
+                };
+            };
+            401: components["responses"]["AuthenticationException"];
+            403: components["responses"]["AuthorizationException"];
+        };
+    };
+    "report.export": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                report: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    "Transfer-Encoding": "chunked";
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/csv; charset=UTF-8": string;
+                };
+            };
+            401: components["responses"]["AuthenticationException"];
+            403: components["responses"]["AuthorizationException"];
         };
     };
     "roles.index": {

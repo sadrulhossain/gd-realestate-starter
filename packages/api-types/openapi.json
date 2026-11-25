@@ -1435,7 +1435,7 @@
         "/v1/dashboard": {
             "get": {
                 "operationId": "v1.dashboard",
-                "description": "Row counts for every module the user may view, plus unread contact messages.\nModules the user cannot view are left out.",
+                "description": "Row counts for every module the user may view, plus unread contact messages, new leads and upcoming\nviewings (your own unless you can see all). Modules the user cannot view are left out.",
                 "summary": "Dashboard counts",
                 "tags": [
                     "Dashboard"
@@ -7327,6 +7327,393 @@
                     },
                     "404": {
                         "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            }
+        },
+        "/v1/reports/{report}": {
+            "get": {
+                "operationId": "report.show",
+                "description": "`report` is `leads` (per agent and status, by creation date), `viewings` (per agent and status, by start time)\nor `properties` (by status and listing type; the dates do not apply). Optional `from` and `to` (dates, inclusive).\nNeeds `reports.view`. Counts cover every record, not just your own.",
+                "summary": "Show a sales report",
+                "tags": [
+                    "Report"
+                ],
+                "parameters": [
+                    {
+                        "name": "report",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "anyOf": [
+                                                {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "key": {
+                                                            "type": "string",
+                                                            "const": "leads"
+                                                        },
+                                                        "title": {
+                                                            "type": "string",
+                                                            "const": "Leads by agent"
+                                                        },
+                                                        "columns": {
+                                                            "type": "array",
+                                                            "prefixItems": [
+                                                                {
+                                                                    "type": "string",
+                                                                    "const": "Agent"
+                                                                },
+                                                                {
+                                                                    "type": "string",
+                                                                    "const": "Leads"
+                                                                },
+                                                                {
+                                                                    "type": "array",
+                                                                    "items": {}
+                                                                },
+                                                                {
+                                                                    "type": "string",
+                                                                    "const": "Won %"
+                                                                }
+                                                            ],
+                                                            "minItems": 4,
+                                                            "maxItems": 4
+                                                        },
+                                                        "rows": {
+                                                            "type": "array",
+                                                            "items": {
+                                                                "anyOf": [
+                                                                    {
+                                                                        "type": "array",
+                                                                        "prefixItems": [
+                                                                            {
+                                                                                "type": "string"
+                                                                            },
+                                                                            {
+                                                                                "type": "number"
+                                                                            },
+                                                                            {
+                                                                                "type": "array",
+                                                                                "items": {}
+                                                                            },
+                                                                            {
+                                                                                "type": "string"
+                                                                            }
+                                                                        ],
+                                                                        "minItems": 4,
+                                                                        "maxItems": 4
+                                                                    },
+                                                                    {
+                                                                        "type": "array",
+                                                                        "prefixItems": [
+                                                                            {
+                                                                                "type": "string",
+                                                                                "const": "Total"
+                                                                            },
+                                                                            {
+                                                                                "type": "number"
+                                                                            },
+                                                                            {
+                                                                                "type": "array",
+                                                                                "items": {}
+                                                                            },
+                                                                            {
+                                                                                "type": "string"
+                                                                            }
+                                                                        ],
+                                                                        "minItems": 4,
+                                                                        "maxItems": 4
+                                                                    }
+                                                                ]
+                                                            }
+                                                        }
+                                                    },
+                                                    "required": [
+                                                        "key",
+                                                        "title",
+                                                        "columns",
+                                                        "rows"
+                                                    ]
+                                                },
+                                                {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "key": {
+                                                            "type": "string",
+                                                            "const": "viewings"
+                                                        },
+                                                        "title": {
+                                                            "type": "string",
+                                                            "const": "Viewings by agent"
+                                                        },
+                                                        "columns": {
+                                                            "type": "array",
+                                                            "prefixItems": [
+                                                                {
+                                                                    "type": "string",
+                                                                    "const": "Agent"
+                                                                },
+                                                                {
+                                                                    "type": "string",
+                                                                    "const": "Viewings"
+                                                                },
+                                                                {
+                                                                    "type": "array",
+                                                                    "items": {}
+                                                                }
+                                                            ],
+                                                            "minItems": 3,
+                                                            "maxItems": 3
+                                                        },
+                                                        "rows": {
+                                                            "type": "array",
+                                                            "items": {
+                                                                "anyOf": [
+                                                                    {
+                                                                        "type": "array",
+                                                                        "prefixItems": [
+                                                                            {
+                                                                                "type": "string"
+                                                                            },
+                                                                            {
+                                                                                "type": "number"
+                                                                            },
+                                                                            {
+                                                                                "type": "array",
+                                                                                "items": {}
+                                                                            },
+                                                                            {
+                                                                                "type": "string"
+                                                                            }
+                                                                        ],
+                                                                        "minItems": 4,
+                                                                        "maxItems": 4
+                                                                    },
+                                                                    {
+                                                                        "type": "array",
+                                                                        "prefixItems": [
+                                                                            {
+                                                                                "type": "string",
+                                                                                "const": "Total"
+                                                                            },
+                                                                            {
+                                                                                "type": "number"
+                                                                            },
+                                                                            {
+                                                                                "type": "array",
+                                                                                "items": {}
+                                                                            },
+                                                                            {
+                                                                                "type": "string"
+                                                                            }
+                                                                        ],
+                                                                        "minItems": 4,
+                                                                        "maxItems": 4
+                                                                    }
+                                                                ]
+                                                            }
+                                                        }
+                                                    },
+                                                    "required": [
+                                                        "key",
+                                                        "title",
+                                                        "columns",
+                                                        "rows"
+                                                    ]
+                                                },
+                                                {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "key": {
+                                                            "type": "string",
+                                                            "const": "properties"
+                                                        },
+                                                        "title": {
+                                                            "type": "string",
+                                                            "const": "Properties by status"
+                                                        },
+                                                        "columns": {
+                                                            "type": "array",
+                                                            "prefixItems": [
+                                                                {
+                                                                    "type": "string",
+                                                                    "const": "Status"
+                                                                },
+                                                                {
+                                                                    "type": "string",
+                                                                    "const": "For sale"
+                                                                },
+                                                                {
+                                                                    "type": "string",
+                                                                    "const": "For rent"
+                                                                },
+                                                                {
+                                                                    "type": "string",
+                                                                    "const": "Total"
+                                                                }
+                                                            ],
+                                                            "minItems": 4,
+                                                            "maxItems": 4
+                                                        },
+                                                        "rows": {
+                                                            "type": "array",
+                                                            "items": {
+                                                                "anyOf": [
+                                                                    {
+                                                                        "type": "array",
+                                                                        "prefixItems": [
+                                                                            {
+                                                                                "type": "string"
+                                                                            },
+                                                                            {
+                                                                                "anyOf": [
+                                                                                    {
+                                                                                        "type": "string"
+                                                                                    },
+                                                                                    {
+                                                                                        "type": "integer",
+                                                                                        "enum": [
+                                                                                            0
+                                                                                        ]
+                                                                                    }
+                                                                                ]
+                                                                            },
+                                                                            {
+                                                                                "anyOf": [
+                                                                                    {
+                                                                                        "type": "string"
+                                                                                    },
+                                                                                    {
+                                                                                        "type": "integer",
+                                                                                        "enum": [
+                                                                                            0
+                                                                                        ]
+                                                                                    }
+                                                                                ]
+                                                                            },
+                                                                            {
+                                                                                "type": [
+                                                                                    "number",
+                                                                                    "array"
+                                                                                ]
+                                                                            }
+                                                                        ],
+                                                                        "minItems": 4,
+                                                                        "maxItems": 4
+                                                                    },
+                                                                    {
+                                                                        "type": "array",
+                                                                        "prefixItems": [
+                                                                            {
+                                                                                "type": "string",
+                                                                                "const": "Total"
+                                                                            },
+                                                                            {
+                                                                                "type": "integer",
+                                                                                "const": 0
+                                                                            },
+                                                                            {
+                                                                                "type": "integer",
+                                                                                "const": 0
+                                                                            },
+                                                                            {
+                                                                                "type": "integer",
+                                                                                "const": 0
+                                                                            }
+                                                                        ],
+                                                                        "minItems": 4,
+                                                                        "maxItems": 4
+                                                                    }
+                                                                ]
+                                                            }
+                                                        }
+                                                    },
+                                                    "required": [
+                                                        "key",
+                                                        "title",
+                                                        "columns",
+                                                        "rows"
+                                                    ]
+                                                }
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            }
+        },
+        "/v1/reports/{report}/export": {
+            "get": {
+                "operationId": "report.export",
+                "description": "The same table as `reports/{report}`, one header row then the data rows. Cells that could be read as a\nspreadsheet formula are prefixed with an apostrophe.",
+                "summary": "Download a sales report as CSV",
+                "tags": [
+                    "Report"
+                ],
+                "parameters": [
+                    {
+                        "name": "report",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "text/csv; charset=UTF-8": {
+                                "schema": {
+                                    "type": "string",
+                                    "format": "binary"
+                                }
+                            }
+                        },
+                        "headers": {
+                            "Transfer-Encoding": {
+                                "required": true,
+                                "schema": {
+                                    "type": "string",
+                                    "enum": [
+                                        "chunked"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
                     },
                     "401": {
                         "$ref": "#/components/responses/AuthenticationException"

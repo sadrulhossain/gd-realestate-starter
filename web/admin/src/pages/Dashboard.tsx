@@ -6,6 +6,10 @@ import { Icon } from '../components/Icon'
 
 /** Dashboard card order: key => [label, admin path, icon]. The API only returns counts the user may see. */
 const CARDS: Record<string, [string, string, string]> = {
+  new_leads: ['New leads', '/leads', 'inbox'],
+  upcoming_viewings: ['Upcoming viewings', '/viewings', 'calendar'],
+  properties: ['Properties', '/properties', 'building'],
+  agents: ['Agents', '/agents', 'users'],
   unread_messages: ['Unread messages', '/messages', 'mail'],
   posts: ['Posts', '/posts', 'file-text'],
   categories: ['Categories', '/categories', 'tag'],

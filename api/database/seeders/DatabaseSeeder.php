@@ -32,6 +32,7 @@ class DatabaseSeeder extends Seeder
             AgentsModuleSeeder::class,
             LeadsModuleSeeder::class,
             ViewingsModuleSeeder::class,
+            ReportsModuleSeeder::class,
             SettingsModuleSeeder::class,
             AccessModuleSeeder::class,
             SuperadminSeeder::class,

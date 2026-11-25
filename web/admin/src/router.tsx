@@ -12,6 +12,7 @@ import { NotFound } from './pages/errors'
 import { MessagesPage } from './pages/Messages'
 import { ProfilePage } from './pages/Profile'
 import { ProjectUnitsPage } from './pages/ProjectUnits'
+import { ReportsPage } from './pages/Reports'
 import { SettingsPage } from './pages/Settings'
 import { about, hero, settings } from './settingsConfig'
 import { Showcase } from './showcase'
@@ -63,6 +64,14 @@ export const router = createBrowserRouter([
           ),
         }
       }),
+      {
+        path: 'reports',
+        element: (
+          <RequirePermission permission="reports.view">
+            <ReportsPage />
+          </RequirePermission>
+        ),
+      },
       // Units of one project: shallow API routes, so the project id lives in the URL.
       {
         path: 'projects/:id/units',

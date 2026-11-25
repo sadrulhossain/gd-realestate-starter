@@ -159,3 +159,10 @@ singleton reference: Settings. Paths below are relative to `api/app` unless note
 - Units are not in `modules`: `unitsConfig(projectId)` (list under `/v1/projects/{id}/units`, rows at `/v1/units/{id}`) is served at `/projects/:id/units` by `pages/ProjectUnits.tsx`; projects link to it with `rowExtra`. "Publish as property" is `UnitPublishAction`.
 - Module `key` is the permission prefix, so `property_types` has path `/property-types`.
 - Admin tests run in the node container: `docker compose exec -T -w /app/web/admin node pnpm exec vitest run` (the host Node is too old for jsdom/undici).
+
+## Admin: sales screens and reports (phase R6)
+- CrudPage options added: `filters` (selects, text, dates sent as query params; any change returns to page 1), `editExtra` (a panel under the edit fields, e.g. `LeadPanel`; its buttons are `type="button"` because it sits inside the form), field flags `createOnly` (create form only, for things the API prohibits on PATCH), `needs` (hidden and not sent without that permission) and `lookup` (`LookupField`: search `?q=`, pick one, value is the id; use it instead of a select when the list is paginated).
+- Workflow menus: `RowStatusMenu` (POST `{status}`, "Move to..."), fed by `lib/salesStatus.ts` (mirror of the API tables) or `lib/propertyStatus.ts`. Statuses render with `StatusBadge`.
+- Leads: status, assignment and notes are not form fields. `LeadPanel` posts to `leads/{id}/status|assign|notes`; the timeline is `lead_notes`.
+- Reports (`reports.view`, admin role only, counts every record): `GET reports/{leads|viewings|properties}?from&to` returns `{key,title,columns,rows}`; `.../export` is the same table as CSV (cells starting with `= + - @` get a leading apostrophe). Tables are built in `Services/SalesReports`; add a report there and to `KEYS`. The admin page fetches the CSV with the token and saves the blob.
+- Dashboard: `new_leads` and `upcoming_viewings` follow the own-records scope; `properties` and `agents` need their `.view`.

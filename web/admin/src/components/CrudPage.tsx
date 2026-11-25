@@ -9,6 +9,7 @@ import type { Listing } from '../types'
 import { BilingualField } from './BilingualField'
 import { ConfirmDialog, Modal } from './ConfirmDialog'
 import { ImagePanel } from './ImagePanel'
+import { LookupField } from './LookupField'
 import { DataTable, type Column } from './DataTable'
 import { FormField, type FieldOption, type FieldType } from './FormField'
 import { toast } from './Toast'
@@ -29,8 +30,24 @@ export interface CrudField {
   optionsFrom?: { endpoint: string; map?: (item: never) => FieldOption; mapAll?: (items: never[]) => FieldOption[] }
   /** Forms with tabs: fields sharing a `tab` name form one tab, in order of first appearance. Give every field a tab or none. */
   tab?: string
+  /** Only on the create form: the API rejects it on PATCH (the property of a viewing, the agent of a new lead). */
+  createOnly?: boolean
+  /** Hidden (and not sent) unless the user holds this permission. */
+  needs?: string
+  /** A search box over `${endpoint}?q=`: the user picks one result and the value is its id. `initialLabel` names the current value when editing. */
+  lookup?: { endpoint: string; label: (item: never) => string; initialLabel?: (values: Record<string, unknown>) => string | undefined }
   /** Starting value on create. */
   initial?: unknown
+}
+
+/** A list filter: sent as `?name=value` when not empty. Same shapes as a field (select, text, date). */
+export interface CrudFilter {
+  name: string
+  label: string
+  type?: 'select' | 'text' | 'date'
+  options?: FieldOption[]
+  optionsFrom?: CrudField['optionsFrom']
+  initial?: string
 }
 
 /**
@@ -62,6 +79,10 @@ export interface CrudConfig {
   rowEndpoint?: string
   /** Fetch the row (`GET ${rowEndpoint}/${id}`) before editing: the list omits relations the form needs (amenity ids). */
   loadOnEdit?: boolean
+  /** Filters above the table; changing one returns to page 1. */
+  filters?: CrudFilter[]
+  /** Extra content under the edit form's fields (a timeline); only for an existing row. */
+  editExtra?: (row: Row) => ReactNode
   /** Extra controls in a row's action cell (status menu, links). Render with the row; check permissions inside. */
   rowExtra?: (row: Row) => ReactNode
   reorder?: { endpoint: string; group?: (row: Row) => unknown }
@@ -85,11 +106,13 @@ export function CrudPage({ config }: { config: CrudConfig }) {
   const canUpdate = can(`${config.key}.update`)
   const canDelete = config.canDelete !== false && can(`${config.key}.delete`)
 
-  const listKey = ['crud', config.endpoint, page]
+  const [filters, setFilters] = useState<Record<string, string>>(() => Object.fromEntries((config.filters ?? []).map((f) => [f.name, f.initial ?? ''])))
+  const activeFilters = Object.fromEntries(Object.entries(filters).filter(([, v]) => v !== ''))
+  const listKey = ['crud', config.endpoint, page, activeFilters]
   const list = useQuery({
     queryKey: listKey,
     placeholderData: keepPreviousData,
-    queryFn: async () => (await api.request('GET', config.endpoint, { query: { page } })) as Listing<Row>,
+    queryFn: async () => (await api.request('GET', config.endpoint, { query: { page, ...activeFilters } })) as Listing<Row>,
   })
 
   const move = useMutation({
@@ -143,6 +166,24 @@ export function CrudPage({ config }: { config: CrudConfig }) {
           <IconButton showText variant="primary" icon="plus" label={`New ${config.noun.toLowerCase()}`} onClick={() => setEditing('new')} />
         )}
       </header>
+
+      {config.filters && config.filters.length > 0 && (
+        <form className="flex flex-wrap items-end gap-3" aria-label="Filters" onSubmit={(e) => e.preventDefault()}>
+          {config.filters.map((f) => (
+            <div key={f.name} className="min-w-40">
+              <OptionsField
+                field={{ name: f.name, label: f.label, type: f.type ?? 'text', options: f.options, optionsFrom: f.optionsFrom }}
+                value={filters[f.name]}
+                values={filters}
+                onChange={(v) => {
+                  setFilters((prev) => ({ ...prev, [f.name]: String(v ?? '') }))
+                  setPage(1)
+                }}
+              />
+            </div>
+          ))}
+        </form>
+      )}
 
       {list.isError ? (
         <p role="alert" className="text-danger">
@@ -226,17 +267,20 @@ function CrudForm({ config, row, onDone, onCancel }: { config: CrudConfig; row: 
   const [values, setValues] = useState<Record<string, unknown>>(() => ({ ...blank(config.fields), ...(row ?? {}) }))
   const [errors, setErrors] = useState<Record<string, string>>({})
   const set = (name: string, value: unknown) => setValues((v) => ({ ...v, [name]: value }))
-  const tabs = [...new Set(config.fields.flatMap((f) => (f.tab ? [f.tab] : [])))]
+  const can = useAuth((s) => s.can)
+  // Fields the API accepts for this user and this operation (create vs edit).
+  const fields = config.fields.filter((f) => !(f.createOnly && row) && (!f.needs || can(f.needs)))
+  const tabs = [...new Set(fields.flatMap((f) => (f.tab ? [f.tab] : [])))]
   const [tab, setTab] = useState(tabs[0])
   // A tab is flagged when one of its fields failed validation (the error may be on a field of a tab that is not showing).
-  const tabHasError = (name: string) => config.fields.some((f) => f.tab === name && (f.bilingual ? [f.name, `${f.name}_2nd`] : [f.name]).some((n) => errors[n]))
-  const shown = tabs.length ? config.fields.filter((f) => f.tab === tab) : config.fields
+  const tabHasError = (name: string) => fields.some((f) => f.tab === name && (f.bilingual ? [f.name, `${f.name}_2nd`] : [f.name]).some((n) => errors[n]))
+  const shown = tabs.length ? fields.filter((f) => f.tab === tab) : fields
 
   const save = useMutation({
     mutationFn: () =>
       row
-        ? api.request('PATCH', `${rowBase(config)}/${row.id}`, { body: payload(config.fields, values) })
-        : api.request('POST', config.endpoint, { body: payload(config.fields, values) }),
+        ? api.request('PATCH', `${rowBase(config)}/${row.id}`, { body: payload(fields, values) })
+        : api.request('POST', config.endpoint, { body: payload(fields, values) }),
     onSuccess: () => {
       toast.success(`${config.noun} saved`)
       onDone()
@@ -244,8 +288,8 @@ function CrudForm({ config, row, onDone, onCancel }: { config: CrudConfig; row: 
     onError: (error) => {
       const found = fieldErrors(error)
       setErrors(found)
-      const firstBad = tabs.find((t) => config.fields.some((f) => f.tab === t && (f.bilingual ? [f.name, `${f.name}_2nd`] : [f.name]).some((n) => found[n])))
-      if (firstBad && !config.fields.some((f) => f.tab === tab && (f.bilingual ? [f.name, `${f.name}_2nd`] : [f.name]).some((n) => found[n]))) setTab(firstBad)
+      const firstBad = tabs.find((t) => fields.some((f) => f.tab === t && (f.bilingual ? [f.name, `${f.name}_2nd`] : [f.name]).some((n) => found[n])))
+      if (firstBad && !fields.some((f) => f.tab === tab && (f.bilingual ? [f.name, `${f.name}_2nd`] : [f.name]).some((n) => found[n]))) setTab(firstBad)
       toast.error(error instanceof ApiError && error.status === 422 ? 'Please fix the highlighted fields' : `Could not save the ${config.noun.toLowerCase()}`)
     },
   })
@@ -290,7 +334,7 @@ function CrudForm({ config, row, onDone, onCancel }: { config: CrudConfig; row: 
             onChange={set}
           />
         ) : (
-          <OptionsField key={f.name} field={f} value={values[f.name]} error={errors[f.name]} onChange={(v) => set(f.name, v)} />
+          <OptionsField key={f.name} field={f} value={values[f.name]} values={values} error={errors[f.name]} onChange={(v) => set(f.name, v)} />
         ),
       )}
       {config.image &&
@@ -299,6 +343,7 @@ function CrudForm({ config, row, onDone, onCancel }: { config: CrudConfig; row: 
         ) : (
           <p className="text-sm text-ink-muted">Save first, then add an image.</p>
         ))}
+      {row && config.editExtra?.(row)}
       <div className="flex justify-end gap-2 pt-2">
         <IconButton showText variant="secondary" icon="x" label="Cancel" onClick={onCancel} />
         <IconButton showText type="submit" variant="primary" icon="save" label="Save" disabled={save.isPending} />
@@ -308,7 +353,7 @@ function CrudForm({ config, row, onDone, onCancel }: { config: CrudConfig; row: 
 }
 
 /** A plain field whose options may come from the API. */
-function OptionsField({ field, value, error, onChange }: { field: CrudField; value: unknown; error?: string; onChange: (value: unknown) => void }) {
+function OptionsField({ field, value, values, error, onChange }: { field: CrudField; value: unknown; values: Record<string, unknown>; error?: string; onChange: (value: unknown) => void }) {
   const remote = field.optionsFrom
   const options = useQuery({
     queryKey: ['options', remote?.endpoint],
@@ -320,6 +365,10 @@ function OptionsField({ field, value, error, onChange }: { field: CrudField; val
       return remote!.mapAll ? remote!.mapAll(items) : items.map(remote!.map!)
     },
   })
+
+  if (field.lookup) {
+    return <LookupField label={field.label} name={field.name} required={field.required} hint={field.hint} lookup={field.lookup} value={value} initialLabel={field.lookup.initialLabel?.(values)} error={error} onChange={onChange} />
+  }
 
   return (
     <FormField
