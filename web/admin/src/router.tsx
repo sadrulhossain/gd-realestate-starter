@@ -11,6 +11,7 @@ import { Dashboard } from './pages/Dashboard'
 import { NotFound } from './pages/errors'
 import { MessagesPage } from './pages/Messages'
 import { ProfilePage } from './pages/Profile'
+import { ProjectUnitsPage } from './pages/ProjectUnits'
 import { SettingsPage } from './pages/Settings'
 import { about, hero, settings } from './settingsConfig'
 import { Showcase } from './showcase'
@@ -62,6 +63,15 @@ export const router = createBrowserRouter([
           ),
         }
       }),
+      // Units of one project: shallow API routes, so the project id lives in the URL.
+      {
+        path: 'projects/:id/units',
+        element: (
+          <RequirePermission permission="project_units.view">
+            <ProjectUnitsPage />
+          </RequirePermission>
+        ),
+      },
       {
         path: about.path.slice(1),
         element: (

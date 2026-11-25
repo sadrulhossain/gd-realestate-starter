@@ -1,8 +1,10 @@
-import { useId } from 'react'
+import { useId, useState } from 'react'
 import { Icon, ICON_OPTIONS } from './Icon'
+import { useCurrency } from './Money'
+import { toMajor, toMinor } from '../lib/money'
 import { RichText } from './RichText'
 
-export type FieldType = 'text' | 'textarea' | 'number' | 'checkbox' | 'select' | 'password' | 'checkgroup' | 'richtext' | 'date' | 'datetime' | 'icon'
+export type FieldType = 'text' | 'textarea' | 'number' | 'money' | 'checkbox' | 'select' | 'password' | 'checkgroup' | 'richtext' | 'date' | 'datetime' | 'icon'
 
 export interface FieldOption {
   value: string | number
@@ -94,6 +96,8 @@ export function FormField({ label, name, type = 'text', value, onChange, error, 
     input = <input {...common} type="date" className={control} value={String(value ?? '').slice(0, 10)} onChange={(e) => onChange(e.target.value)} />
   } else if (type === 'datetime') {
     input = <input {...common} type="datetime-local" className={control} value={toLocalInput(value)} onChange={(e) => onChange(fromLocalInput(e.target.value))} />
+  } else if (type === 'money') {
+    input = <MoneyInput {...common} value={value} onChange={onChange} />
   } else if (type === 'number') {
     input = (
       <input
@@ -130,6 +134,47 @@ export function FormField({ label, name, type = 'text', value, onChange, error, 
 }
 
 /**
+ * A price field: the user types major units ("1500.50"), the form value is whole minor units (150050) like the API.
+ * The text is kept locally so "12." and "12.0" can be typed; it follows the value when it changes from outside.
+ */
+function MoneyInput({ value, onChange, ...aria }: { value: unknown; onChange: (value: unknown) => void; id: string; name: string; required?: boolean; 'aria-invalid'?: boolean; 'aria-describedby'?: string }) {
+  const { symbol, currency, digits } = useCurrency()
+  const minor = value === null || value === undefined || value === '' ? null : Number(value)
+  const [text, setText] = useState(() => (minor === null ? '' : String(toMajor(minor, digits))))
+  const [seen, setSeen] = useState(minor)
+
+  const [seenDigits, setSeenDigits] = useState(digits)
+
+  // The currency arrives after the first render (digits change) and a form reset changes the value: re-derive the text then.
+  if (digits !== seenDigits || (minor !== seen && minor !== toMinor(text, digits))) {
+    setSeenDigits(digits)
+    setSeen(minor)
+    setText(minor === null ? '' : String(toMajor(minor, digits)))
+  }
+
+  return (
+    <div className="flex items-center gap-2">
+      {(symbol || currency) && <span aria-hidden="true" className="text-ink-muted">{symbol || currency}</span>}
+      <input
+        {...aria}
+        type="number"
+        inputMode="decimal"
+        min={0}
+        step={1 / 10 ** digits}
+        className={control}
+        value={text}
+        onChange={(e) => {
+          setText(e.target.value)
+          const next = toMinor(e.target.value, digits)
+          setSeen(next)
+          onChange(next)
+        }}
+      />
+    </div>
+  )
+}
+
+/**
  * Several checkboxes writing one string[]. With grouped options it renders a matrix: one row per group, one column per
  * distinct label (e.g. rows = modules, columns = view/create/update/delete); a missing cell is simply empty.
  */
@@ -147,12 +192,14 @@ function CheckGroup({
   id: string
   name: string
 }) {
+  // Ids can arrive as numbers (a loaded row) or strings (earlier toggles); compare and store them as strings.
+  const current = value.map(String)
   const toggle = (option: FieldOption, on: boolean) => {
     const key = String(option.value)
-    onChange(on ? [...value.filter((v) => v !== key), key] : value.filter((v) => v !== key))
+    onChange(on ? [...current.filter((v) => v !== key), key] : current.filter((v) => v !== key))
   }
   const box = (option: FieldOption, name = option.label) => (
-    <input type="checkbox" className="size-4" aria-label={`${label}: ${name}`} checked={value.includes(String(option.value))} onChange={(e) => toggle(option, e.target.checked)} />
+    <input type="checkbox" className="size-4" aria-label={`${label}: ${name}`} checked={current.includes(String(option.value))} onChange={(e) => toggle(option, e.target.checked)} />
   )
 
   if (!options.some((o) => o.group)) {
