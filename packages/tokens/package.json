@@ -6,6 +6,7 @@
   "exports": {
     "./base.css": "./base.css",
     "./admin.css": "./admin.css",
-    "./portal.css": "./portal.css"
+    "./portal.css": "./portal.css",
+    "./estate.css": "./estate.css"
   }
 }

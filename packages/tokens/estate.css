@@ -1,0 +1,53 @@
+/*
+ * Estate layer (phase R7): the real estate look, portal only. Import it after portal.css so it wins:
+ *   @import '@gd/tokens/portal.css';
+ *   @import '@gd/tokens/estate.css';
+ * It re-points the portal's `brand` scale to deep harbour blue, `accent` to warm gold, and the neutrals to cool slate,
+ * then adds the tokens property listings need (status colours, card radius and shadows). Utility names do not change,
+ * so every existing portal page picks the theme up. The admin theme never imports this file.
+ *
+ * Contrast (checked against WCAG AA): white text is safe on brand-600 and darker (6.9:1 at 600), body text ink on
+ * canvas is 16:1, ink-muted on canvas 6.4:1. Gold is for fills and rules; text on gold is `ink`, never white.
+ */
+@theme {
+  --color-canvas: #f6f8fb;
+  --color-line: #dde5ee;
+  --color-ink: #0d1b2a;
+  --color-ink-muted: #4b5b6c;
+  --color-night: #07192b;
+  --color-night-soft: #0e2740;
+
+  --color-brand-50: #eff6fc;
+  --color-brand-100: #dbeaf7;
+  --color-brand-200: #b7d5ee;
+  --color-brand-300: #86b8de;
+  --color-brand-400: #4f95c8;
+  --color-brand-500: #2f78ad;
+  --color-brand-600: #1f5f91;
+  --color-brand-700: #184c75;
+  --color-brand-800: #123a5a;
+  --color-brand-900: #0c2840;
+
+  --color-accent-300: #f2d38a;
+  --color-accent-400: #e6b955;
+  --color-accent-500: #d39a2c;
+  --color-accent-600: #a87617;
+
+  /* Listing status chips: soft fill plus a dark text colour of the same hue (each pair is above 4.5:1). */
+  --color-status-available: #e3f4ea;
+  --color-status-available-ink: #1b6b3d;
+  --color-status-offer: #fdf1d6;
+  --color-status-offer-ink: #7a5200;
+  --color-status-sold: #fbe4e4;
+  --color-status-sold-ink: #9b2222;
+  --color-status-rented: #e4ecfb;
+  --color-status-rented-ink: #1f4f9a;
+
+  --radius-card: 1rem;
+  --radius-pill: 9999px;
+
+  --shadow-card: 0 1px 2px rgb(13 27 42 / 0.05), 0 10px 28px -12px rgb(24 76 117 / 0.22);
+  --shadow-card-hover: 0 2px 4px rgb(13 27 42 / 0.06), 0 24px 44px -16px rgb(24 76 117 / 0.38);
+  --shadow-soft: 0 1px 2px rgb(13 27 42 / 0.04), 0 8px 24px -8px rgb(24 76 117 / 0.16);
+  --shadow-lift: 0 2px 4px rgb(13 27 42 / 0.05), 0 20px 40px -12px rgb(24 76 117 / 0.32);
+}

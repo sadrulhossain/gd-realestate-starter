@@ -11,7 +11,7 @@ it('seeds core sections on and optional sections off', function () {
     $this->seed(SectionsModuleSeeder::class);
 
     expect(Section::where('is_visible', true)->orderBy('sort_order')->pluck('key')->all())
-        ->toBe(['hero', 'about', 'services', 'contact'])
+        ->toBe(['hero', 'featured_properties', 'property_types', 'locations', 'projects', 'about', 'services', 'agents', 'contact'])
         ->and(Section::where('is_visible', false)->orderBy('sort_order')->pluck('key')->all())
         ->toBe(['pricing', 'testimonials', 'gallery', 'faq', 'team']);
 });
@@ -32,7 +32,7 @@ it('never overwrites admin edits when seeded again', function () {
 
     $this->seed([SectionsModuleSeeder::class, SettingsModuleSeeder::class]);
 
-    expect(Section::count())->toBe(9)
+    expect(Section::count())->toBe(14)
         ->and(Section::where('key', 'hero')->first()->title)->toBe('Edited')
         ->and(Section::where('key', 'hero')->first()->is_visible)->toBeFalse()
         ->and(Setting::current()->site_name)->toBe('Acme');
