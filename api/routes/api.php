@@ -1,14 +1,18 @@
 <?php
 
+use App\Http\Controllers\Api\V1\AgentController;
+use App\Http\Controllers\Api\V1\AgentImageController;
 use App\Http\Controllers\Api\V1\AmenityController;
 use App\Http\Controllers\Api\V1\CategoryController;
 use App\Http\Controllers\Api\V1\ContactController;
 use App\Http\Controllers\Api\V1\ContactMessageController;
 use App\Http\Controllers\Api\V1\DashboardController;
+use App\Http\Controllers\Api\V1\DeveloperController;
 use App\Http\Controllers\Api\V1\FaqController;
 use App\Http\Controllers\Api\V1\GalleryItemController;
 use App\Http\Controllers\Api\V1\GalleryItemImageController;
 use App\Http\Controllers\Api\V1\HealthController;
+use App\Http\Controllers\Api\V1\LeadController;
 use App\Http\Controllers\Api\V1\LocalesController;
 use App\Http\Controllers\Api\V1\LocationController;
 use App\Http\Controllers\Api\V1\LogoutController;
@@ -20,6 +24,8 @@ use App\Http\Controllers\Api\V1\PostController;
 use App\Http\Controllers\Api\V1\PostImageController;
 use App\Http\Controllers\Api\V1\PricingController;
 use App\Http\Controllers\Api\V1\ProfileController;
+use App\Http\Controllers\Api\V1\ProjectController;
+use App\Http\Controllers\Api\V1\ProjectUnitController;
 use App\Http\Controllers\Api\V1\PropertyController;
 use App\Http\Controllers\Api\V1\PropertyMediaController;
 use App\Http\Controllers\Api\V1\PropertyStatusController;
@@ -37,6 +43,7 @@ use App\Http\Controllers\Api\V1\TeamMemberImageController;
 use App\Http\Controllers\Api\V1\TestimonialController;
 use App\Http\Controllers\Api\V1\TestimonialImageController;
 use App\Http\Controllers\Api\V1\UserController;
+use App\Http\Controllers\Api\V1\ViewingController;
 use App\Http\Middleware\LocalizePublicResponse;
 use Illuminate\Support\Facades\Route;
 
@@ -63,7 +70,15 @@ Route::prefix('v1')->group(function (): void {
         Route::get('public/amenities', [AmenityController::class, 'publicIndex']);
         Route::get('public/properties', [PropertyController::class, 'publicIndex']);
         Route::get('public/properties/{slug}', [PropertyController::class, 'publicShow']);
+        Route::get('public/developers', [DeveloperController::class, 'publicIndex']);
+        Route::get('public/projects', [ProjectController::class, 'publicIndex']);
+        Route::get('public/projects/{slug}', [ProjectController::class, 'publicShow']);
+        Route::get('public/agents', [AgentController::class, 'publicIndex']);
+        Route::get('public/agents/{slug}', [AgentController::class, 'publicShow']);
     });
+
+    // Enquiry form (same captcha as contact): throttled per IP.
+    Route::post('public/leads', [LeadController::class, 'publicStore'])->middleware('throttle:leads');
 
     // Contact form: captcha first, then the throttled submit.
     Route::get('public/captcha', [ContactController::class, 'captcha'])->middleware('throttle:30,1');
@@ -139,6 +154,25 @@ Route::prefix('v1')->group(function (): void {
         Route::post('properties/{property}/media', [PropertyMediaController::class, 'store']);
         Route::patch('properties/{property}/media/{media}', [PropertyMediaController::class, 'update']);
         Route::delete('properties/{property}/media/{media}', [PropertyMediaController::class, 'destroy']);
+
+        // Developers, projects and units
+        Route::apiResource('developers', DeveloperController::class);
+        Route::apiResource('projects', ProjectController::class);
+        Route::apiResource('projects.units', ProjectUnitController::class)->shallow()->only(['index', 'store', 'show', 'update', 'destroy']);
+        Route::post('units/{unit}/publish', [ProjectUnitController::class, 'publish']);
+
+        // Agents, leads and viewings
+        Route::apiResource('agents', AgentController::class);
+        Route::post('agents/{agent}/image', [AgentImageController::class, 'store']);
+        Route::delete('agents/{agent}/image', [AgentImageController::class, 'destroy']);
+
+        Route::apiResource('leads', LeadController::class);
+        Route::post('leads/{lead}/status', [LeadController::class, 'status']);
+        Route::post('leads/{lead}/assign', [LeadController::class, 'assign']);
+        Route::post('leads/{lead}/notes', [LeadController::class, 'note']);
+
+        Route::apiResource('viewings', ViewingController::class);
+        Route::post('viewings/{viewing}/status', [ViewingController::class, 'status']);
 
         // Contact inbox (no create/delete)
         Route::apiResource('contact-messages', ContactMessageController::class)

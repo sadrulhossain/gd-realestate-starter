@@ -1,8 +1,10 @@
 <?php
 
 use App\Enums\PropertyStatus;
+use App\Models\Agent;
 use App\Models\Amenity;
 use App\Models\Location;
+use App\Models\Project;
 use App\Models\Property;
 use App\Models\PropertyType;
 
@@ -40,7 +42,7 @@ it('hides draft and sold properties from the detail page too', function () {
 });
 
 it('never exposes owner, agent or workflow fields publicly', function () {
-    $open = Property::factory()->available()->create(['owner_id' => 7, 'agent_id' => 8, 'project_id' => 9]);
+    $open = Property::factory()->available()->create(['owner_id' => 7, 'agent_id' => Agent::factory()->create()->id, 'project_id' => Project::factory()->create()->id]);
 
     $card = $this->getJson('/api/v1/public/properties')->assertOk()->json('data.0');
     $detail = $this->getJson("/api/v1/public/properties/{$open->slug}")->assertOk()->json('data');

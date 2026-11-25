@@ -8,7 +8,7 @@ return [
     |--------------------------------------------------------------------------
     |
     | captcha_ttl: seconds a captcha stays valid (it is also consumed on first use).
-    | per_minute: submissions per IP per minute (named limiter "contact").
+    | per_minute: submissions per IP per minute (named limiters "contact" and "leads").
     | notify_to: fallback recipient when Settings has no email.
     |
     */
