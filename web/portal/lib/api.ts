@@ -257,6 +257,8 @@ export interface ProjectCardData {
 }
 
 export interface AgentCardData {
+  bio?: string | null
+  license_no?: string | null
   id: number
   slug: string
   name: string
@@ -365,4 +367,67 @@ export async function getPropertiesBySlugs(locale: string, slugs: string[]): Pro
   const rows = ((await apiFor(locale).request('GET', `/v1/public/properties?${qs}&per_page=48`)) as Listing<PropertyCardData>).data
 
   return unique.flatMap((slug) => rows.filter((r) => r.slug === slug))
+}
+
+// --- Agents, locations, projects (R9) ---
+
+export interface ProjectUnitData {
+  id: number
+  code: string | null
+  name: string | null
+  property_type: PropertyType | null
+  beds: number | null
+  baths: number | null
+  area: string | number | null
+  area_unit: string | null
+  floor: number | null
+  price: number
+  status: string
+}
+
+export interface ProjectDetailData extends ProjectCardData {
+  description: string | null
+  address_line: string | null
+  lat: string | number | null
+  lng: string | number | null
+  handover_date: string | null
+  featured: boolean
+  seo_title: string | null
+  seo_description: string | null
+  developer: { name: string; website?: string | null } | null
+  units: ProjectUnitData[]
+}
+
+export async function getAgent(locale: string, slug: string): Promise<AgentCardData | null> {
+  try {
+    return ((await apiFor(locale).request('GET', `/v1/public/agents/${encodeURIComponent(slug)}`)) as { data: AgentCardData }).data
+  } catch (error) {
+    if (error instanceof ApiError && error.status === 404) return null
+    throw error
+  }
+}
+
+export async function getProject(locale: string, slug: string): Promise<ProjectDetailData | null> {
+  try {
+    return ((await apiFor(locale).request('GET', `/v1/public/projects/${encodeURIComponent(slug)}`)) as { data: ProjectDetailData }).data
+  } catch (error) {
+    if (error instanceof ApiError && error.status === 404) return null
+    throw error
+  }
+}
+
+export interface ProjectPage {
+  projects: ProjectCardData[]
+  page: number
+  lastPage: number
+}
+
+/** One page of active projects (12 per page), featured first. */
+export async function getProjectPage(locale: string, page = 1): Promise<ProjectPage> {
+  const body = (await apiFor(locale).request('GET', `/v1/public/projects?page=${page}`)) as {
+    data: ProjectCardData[]
+    meta?: { current_page: number; last_page: number }
+  }
+
+  return { projects: body.data, page: body.meta?.current_page ?? 1, lastPage: body.meta?.last_page ?? 1 }
 }

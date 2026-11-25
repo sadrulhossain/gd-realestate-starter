@@ -547,6 +547,7 @@ export const modules: CrudConfig[] = [
       { key: 'source', header: 'Source', render: (r) => statusLabel(String(r.source)) },
       { key: 'status', header: 'Status', render: (r) => <StatusBadge status={r.status} /> },
       { key: 'agent', header: 'Agent', render: (r) => String((r.agent as { name?: string } | null)?.name ?? '') },
+      { key: 'viewing_requested_at', header: 'Viewing asked', render: (r) => (r.viewing_requested_at ? dateTime(r.viewing_requested_at) : '') },
       { key: 'created_at', header: 'Received', render: (r) => dateOnly(r.created_at) },
     ],
     fields: [

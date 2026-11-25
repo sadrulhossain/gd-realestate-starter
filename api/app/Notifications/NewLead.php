@@ -33,6 +33,10 @@ class NewLead extends Notification implements ShouldQueue
             $mail->line("Property: {$lead->property->ref_code} {$lead->property->title}");
         }
 
+        if ($lead->viewing_requested_at) {
+            $mail->line('Viewing requested for: '.$lead->viewing_requested_at->format('Y-m-d H:i T'));
+        }
+
         if (filled($lead->message)) {
             $mail->line($lead->message);
         }

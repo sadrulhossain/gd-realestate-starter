@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-import type { Post, PropertyCardData, PropertyDetailData, Settings } from './api'
+import type { AgentCardData, Post, ProjectDetailData, PropertyCardData, PropertyDetailData, Settings } from './api'
 import { defaultLocale, localePath, locales } from './i18n'
 
 /** Public origin of the portal, for canonical URLs, Open Graph, the sitemap and JSON-LD. Set SITE_URL in production. */
@@ -157,6 +157,40 @@ export function propertyJsonLd(p: PropertyDetailData, settings: Settings, locale
         })
       : undefined,
     provider: p.agent ? { '@type': 'RealEstateAgent', name: p.agent.name, telephone: p.agent.phone, email: p.agent.email } : { '@type': 'Organization', name: settings.site_name },
+  })
+}
+
+/** schema.org RealEstateAgent for an agent's profile page. */
+export function agentJsonLd(agent: AgentCardData, settings: Settings, locale: string): Record<string, unknown> {
+  return clean({
+    '@context': 'https://schema.org',
+    '@type': 'RealEstateAgent',
+    name: agent.name,
+    jobTitle: agent.title,
+    description: agent.bio,
+    url: absolute(localePath(locale, `/agents/${agent.slug}`)),
+    image: agent.image?.url,
+    telephone: agent.phone,
+    email: agent.email,
+    worksFor: { '@type': 'Organization', name: settings.site_name },
+  })
+}
+
+/** schema.org for a development: a Residence-style place with its developer as the organization behind it. */
+export function projectJsonLd(project: ProjectDetailData, settings: Settings, locale: string): Record<string, unknown> {
+  const lat = project.lat === null || project.lat === undefined ? undefined : Number(project.lat)
+  const lng = project.lng === null || project.lng === undefined ? undefined : Number(project.lng)
+
+  return clean({
+    '@context': 'https://schema.org',
+    '@type': 'ApartmentComplex',
+    name: project.name,
+    description: project.seo_description ?? project.description?.slice(0, 300),
+    url: absolute(localePath(locale, `/projects/${project.slug}`)),
+    numberOfAvailableAccommodationUnits: project.units_count,
+    address: { '@type': 'PostalAddress', streetAddress: project.address_line, addressLocality: project.location?.name },
+    geo: Number.isFinite(lat) && Number.isFinite(lng) ? { '@type': 'GeoCoordinates', latitude: lat, longitude: lng } : undefined,
+    brand: project.developer ? { '@type': 'Organization', name: project.developer.name } : { '@type': 'Organization', name: settings.site_name },
   })
 }
 

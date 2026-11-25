@@ -1,6 +1,7 @@
 import type { MetadataRoute } from 'next'
-import { getList, getPosts, getSections, searchProperties, type Service } from '../lib/api'
+import { getAgents, getList, getLocations, getPosts, getProjectPage, getSections, searchProperties, type Service } from '../lib/api'
 import { defaultLocale, localePath, locales } from '../lib/i18n'
+import { locationSlugPath } from '../lib/locations'
 import { SECTION_PAGES } from '../lib/section-page'
 import { absolute } from '../lib/seo'
 
@@ -13,6 +14,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const services = sections.some((s) => s.key === 'services') ? await getList<Service>(defaultLocale, 'services') : []
   const posts = await allPosts()
   const properties = await allProperties()
+  const offered = (key: string) => sections.some((s) => s.key === key)
+  const agents = offered('agents') ? await getAgents(defaultLocale) : []
+  const locations = offered('locations') ? await getLocations(defaultLocale) : []
+  const projects = offered('projects') ? await allProjects() : []
 
   const paths: { path: string; modified?: string }[] = [
     { path: '/' },
@@ -25,6 +30,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...services.map((s) => ({ path: `/services/${s.id}` })),
     ...posts.map((p) => ({ path: `/blog/${p.slug}`, modified: p.updated_at })),
     ...properties.map((p) => ({ path: `/properties/${p.slug}` })),
+    ...agents.map((a) => ({ path: `/agents/${a.slug}` })),
+    ...locations.map((l) => ({ path: `/locations/${locationSlugPath(locations, l)}` })),
+    ...projects.map((p) => ({ path: `/projects/${p.slug}` })),
   ]
 
   return paths.flatMap(({ path, modified }) =>
@@ -50,4 +58,11 @@ async function allProperties() {
   const rest = await Promise.all(Array.from({ length: Math.max(0, pages - 1) }, (_, i) => searchProperties(defaultLocale, new URLSearchParams({ per_page: '48', page: String(i + 2) }))))
 
   return [first, ...rest].flatMap((page) => page.properties)
+}
+
+async function allProjects() {
+  const first = await getProjectPage(defaultLocale)
+  const rest = await Promise.all(Array.from({ length: Math.max(0, Math.min(first.lastPage, 20) - 1) }, (_, i) => getProjectPage(defaultLocale, i + 2)))
+
+  return [first, ...rest].flatMap((page) => page.projects)
 }

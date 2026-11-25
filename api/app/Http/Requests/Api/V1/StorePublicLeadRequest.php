@@ -26,6 +26,8 @@ class StorePublicLeadRequest extends FormRequest
             'message' => ['nullable', 'string', 'max:5000'],
             'property_id' => ['nullable', 'integer', Rule::exists('properties', 'id')->whereIn('status', PropertyStatus::publicValues())],
             'project_id' => ['nullable', 'integer', Rule::exists('projects', 'id')->where('is_active', true)],
+            // A viewing request: the visitor's preferred time, from now up to 90 days ahead.
+            'viewing_requested_at' => ['nullable', 'date', 'after:now', 'before:'.now()->addDays(90)->toDateTimeString()],
             'captcha_id' => ['required', 'string', 'max:64'],
             'captcha_answer' => ['required', 'integer'],
             'website' => ['prohibited'],
