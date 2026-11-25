@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\LeadStatus;
+use Carbon\Carbon;
 use Database\Factories\LeadFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Builder;
@@ -16,8 +17,9 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * assignment through the assign endpoint.
  *
  * @property LeadStatus $status
+ * @property Carbon|null $viewing_requested_at
  */
-#[Fillable(['name', 'email', 'phone', 'message', 'source', 'property_id', 'project_id'])]
+#[Fillable(['name', 'email', 'phone', 'message', 'source', 'property_id', 'project_id', 'viewing_requested_at'])]
 class Lead extends Model
 {
     /** @use HasFactory<LeadFactory> */
@@ -72,6 +74,6 @@ class Lead extends Model
     /** @return array<string, string> */
     protected function casts(): array
     {
-        return ['status' => LeadStatus::class, 'last_contacted_at' => 'datetime'];
+        return ['status' => LeadStatus::class, 'last_contacted_at' => 'datetime', 'viewing_requested_at' => 'datetime'];
     }
 }

@@ -6118,6 +6118,22 @@
                         }
                     },
                     {
+                        "name": "agent",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer",
+                            "minimum": 1
+                        }
+                    },
+                    {
+                        "name": "project",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer",
+                            "minimum": 1
+                        }
+                    },
+                    {
                         "name": "slugs[]",
                         "in": "query",
                         "schema": {
@@ -11556,6 +11572,13 @@
                             "name"
                         ]
                     },
+                    "viewing_requested_at": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "format": "date-time"
+                    },
                     "last_contacted_at": {
                         "type": [
                             "string",
@@ -11639,6 +11662,7 @@
                     "property_id",
                     "project_id",
                     "agent_id",
+                    "viewing_requested_at",
                     "last_contacted_at",
                     "created_at",
                     "updated_at"
@@ -15236,6 +15260,14 @@
                             "integer",
                             "null"
                         ]
+                    },
+                    "viewing_requested_at": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "format": "date-time",
+                        "description": "A viewing request: the visitor's preferred time, from now up to 90 days ahead."
                     },
                     "captcha_id": {
                         "type": "string",

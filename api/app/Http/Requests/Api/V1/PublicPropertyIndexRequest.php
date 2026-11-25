@@ -42,6 +42,8 @@ class PublicPropertyIndexRequest extends FormRequest
             'featured' => ['boolean'],
             'status' => [Rule::in(PropertyStatus::publicValues())],
             'q' => ['string', 'max:100'],
+            'agent' => ['integer', 'min:1'],
+            'project' => ['integer', 'min:1'],
             'slugs' => ['array', 'max:48'],
             'slugs.*' => ['string', 'max:160'],
             'lat' => ['numeric', 'between:-90,90', 'required_with:lng,radius_km'],

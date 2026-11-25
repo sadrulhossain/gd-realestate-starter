@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
+import { EnquiryForm } from '../../../../components/estate/EnquiryForm'
 import { FactList } from '../../../../components/estate/FactList'
 import { Gallery } from '../../../../components/estate/Gallery'
 import { PriceTag } from '../../../../components/estate/PriceTag'
@@ -168,7 +169,7 @@ export default async function PropertyPage({ params }: Props) {
           )}
         </div>
 
-        <aside aria-labelledby="agent-title" className="space-y-6 lg:sticky lg:top-24 lg:self-start">
+        <aside aria-label={messages.estate.enquiry.heading} className="space-y-6 lg:sticky lg:top-24 lg:self-start">
           <section className="rounded-card border border-line bg-surface p-6 shadow-card">
             <h2 id="agent-title" className="text-sm font-semibold tracking-wide text-ink-muted uppercase">
               {t.agent}
@@ -219,6 +220,14 @@ export default async function PropertyPage({ params }: Props) {
               <p className="mt-3 text-ink-muted">{settings.phone ?? settings.email ?? settings.site_name}</p>
             )}
             {date && <p className="mt-5 border-t border-line pt-3 text-sm text-ink-muted">{t.published.replace('{date}', date)}</p>}
+          </section>
+
+          <section aria-labelledby="enquiry-title" className="rounded-card border border-line bg-surface p-6 shadow-card">
+            <h2 id="enquiry-title" className="font-display text-xl font-bold tracking-tight">
+              {messages.estate.enquiry.heading}
+            </h2>
+            <p className="mt-1 mb-4 text-sm text-ink-muted">{messages.estate.enquiry.intro}</p>
+            <EnquiryForm messages={messages} propertyId={p.id} subject={p.title} />
           </section>
         </aside>
       </div>

@@ -222,3 +222,13 @@ it('limits the list to given slugs and shows only an active agent on the detail'
     $agent->update(['is_active' => false]);
     $this->getJson("/api/v1/public/properties/{$a->slug}")->assertOk()->assertJsonPath('data.agent', null);
 });
+
+it('filters public listings by agent and by project', function () {
+    $agent = Agent::factory()->create();
+    $project = Project::factory()->create();
+    Property::factory()->available()->create(['title' => 'Theirs', 'agent_id' => $agent->id, 'project_id' => $project->id]);
+    Property::factory()->available()->create(['title' => 'Other']);
+
+    $this->getJson("/api/v1/public/properties?agent={$agent->id}")->assertOk()->assertJsonCount(1, 'data')->assertJsonPath('data.0.title', 'Theirs');
+    $this->getJson("/api/v1/public/properties?project={$project->id}")->assertOk()->assertJsonCount(1, 'data')->assertJsonPath('data.0.title', 'Theirs');
+});

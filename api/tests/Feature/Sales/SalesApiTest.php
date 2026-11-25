@@ -328,3 +328,19 @@ it('filters the agenda by date range, agent and status', function () {
     $this->getJson('/api/v1/viewings?status=cancelled')->assertOk()->assertJsonCount(0, 'data');
     $this->getJson('/api/v1/viewings?from=2030-02-01&to=2030-01-01')->assertUnprocessable();
 });
+
+it('stores a viewing request time on the lead and rejects past or far-future times', function () {
+    Notification::fake();
+    $property = Property::factory()->available()->create();
+    $when = now()->addDays(3)->setTime(11, 0);
+
+    $this->postJson('/api/v1/public/leads', ['name' => 'Jane', 'phone' => '0170000000', 'property_id' => $property->id, 'viewing_requested_at' => $when->toIso8601String()] + ($this->captcha)())
+        ->assertCreated();
+
+    expect(Lead::query()->firstOrFail()->viewing_requested_at->equalTo($when))->toBeTrue();
+
+    foreach ([now()->subDay()->toIso8601String(), now()->addDays(120)->toIso8601String(), 'tomorrow-ish'] as $bad) {
+        $this->postJson('/api/v1/public/leads', ['name' => 'Jane', 'phone' => '0170000000', 'viewing_requested_at' => $bad] + ($this->captcha)())
+            ->assertUnprocessable()->assertDetails(['viewing_requested_at']);
+    }
+});

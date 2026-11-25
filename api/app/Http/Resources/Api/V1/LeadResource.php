@@ -36,6 +36,7 @@ class LeadResource extends JsonResource
             ] : null),
             'agent_id' => $this->agent_id,
             'agent' => $this->whenLoaded('agent', fn () => $this->agent ? ['id' => $this->agent->id, 'name' => $this->agent->name] : null),
+            'viewing_requested_at' => $this->viewing_requested_at,
             'last_contacted_at' => $this->last_contacted_at,
             'notes' => $this->whenLoaded('notes', fn () => $this->notes->map(fn ($note) => [
                 'id' => $note->id,

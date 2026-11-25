@@ -8,7 +8,7 @@ import { NavDropdown } from './NavDropdown'
 import { SiteLogo } from './SiteLogo'
 
 /** Sections that only make sense as part of the home page (their content is not a page of its own): no menu entry. */
-const HOME_ONLY = new Set(['featured_properties', 'property_types', 'locations', 'projects', 'agents'])
+const HOME_ONLY = new Set(['featured_properties', 'property_types'])
 
 /** Sticky glass header: logo, one link per visible section (the hero is the page top, contact has its own button), Blog, Contact. */
 export function Header({ locale, settings, sections, messages }: { locale: string; settings: Settings; sections: Section[]; messages: Messages }) {

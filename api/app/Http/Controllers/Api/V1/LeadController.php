@@ -38,7 +38,7 @@ class LeadController extends Controller
      */
     public function publicStore(StorePublicLeadRequest $request): JsonResponse
     {
-        $data = $request->safe()->only(['name', 'email', 'phone', 'message', 'property_id', 'project_id']);
+        $data = $request->safe()->only(['name', 'email', 'phone', 'message', 'property_id', 'project_id', 'viewing_requested_at']);
 
         $lead = new Lead($data);
         $lead->source = 'web';

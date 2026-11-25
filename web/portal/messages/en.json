@@ -167,7 +167,8 @@
       "available": "Available",
       "under_offer": "Under offer",
       "sold": "Sold",
-      "rented": "Rented"
+      "rented": "Rented",
+      "reserved": "Reserved"
     },
     "listing": {
       "sale": "For sale",
@@ -309,6 +310,59 @@
         "listing": "Listing"
       },
       "failed": "Could not load your list. Please try again."
+    },
+    "enquiry": {
+      "title": "Enquire about {subject}",
+      "heading": "Enquire or book a viewing",
+      "intro": "Send a message to the agent. Tick the box to ask for a viewing time.",
+      "contactHint": "An email or a phone number is required.",
+      "contactNeeded": "Enter an email or a phone number.",
+      "wantViewing": "I would like a viewing",
+      "when": "Preferred date and time",
+      "whenHint": "We will confirm the time with you; nothing is booked until then.",
+      "whenNeeded": "Choose a date and time.",
+      "send": "Send enquiry",
+      "sendViewing": "Request viewing",
+      "success": "Thank you. We have your enquiry and will reply soon.",
+      "successViewing": "Thank you. We have your viewing request and will confirm the time soon."
+    },
+    "agents": {
+      "title": "Our agents",
+      "intro": "The people who will help you buy, sell or rent.",
+      "profileTitle": "{name}",
+      "listings": "Properties listed by {name}",
+      "noListings": "No properties listed right now.",
+      "bio": "About",
+      "license": "Licence {no}",
+      "contact": "Contact",
+      "all": "All agents",
+      "empty": "No agents to show yet."
+    },
+    "locations": {
+      "title": "Locations",
+      "intro": "Browse properties by area.",
+      "inLocation": "Properties in {name}",
+      "noListings": "No properties listed here right now.",
+      "areas": "Areas in {name}",
+      "viewAll": "See all properties in {name}",
+      "all": "All locations",
+      "empty": "No locations to show yet.",
+      "introLocation": "Homes, apartments and commercial space for sale and to rent in {name}."
+    },
+    "projects": {
+      "title": "Projects",
+      "intro": "New developments and the units still available.",
+      "empty": "No projects to show yet.",
+      "by": "By {name}",
+      "handover": "Handover {date}",
+      "units": "Units",
+      "unitsAvailable": "{count} available",
+      "unitCode": "Unit",
+      "price": "Price",
+      "noUnits": "No units listed yet.",
+      "all": "All projects",
+      "propertiesIn": "Listings in this project",
+      "about": "About this project"
     }
   }
 }

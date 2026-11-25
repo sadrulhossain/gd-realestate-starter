@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { getAgents, getLocations, getProjects, getProperties, getPropertyTypes } from '../../lib/api'
 import { localePath } from '../../lib/i18n'
+import { locationSlugPath } from '../../lib/locations'
 import { AgentCard } from '../estate/AgentCard'
 import { ProjectCard } from '../estate/ProjectCard'
 import { PropertyCard } from '../estate/PropertyCard'
@@ -75,7 +76,7 @@ export const Locations: SectionView = async ({ section, locale, messages, page }
         {places.map((l) => (
           <li key={l.id}>
             <Tile
-              href={`${localePath(locale, '/properties')}?location=${l.id}`}
+              href={localePath(locale, `/locations/${locationSlugPath(all, l)}`)}
               name={l.name}
               hint={l.parent_id ? (name.get(l.parent_id) ?? undefined) : messages.estate.home.browseLocation.replace('{name}', l.name)}
             />
@@ -117,7 +118,7 @@ export const Agents: SectionView = async ({ section, locale, messages, page }) =
         {agents.map((a) => (
           <li key={a.id} className="flex">
             <div className="flex w-full flex-col">
-              <AgentCard agent={a} messages={messages} />
+              <AgentCard agent={a} messages={messages} locale={locale} />
             </div>
           </li>
         ))}

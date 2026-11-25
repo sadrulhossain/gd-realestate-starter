@@ -2344,6 +2344,8 @@ export interface components {
                 name: string;
             } | null;
             /** Format: date-time */
+            viewing_requested_at: string | null;
+            /** Format: date-time */
             last_contacted_at: string | null;
             notes?: {
                 id: number;
@@ -3054,6 +3056,11 @@ export interface components {
             message?: string | null;
             property_id?: number | null;
             project_id?: number | null;
+            /**
+             * Format: date-time
+             * @description A viewing request: the visitor's preferred time, from now up to 90 days ahead.
+             */
+            viewing_requested_at?: string | null;
             captcha_id: string;
             captcha_answer: number;
             website?: string;
@@ -6663,6 +6670,8 @@ export interface operations {
                 featured?: boolean;
                 status?: "available" | "under_offer";
                 q?: string;
+                agent?: number;
+                project?: number;
                 "slugs[]"?: string[];
                 lat?: number;
                 lng?: number;
