@@ -37,6 +37,19 @@ const TONE: Record<string, string> = {
   completed: 'bg-success/15 text-success',
   cancelled: 'bg-surface-muted text-ink-muted',
   no_show: 'bg-danger/10 text-danger',
+  // Rentals
+  draft: 'bg-surface-muted text-ink',
+  active: 'bg-success/15 text-success',
+  ended: 'bg-surface-muted text-ink-muted',
+  terminated: 'bg-surface-muted text-ink-muted',
+  pending: 'bg-primary-100 text-primary-800',
+  partial: 'bg-surface-muted text-ink',
+  paid: 'bg-success/15 text-success',
+  overdue: 'bg-danger/10 text-danger',
+  void: 'bg-surface-muted text-ink-muted',
+  open: 'bg-primary-100 text-primary-800',
+  in_progress: 'bg-surface-muted text-ink',
+  resolved: 'bg-success/15 text-success',
 }
 
 export const statusTone = (status: string): string => TONE[status] ?? 'bg-surface-muted text-ink'

@@ -2,7 +2,9 @@
 
 namespace App\Services;
 
+use App\Enums\LeaseStatus;
 use App\Enums\PropertyStatus;
+use App\Models\Lease;
 use App\Models\Property;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
@@ -20,6 +22,11 @@ class PropertyStatusService
             throw ValidationException::withMessages([
                 'status' => ["A {$property->listing_type} property cannot move from {$from->value} to {$to->value}."],
             ]);
+        }
+
+        if (config('rentals.enabled') && $from === PropertyStatus::Rented
+            && Lease::query()->where('property_id', $property->id)->where('status', LeaseStatus::Active)->exists()) {
+            throw ValidationException::withMessages(['status' => ['This property has an active lease: end the lease first.']]);
         }
 
         DB::transaction(function () use ($property, $from, $to, $actor, $note): void {

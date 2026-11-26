@@ -3,6 +3,15 @@
 Format: [Keep a Changelog](https://keepachangelog.com), versions follow [SemVer](https://semver.org).
 Each entry lists new environment variables and seeders to run, because upgrades need them (see docs/UPGRADE.md).
 
+## [Unreleased]
+
+### Added
+- Optional rental management: tenants, leases, rent schedules and payments, maintenance requests, rental reports with CSV export, admin screens, a daily `rentals:run` job and property status sync.
+- New environment variable `RENTALS_ENABLED` (default `true`).
+
+### Upgrade
+- Seeder to run: `db:seed --class=RentalsModuleSeeder --force`.
+
 ## [1.0.0] - 2026-11-26
 
 First release of the real estate kit, forked from the business-site template (its 1.0.0 plus the phase 17 changes, commit `3eade4d`).

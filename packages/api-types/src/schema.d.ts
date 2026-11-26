@@ -696,6 +696,65 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/leases": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List leases (newest first). Filters: `status`, `property_id`, `tenant_id`, `q` (tenant name or property reference) */
+        get: operations["leases.index"];
+        put?: never;
+        /** Create a draft lease on a rent listing */
+        post: operations["leases.store"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/leases/{lease}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Show a lease with its rent schedule */
+        get: operations["leases.show"];
+        /** Update a lease (only a draft can change its terms; notes can always change) */
+        put: operations["leases.update"];
+        post?: never;
+        /** Delete a lease that never started (draft or cancelled); others answer 409 */
+        delete: operations["leases.destroy"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/leases/{lease}/status": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Change a lease's status
+         * @description draft to active (writes the rent schedule, marks the property rented) or cancelled; active to ended or
+         *     terminated on `ended_on` (default today, not in the future), which voids later unpaid periods and makes the
+         *     property available again.
+         */
+        post: operations["lease.status"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/meta/locales": {
         parameters: {
             query?: never;
@@ -795,6 +854,60 @@ export interface paths {
          *     login page is ended separately by visiting `/logout`.
          */
         post: operations["v1.logout"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/maintenance": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List maintenance requests (newest first). Filters: `status`, `priority`, `property_id` */
+        get: operations["maintenance.index"];
+        put?: never;
+        /** Log a maintenance request */
+        post: operations["maintenance.store"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/maintenance/{maintenance}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Show a maintenance request */
+        get: operations["maintenance.show"];
+        /** Update a maintenance request */
+        put: operations["maintenance.update"];
+        post?: never;
+        /** Delete a maintenance request */
+        delete: operations["maintenance.destroy"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/maintenance/{maintenance}/status": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Change a request's status (resolved and cancelled requests can be reopened) */
+        post: operations["maintenance.status"];
         delete?: never;
         options?: never;
         head?: never;
@@ -1447,6 +1560,117 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/rent-charges": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List rent charges
+         * @description By due date, earliest first, 50 per page. Filters: `status` (pending, partial, paid, void or overdue),
+         *     `lease_id`, `from` and `to` (due dates, inclusive).
+         */
+        get: operations["rent-charges.index"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/rent-charges/{rentCharge}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Show a rent charge with its payments */
+        get: operations["rent-charges.show"];
+        /** Change a charge's due date or note */
+        put: operations["rent-charges.update"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/rent-charges/{rentCharge}/payments": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Record a payment (at most what is still owed) */
+        post: operations["rentCharge.pay"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/rent-charges/{rentCharge}/payments/{payment}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Remove a payment entered by mistake */
+        delete: operations["rentCharge.reverse"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/rental-reports/{report}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Show a rental report
+         * @description `report` is `rent-roll` (active leases and what they owe), `arrears` (every overdue charge) or `collections`
+         *     (payments between `from` and `to`). Money is in major units. Needs `rental_reports.view`.
+         */
+        get: operations["rentalReport.show"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/rental-reports/{report}/export": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Download a rental report as CSV */
+        get: operations["rentalReport.export"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/reports/{report}": {
         parameters: {
             query?: never;
@@ -2002,6 +2226,43 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/tenants": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List tenants (by name; `q` searches name, email and phone) */
+        get: operations["tenants.index"];
+        put?: never;
+        /** Create a tenant */
+        post: operations["tenants.store"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/tenants/{tenant}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Show a tenant */
+        get: operations["tenants.show"];
+        /** Update a tenant */
+        put: operations["tenants.update"];
+        post?: never;
+        /** Delete a tenant (409 while they have a lease) */
+        delete: operations["tenants.destroy"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/public/testimonials": {
         parameters: {
             query?: never;
@@ -2250,6 +2511,16 @@ export interface components {
             status: components["schemas"]["LeadStatus"];
             lost_reason?: string | null;
         };
+        /** ChangeLeaseStatusRequest */
+        ChangeLeaseStatusRequest: {
+            status: components["schemas"]["LeaseStatus"];
+            /** Format: date */
+            ended_on?: string | null;
+        };
+        /** ChangeMaintenanceStatusRequest */
+        ChangeMaintenanceStatusRequest: {
+            status: components["schemas"]["MaintenanceStatus"];
+        };
         /** ChangePropertyStatusRequest */
         ChangePropertyStatusRequest: {
             status: components["schemas"]["PropertyStatus"];
@@ -2369,6 +2640,38 @@ export interface components {
          * @enum {string}
          */
         LeadStatus: "new" | "contacted" | "qualified" | "viewing" | "negotiation" | "won" | "lost";
+        /** LeaseResource */
+        LeaseResource: {
+            id: string;
+            property_id: string;
+            property?: {
+                id: number;
+                ref_code: string;
+                title: string;
+            };
+            tenant_id: string;
+            tenant?: {
+                id: string;
+                name: string;
+            };
+            start_date: string;
+            end_date: string;
+            rent_amount: string;
+            rent_period: string;
+            deposit_amount: string;
+            status: components["schemas"]["LeaseStatus"];
+            ended_on: string | null;
+            notes: string;
+            charges?: components["schemas"]["RentChargeResource"][];
+            created_at: string;
+            updated_at: string;
+        };
+        /**
+         * LeaseStatus
+         * @description Lease lifecycle. Status changes only through LeaseService, which enforces this table.
+         * @enum {string}
+         */
+        LeaseStatus: "draft" | "active" | "ended" | "terminated" | "cancelled";
         /** LocationResource */
         LocationResource: {
             id: number;
@@ -2383,6 +2686,32 @@ export interface components {
             /** Format: date-time */
             updated_at: string | null;
         };
+        /** MaintenanceResource */
+        MaintenanceResource: {
+            id: string;
+            property_id: string;
+            property?: {
+                id: number;
+                ref_code: string;
+                title: string;
+            };
+            lease_id: string;
+            title: string;
+            description: string;
+            priority: string;
+            status: components["schemas"]["MaintenanceStatus"];
+            cost: string;
+            /** Format: date-time */
+            resolved_at: string | null;
+            created_at: string;
+            updated_at: string;
+        };
+        /**
+         * MaintenanceStatus
+         * @description Maintenance request lifecycle; a finished request can be reopened.
+         * @enum {string}
+         */
+        MaintenanceStatus: "open" | "in_progress" | "resolved" | "cancelled";
         /** MenuResource */
         MenuResource: {
             id: number;
@@ -2715,6 +3044,40 @@ export interface components {
             /** @enum {string|null} */
             rent_period?: "month" | "year" | "day" | null;
         };
+        /** RentChargeResource */
+        RentChargeResource: {
+            id: string;
+            lease_id: string;
+            lease?: {
+                id: string;
+                property: {
+                    id: number;
+                    ref_code: string;
+                    title: string;
+                };
+                tenant: {
+                    id: string;
+                    name: string;
+                };
+            };
+            period_start: string;
+            period_end: string;
+            due_date: string;
+            amount: string;
+            paid_amount: string;
+            status: string;
+            overdue: boolean;
+            note: string;
+            payments?: components["schemas"]["RentPaymentResource"][];
+        };
+        /** RentPaymentResource */
+        RentPaymentResource: {
+            id: string;
+            amount: string;
+            paid_on: string;
+            method: string;
+            reference: string;
+        };
         /** ReorderMenusRequest */
         ReorderMenusRequest: {
             ids: number[];
@@ -2892,6 +3255,20 @@ export interface components {
             /** @description Only people who can assign leads choose the agent; everyone else's lead goes to their own profile. */
             agent_id?: string;
         };
+        /** StoreLeaseRequest */
+        StoreLeaseRequest: {
+            property_id: number;
+            tenant_id: number;
+            /** Format: date */
+            start_date: string;
+            /** Format: date */
+            end_date: string;
+            rent_amount: number;
+            /** @enum {string} */
+            rent_period?: "month" | "year";
+            deposit_amount?: number;
+            notes?: string | null;
+        };
         /** StoreLocationRequest */
         StoreLocationRequest: {
             name: string;
@@ -2902,6 +3279,16 @@ export interface components {
             lng?: number | null;
             sort_order?: number;
             is_active?: boolean;
+        };
+        /** StoreMaintenanceRequest */
+        StoreMaintenanceRequest: {
+            property_id: number;
+            lease_id?: number | null;
+            title: string;
+            description?: string | null;
+            /** @enum {string} */
+            priority?: "low" | "normal" | "high" | "urgent";
+            cost?: number | null;
         };
         /** StorePostImageRequest */
         StorePostImageRequest: {
@@ -3065,6 +3452,15 @@ export interface components {
             captcha_answer: number;
             website?: string;
         };
+        /** StoreRentPaymentRequest */
+        StoreRentPaymentRequest: {
+            amount: number;
+            /** Format: date */
+            paid_on: string;
+            /** @enum {string} */
+            method: "cash" | "bank" | "cheque" | "online" | "other";
+            reference?: string | null;
+        };
         /** StoreRoleRequest */
         StoreRoleRequest: {
             name: string;
@@ -3132,6 +3528,16 @@ export interface components {
             sort_order?: number;
             is_visible?: boolean;
         };
+        /** StoreTenantRequest */
+        StoreTenantRequest: {
+            name: string;
+            /** Format: email */
+            email?: string | null;
+            phone?: string | null;
+            id_number?: string | null;
+            address?: string | null;
+            notes?: string | null;
+        };
         /** StoreTestimonialImageRequest */
         StoreTestimonialImageRequest: {
             /**
@@ -3184,6 +3590,18 @@ export interface components {
             is_visible: boolean;
             /** Format: date-time */
             updated_at: string | null;
+        };
+        /** TenantResource */
+        TenantResource: {
+            id: string;
+            name: string;
+            email: string;
+            phone: string;
+            id_number: string;
+            address: string;
+            notes: string;
+            created_at: string;
+            updated_at: string;
         };
         /** TestimonialResource */
         TestimonialResource: {
@@ -3279,6 +3697,23 @@ export interface components {
             status?: string;
             agent_id?: string;
         };
+        /**
+         * UpdateLeaseRequest
+         * @description The create rules, all optional. LeaseService refuses term changes once the lease is no longer a draft.
+         */
+        UpdateLeaseRequest: {
+            property_id?: number;
+            tenant_id?: number;
+            /** Format: date */
+            start_date?: string;
+            /** Format: date */
+            end_date?: string;
+            rent_amount?: number;
+            /** @enum {string} */
+            rent_period?: "month" | "year";
+            deposit_amount?: number;
+            notes?: string | null;
+        };
         /** UpdateLocationRequest */
         UpdateLocationRequest: {
             name?: string;
@@ -3289,6 +3724,16 @@ export interface components {
             lng?: number | null;
             sort_order?: number;
             is_active?: boolean;
+        };
+        /** UpdateMaintenanceRequest */
+        UpdateMaintenanceRequest: {
+            property_id?: number;
+            lease_id?: number | null;
+            title?: string;
+            description?: string | null;
+            /** @enum {string} */
+            priority?: "low" | "normal" | "high" | "urgent";
+            cost?: number | null;
         };
         /** UpdateMenuRequest */
         UpdateMenuRequest: {
@@ -3431,6 +3876,12 @@ export interface components {
             sort_order?: number;
             is_active?: boolean;
         };
+        /** UpdateRentChargeRequest */
+        UpdateRentChargeRequest: {
+            /** Format: date */
+            due_date?: string;
+            note?: string | null;
+        };
         /** UpdateRoleRequest */
         UpdateRoleRequest: {
             name?: string;
@@ -3507,6 +3958,16 @@ export interface components {
             name?: string;
             sort_order?: number;
             is_visible?: boolean;
+        };
+        /** UpdateTenantRequest */
+        UpdateTenantRequest: {
+            name?: string;
+            /** Format: email */
+            email?: string | null;
+            phone?: string | null;
+            id_number?: string | null;
+            address?: string | null;
+            notes?: string | null;
         };
         /** UpdateTestimonialRequest */
         UpdateTestimonialRequest: {
@@ -5307,6 +5768,223 @@ export interface operations {
             422: components["responses"]["ValidationException"];
         };
     };
+    "leases.index": {
+        parameters: {
+            query?: {
+                status?: components["schemas"]["LeaseStatus"];
+                property_id?: number;
+                tenant_id?: number;
+                q?: string | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Paginated set of `LeaseResource` */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["LeaseResource"][];
+                        links: {
+                            first: string | null;
+                            last: string | null;
+                            prev: string | null;
+                            next: string | null;
+                        };
+                        meta: {
+                            current_page: number;
+                            from: number | null;
+                            last_page: number;
+                            /** @description Generated paginator links. */
+                            links: {
+                                url: string | null;
+                                label: string;
+                                active: boolean;
+                            }[];
+                            /** @description Base path for paginator generated URLs. */
+                            path: string | null;
+                            /** @description Number of items shown per page. */
+                            per_page: number;
+                            /** @description Number of the last item in the slice. */
+                            to: number | null;
+                            /** @description Total number of items being paginated. */
+                            total: number;
+                        };
+                    };
+                };
+            };
+            401: components["responses"]["AuthenticationException"];
+            403: components["responses"]["AuthorizationException"];
+            422: components["responses"]["ValidationException"];
+        };
+    };
+    "leases.store": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["StoreLeaseRequest"];
+            };
+        };
+        responses: {
+            /** @description `LeaseResource` */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["LeaseResource"];
+                    };
+                };
+            };
+            401: components["responses"]["AuthenticationException"];
+            403: components["responses"]["AuthorizationException"];
+            422: components["responses"]["ValidationException"];
+        };
+    };
+    "leases.show": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The lease ID */
+                lease: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description `LeaseResource` */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["LeaseResource"] & Record<string, never>;
+                    };
+                };
+            };
+            401: components["responses"]["AuthenticationException"];
+            403: components["responses"]["AuthorizationException"];
+            404: components["responses"]["ModelNotFoundException"];
+        };
+    };
+    "leases.update": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The lease ID */
+                lease: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["UpdateLeaseRequest"];
+            };
+        };
+        responses: {
+            /** @description `LeaseResource` */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["LeaseResource"];
+                    };
+                };
+            };
+            401: components["responses"]["AuthenticationException"];
+            403: components["responses"]["AuthorizationException"];
+            404: components["responses"]["ModelNotFoundException"];
+            422: components["responses"]["ValidationException"];
+        };
+    };
+    "leases.destroy": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The lease ID */
+                lease: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No content */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            401: components["responses"]["AuthenticationException"];
+            403: components["responses"]["AuthorizationException"];
+            404: components["responses"]["ModelNotFoundException"];
+            /** @description An error */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /**
+                         * @description Error overview.
+                         * @example A lease that has started is part of the records and cannot be deleted.
+                         */
+                        message: string;
+                    };
+                };
+            };
+        };
+    };
+    "lease.status": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The lease ID */
+                lease: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ChangeLeaseStatusRequest"];
+            };
+        };
+        responses: {
+            /** @description `LeaseResource` */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["LeaseResource"] & Record<string, never>;
+                    };
+                };
+            };
+            401: components["responses"]["AuthenticationException"];
+            403: components["responses"]["AuthorizationException"];
+            404: components["responses"]["ModelNotFoundException"];
+            422: components["responses"]["ValidationException"];
+        };
+    };
     "v1.locales": {
         parameters: {
             query?: never;
@@ -5524,6 +6202,207 @@ export interface operations {
                 content?: never;
             };
             401: components["responses"]["AuthenticationException"];
+        };
+    };
+    "maintenance.index": {
+        parameters: {
+            query?: {
+                status?: components["schemas"]["MaintenanceStatus"];
+                priority?: "low" | "normal" | "high" | "urgent";
+                property_id?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Paginated set of `MaintenanceResource` */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["MaintenanceResource"][];
+                        links: {
+                            first: string | null;
+                            last: string | null;
+                            prev: string | null;
+                            next: string | null;
+                        };
+                        meta: {
+                            current_page: number;
+                            from: number | null;
+                            last_page: number;
+                            /** @description Generated paginator links. */
+                            links: {
+                                url: string | null;
+                                label: string;
+                                active: boolean;
+                            }[];
+                            /** @description Base path for paginator generated URLs. */
+                            path: string | null;
+                            /** @description Number of items shown per page. */
+                            per_page: number;
+                            /** @description Number of the last item in the slice. */
+                            to: number | null;
+                            /** @description Total number of items being paginated. */
+                            total: number;
+                        };
+                    };
+                };
+            };
+            401: components["responses"]["AuthenticationException"];
+            403: components["responses"]["AuthorizationException"];
+            422: components["responses"]["ValidationException"];
+        };
+    };
+    "maintenance.store": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["StoreMaintenanceRequest"];
+            };
+        };
+        responses: {
+            /** @description `MaintenanceResource` */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["MaintenanceResource"];
+                    };
+                };
+            };
+            401: components["responses"]["AuthenticationException"];
+            403: components["responses"]["AuthorizationException"];
+            422: components["responses"]["ValidationException"];
+        };
+    };
+    "maintenance.show": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The maintenance ID */
+                maintenance: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description `MaintenanceResource` */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["MaintenanceResource"];
+                    };
+                };
+            };
+            401: components["responses"]["AuthenticationException"];
+            403: components["responses"]["AuthorizationException"];
+            404: components["responses"]["ModelNotFoundException"];
+        };
+    };
+    "maintenance.update": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The maintenance ID */
+                maintenance: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["UpdateMaintenanceRequest"];
+            };
+        };
+        responses: {
+            /** @description `MaintenanceResource` */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["MaintenanceResource"];
+                    };
+                };
+            };
+            401: components["responses"]["AuthenticationException"];
+            403: components["responses"]["AuthorizationException"];
+            404: components["responses"]["ModelNotFoundException"];
+            422: components["responses"]["ValidationException"];
+        };
+    };
+    "maintenance.destroy": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The maintenance ID */
+                maintenance: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No content */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            401: components["responses"]["AuthenticationException"];
+            403: components["responses"]["AuthorizationException"];
+            404: components["responses"]["ModelNotFoundException"];
+        };
+    };
+    "maintenance.status": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The maintenance ID */
+                maintenance: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ChangeMaintenanceStatusRequest"];
+            };
+        };
+        responses: {
+            /** @description `MaintenanceResource` */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["MaintenanceResource"];
+                    };
+                };
+            };
+            401: components["responses"]["AuthenticationException"];
+            403: components["responses"]["AuthorizationException"];
+            404: components["responses"]["ModelNotFoundException"];
+            422: components["responses"]["ValidationException"];
         };
     };
     "v1.me": {
@@ -6916,6 +7795,21 @@ export interface operations {
             401: components["responses"]["AuthenticationException"];
             403: components["responses"]["AuthorizationException"];
             404: components["responses"]["ModelNotFoundException"];
+            /** @description An error */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /**
+                         * @description Error overview.
+                         * @example This property has leases or maintenance records. Archive it instead.
+                         */
+                        message: string;
+                    };
+                };
+            };
         };
     };
     "propertyMedia.store": {
@@ -7199,6 +8093,320 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+            401: components["responses"]["AuthenticationException"];
+            403: components["responses"]["AuthorizationException"];
+            404: components["responses"]["ModelNotFoundException"];
+        };
+    };
+    "rent-charges.index": {
+        parameters: {
+            query?: {
+                status?: "pending" | "partial" | "paid" | "void" | "overdue";
+                lease_id?: number;
+                from?: string;
+                to?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Paginated set of `RentChargeResource` */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: (components["schemas"]["RentChargeResource"] & Record<string, never>)[];
+                        links: {
+                            first: string | null;
+                            last: string | null;
+                            prev: string | null;
+                            next: string | null;
+                        };
+                        meta: {
+                            current_page: number;
+                            from: number | null;
+                            last_page: number;
+                            /** @description Generated paginator links. */
+                            links: {
+                                url: string | null;
+                                label: string;
+                                active: boolean;
+                            }[];
+                            /** @description Base path for paginator generated URLs. */
+                            path: string | null;
+                            /** @description Number of items shown per page. */
+                            per_page: number;
+                            /** @description Number of the last item in the slice. */
+                            to: number | null;
+                            /** @description Total number of items being paginated. */
+                            total: number;
+                        };
+                    };
+                };
+            };
+            401: components["responses"]["AuthenticationException"];
+            403: components["responses"]["AuthorizationException"];
+            422: components["responses"]["ValidationException"];
+        };
+    };
+    "rent-charges.show": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The rent charge ID */
+                rentCharge: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description `RentChargeResource` */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["RentChargeResource"] & Record<string, never>;
+                    };
+                };
+            };
+            401: components["responses"]["AuthenticationException"];
+            403: components["responses"]["AuthorizationException"];
+            404: components["responses"]["ModelNotFoundException"];
+        };
+    };
+    "rent-charges.update": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The rent charge ID */
+                rentCharge: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["UpdateRentChargeRequest"];
+            };
+        };
+        responses: {
+            /** @description `RentChargeResource` */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["RentChargeResource"] & Record<string, never>;
+                    };
+                };
+            };
+            401: components["responses"]["AuthenticationException"];
+            403: components["responses"]["AuthorizationException"];
+            404: components["responses"]["ModelNotFoundException"];
+            422: components["responses"]["ValidationException"];
+        };
+    };
+    "rentCharge.pay": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The rent charge ID */
+                rentCharge: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["StoreRentPaymentRequest"];
+            };
+        };
+        responses: {
+            /** @description `RentChargeResource` */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["RentChargeResource"] & Record<string, never>;
+                    };
+                };
+            };
+            401: components["responses"]["AuthenticationException"];
+            403: components["responses"]["AuthorizationException"];
+            404: components["responses"]["ModelNotFoundException"];
+            422: components["responses"]["ValidationException"];
+        };
+    };
+    "rentCharge.reverse": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The rent charge ID */
+                rentCharge: number;
+                /** @description The payment ID */
+                payment: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description `RentChargeResource` */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["RentChargeResource"] & Record<string, never>;
+                    };
+                };
+            };
+            401: components["responses"]["AuthenticationException"];
+            403: components["responses"]["AuthorizationException"];
+            404: components["responses"]["ModelNotFoundException"];
+        };
+    };
+    "rentalReport.show": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                report: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: {
+                            /** @constant */
+                            key: "rent-roll";
+                            /** @constant */
+                            title: "Rent roll";
+                            columns: [
+                                "Property",
+                                "Tenant",
+                                "Rent",
+                                "Per",
+                                "Lease ends",
+                                "Overdue"
+                            ];
+                            rows: ([
+                                string,
+                                string,
+                                string,
+                                string,
+                                string,
+                                string
+                            ] | [
+                                "Total",
+                                "",
+                                "",
+                                "",
+                                "",
+                                string
+                            ])[];
+                        } | {
+                            /** @constant */
+                            key: "arrears";
+                            /** @constant */
+                            title: "Arrears";
+                            columns: [
+                                "Tenant",
+                                "Phone",
+                                "Property",
+                                "Due",
+                                "Days late",
+                                "Owed"
+                            ];
+                            rows: ([
+                                string,
+                                string,
+                                string,
+                                string,
+                                number,
+                                string
+                            ] | [
+                                "Total",
+                                "",
+                                "",
+                                "",
+                                "",
+                                string
+                            ])[];
+                        } | {
+                            /** @constant */
+                            key: "collections";
+                            /** @constant */
+                            title: "Rent collected";
+                            columns: [
+                                "Paid on",
+                                "Tenant",
+                                "Property",
+                                "Method",
+                                "Reference",
+                                "Amount"
+                            ];
+                            rows: ([
+                                string,
+                                string,
+                                string,
+                                string,
+                                string,
+                                string
+                            ] | [
+                                "Total",
+                                "",
+                                "",
+                                "",
+                                "",
+                                string
+                            ])[];
+                        };
+                    };
+                };
+            };
+            401: components["responses"]["AuthenticationException"];
+            403: components["responses"]["AuthorizationException"];
+            404: components["responses"]["ModelNotFoundException"];
+        };
+    };
+    "rentalReport.export": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                report: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    "Transfer-Encoding": "chunked";
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/csv; charset=UTF-8": string;
+                };
             };
             401: components["responses"]["AuthenticationException"];
             403: components["responses"]["AuthorizationException"];
@@ -8516,6 +9724,187 @@ export interface operations {
             401: components["responses"]["AuthenticationException"];
             403: components["responses"]["AuthorizationException"];
             404: components["responses"]["ModelNotFoundException"];
+        };
+    };
+    "tenants.index": {
+        parameters: {
+            query?: {
+                q?: string | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Paginated set of `TenantResource` */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["TenantResource"][];
+                        links: {
+                            first: string | null;
+                            last: string | null;
+                            prev: string | null;
+                            next: string | null;
+                        };
+                        meta: {
+                            current_page: number;
+                            from: number | null;
+                            last_page: number;
+                            /** @description Generated paginator links. */
+                            links: {
+                                url: string | null;
+                                label: string;
+                                active: boolean;
+                            }[];
+                            /** @description Base path for paginator generated URLs. */
+                            path: string | null;
+                            /** @description Number of items shown per page. */
+                            per_page: number;
+                            /** @description Number of the last item in the slice. */
+                            to: number | null;
+                            /** @description Total number of items being paginated. */
+                            total: number;
+                        };
+                    };
+                };
+            };
+            401: components["responses"]["AuthenticationException"];
+            403: components["responses"]["AuthorizationException"];
+            422: components["responses"]["ValidationException"];
+        };
+    };
+    "tenants.store": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["StoreTenantRequest"];
+            };
+        };
+        responses: {
+            /** @description `TenantResource` */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["TenantResource"];
+                    };
+                };
+            };
+            401: components["responses"]["AuthenticationException"];
+            403: components["responses"]["AuthorizationException"];
+            422: components["responses"]["ValidationException"];
+        };
+    };
+    "tenants.show": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The tenant ID */
+                tenant: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description `TenantResource` */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["TenantResource"];
+                    };
+                };
+            };
+            401: components["responses"]["AuthenticationException"];
+            403: components["responses"]["AuthorizationException"];
+            404: components["responses"]["ModelNotFoundException"];
+        };
+    };
+    "tenants.update": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The tenant ID */
+                tenant: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["UpdateTenantRequest"];
+            };
+        };
+        responses: {
+            /** @description `TenantResource` */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["TenantResource"];
+                    };
+                };
+            };
+            401: components["responses"]["AuthenticationException"];
+            403: components["responses"]["AuthorizationException"];
+            404: components["responses"]["ModelNotFoundException"];
+            422: components["responses"]["ValidationException"];
+        };
+    };
+    "tenants.destroy": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The tenant ID */
+                tenant: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No content */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            401: components["responses"]["AuthenticationException"];
+            403: components["responses"]["AuthorizationException"];
+            404: components["responses"]["ModelNotFoundException"];
+            /** @description An error */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /**
+                         * @description Error overview.
+                         * @example This tenant has leases and cannot be deleted.
+                         */
+                        message: string;
+                    };
+                };
+            };
         };
     };
     "testimonial.publicIndex": {

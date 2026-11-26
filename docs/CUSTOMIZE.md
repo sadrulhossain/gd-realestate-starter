@@ -37,6 +37,17 @@ Rules that keep the site accessible and consistent:
 | Portal look (cards, search, detail) | the `estate` token layer and components ([THEME.md](THEME.md)); `/styleguide` shows them outside production |
 | Enquiry and viewing emails | `api/app/Notifications/` |
 
+## Rental management (optional)
+
+Tenants, leases, rent schedules and payments, maintenance and rental reports. It is on by default. For a client who does not want it:
+
+1. Set `RENTALS_ENABLED=false` in `.env` (production: `.env.prod`) and recreate the containers (`docker compose ... up -d`).
+2. Run `php artisan db:seed --class=RentalsModuleSeeder --force` in the php container.
+
+The API then answers 404 on the rental routes, the menus and permissions are gone, the dashboard cards disappear and the daily job does nothing. Records are kept (a property with leases or maintenance records still cannot be deleted). To switch it on again, set `true` and repeat both steps; only the `admin` role is granted the permissions again, so re-grant any other role.
+
+Removing the code itself is optional development work. It lives in the `2026_11_28_100000_create_rental_tables` migration, `config/rentals.php`, the `Tenant`, `Lease`, `Rent*`, `Rental*` and `Maintenance*` classes under `api/` (and `tests/Feature/Rentals`), `web/admin/src/rentalModules.tsx`, `lib/rentalStatus.ts`, `components/RentPanel.tsx` and `rentals.test.tsx`. Its hooks in shared files: `routes/api.php`, `routes/console.php`, `DatabaseSeeder`, `PropertyStatusService`, `PropertyController::destroy`, `DashboardController`, `modules.tsx`, `router.tsx`, `Reports.tsx`, `Dashboard.tsx`.
+
 ## Language
 
 The kit ships in English only (`LOCALE_SUPPORTED=en`, DECISIONS.md 013). The template's second-language support (`*_2nd` columns, `web/portal/messages/second.json`) is still in the code but is not maintained or tested here: turning it on is development work, not a setting.

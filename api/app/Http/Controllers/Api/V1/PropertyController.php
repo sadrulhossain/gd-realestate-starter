@@ -9,6 +9,8 @@ use App\Http\Requests\Api\V1\UpdatePropertyRequest;
 use App\Http\Resources\Api\V1\PropertyResource;
 use App\Http\Resources\Api\V1\PublicPropertyDetailResource;
 use App\Http\Resources\Api\V1\PublicPropertyResource;
+use App\Models\Lease;
+use App\Models\MaintenanceRequest;
 use App\Models\Property;
 use App\Models\Setting;
 use App\Services\MediaService;
@@ -145,6 +147,13 @@ class PropertyController extends Controller
     public function destroy(Property $property, MediaService $media): Response
     {
         Gate::authorize('delete', $property);
+
+        // Rental records outlive the listing (also when the rental module is switched off).
+        abort_if(
+            Lease::query()->where('property_id', $property->id)->exists() || MaintenanceRequest::query()->where('property_id', $property->id)->exists(),
+            409,
+            'This property has leases or maintenance records. Archive it instead.',
+        );
 
         $files = $property->media()->get()->filter->isFile();
 

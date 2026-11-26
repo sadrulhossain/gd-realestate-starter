@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\V1;
 
+use App\Enums\MaintenanceStatus;
 use App\Enums\ViewingStatus;
 use App\Http\Controllers\Controller;
 use App\Models\Agent;
@@ -10,8 +11,10 @@ use App\Models\ContactMessage;
 use App\Models\Faq;
 use App\Models\GalleryItem;
 use App\Models\Lead;
+use App\Models\MaintenanceRequest;
 use App\Models\Post;
 use App\Models\Property;
+use App\Models\RentCharge;
 use App\Models\Service;
 use App\Models\TeamMember;
 use App\Models\Testimonial;
@@ -64,6 +67,17 @@ class DashboardController extends Controller
         if ($user->can('viewings.view')) {
             $counts['upcoming_viewings'] = Viewing::query()->visibleTo($user)
                 ->whereIn('status', ViewingStatus::activeValues())->where('starts_at', '>=', now())->count();
+        }
+
+        if (config('rentals.enabled')) {
+            if ($user->can('rent_charges.view')) {
+                $counts['overdue_rent'] = RentCharge::query()->overdue()->count();
+            }
+
+            if ($user->can('maintenance.view')) {
+                $counts['open_maintenance'] = MaintenanceRequest::query()
+                    ->whereIn('status', [MaintenanceStatus::Open, MaintenanceStatus::InProgress])->count();
+            }
         }
 
         return response()->json(['data' => $counts]);

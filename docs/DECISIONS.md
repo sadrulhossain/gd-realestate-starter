@@ -87,3 +87,7 @@ containers stay on the API image. Tests keep cache/session on `array` and queue 
 ## 015 - Typo matching is a fallback, not part of every search
 2026-11-26. `q` searches the full-text index. Only when that finds nothing under the other filters does the search match titles by trigram (`pg_trgm`), inside a transaction with `enable_seqscan = off` so the GIN index is used.
 Why: on 10,000 properties the previous `full-text OR trigram` filter tested every row (250 to 800 ms in PostgreSQL); the two paths now take under 15 ms. Trade-off: when some listings match the words exactly, near-spellings are no longer mixed into the results.
+
+## 016 - Rental management is a switch, not a separate build
+2026-11-26. The module ships in the code and is controlled by `RENTALS_ENABLED` (default on). Off: routes answer 404, its seeder removes menus and permissions, the daily job and the property status guard are inactive; tables and data stay.
+Why: one codebase for every client, nothing destructive, reversible. Rules inside it: one active lease per property; terms are fixed after activation (a renewal is a new lease); a short last period is charged in full (no proration).
