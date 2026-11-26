@@ -27,7 +27,7 @@ Then run what the changelog asks for, typically new seeders (they only add missi
 docker compose -f docker-compose.prod.yml --env-file .env.prod exec php php artisan db:seed --class=<NewModuleSeeder> --force
 ```
 
-Finish with the checks from DEPLOY.md step 5, sign in to the admin, open the portal in both languages and send a test contact message.
+Finish with the checks from DEPLOY.md step 5, sign in to the admin, open the portal, run a property search, and send a test contact message and a test enquiry.
 
 ## Upgrade pinned software
 

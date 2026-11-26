@@ -54,7 +54,7 @@ chmod 600 .env.prod
 ```
 
 Edit `.env.prod`: `APP_DOMAIN`, `APP_NAME`, `TLS_CERT_DIR`, the SMTP settings, `CONTACT_NOTIFY_TO`, and replace every `change-me`. Generate the secrets with
-`openssl rand -base64 32` (`APP_KEY` is `base64:` plus that value). `SUPERADMIN_EMAIL` / `SUPERADMIN_PASSWORD` become the first admin. `LOCALE_SUPPORTED=en,bn` enables a second language.
+`openssl rand -base64 32` (`APP_KEY` is `base64:` plus that value). `SUPERADMIN_EMAIL` / `SUPERADMIN_PASSWORD` become the first admin. Leave `LOCALE_SUPPORTED=en` (the kit is English only). New enquiries and scheduled viewings are emailed, so set working SMTP settings.
 Compose refuses to start when a required secret is missing. **Keep a copy of `.env.prod` outside the server** (a password manager): losing `APP_KEY` loses encrypted data.
 
 ## 5. First start
@@ -68,7 +68,8 @@ docker compose -f docker-compose.prod.yml --env-file .env.prod exec php php arti
 default sections, settings, the superadmin from `.env.prod` and the admin OAuth client. They are idempotent, so running them again is safe; they never overwrite edited content.
 
 Check: `https://example.com` (portal), `https://admin.example.com` (sign in), `https://api.example.com/api/v1/health` (`"status":"ok"`).
-Then in the admin: Settings (name, address, phone, email, hours), Sections (visibility and text), and change the superadmin password.
+Then in the admin: Settings (name, address, phone, email, hours, currency, area unit), Locations (add them before the first property), Property types and Amenities, Agents, Sections (visibility and text), and change the superadmin password.
+The migrations enable the PostgreSQL extensions `pg_trgm`, `cube` and `earthdistance`. The bundled database user may do that; with an external database, enable them as a superuser first.
 
 To run the production commands shorter: `alias dcp='docker compose -f docker-compose.prod.yml --env-file .env.prod'`.
 

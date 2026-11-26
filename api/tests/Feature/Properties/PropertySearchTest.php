@@ -147,6 +147,16 @@ it('tolerates typos in the title through pg_trgm', function () {
     expect(titles($this->getJson('/api/v1/public/properties?q=aprtment')->assertOk()))->toBe(['Spacious apartment in Gulshan']);
 });
 
+it('falls back to typo matching only when full-text finds nothing under the other filters', function () {
+    Property::factory()->available()->create(['title' => 'Lakeview house', 'price' => 900]);
+    Property::factory()->available()->create(['title' => 'Lakeviews flat', 'price' => 100]);
+
+    $q = fn (string $query) => titles($this->getJson('/api/v1/public/properties?'.$query)->assertOk());
+
+    expect($q('q=lakeview'))->toBe(['Lakeview house'])
+        ->and($q('q=lakeview&price_max=500'))->toBe(['Lakeviews flat']);
+});
+
 it('keeps hidden properties out of search results', function () {
     Property::factory()->create(['title' => 'Secret draft mansion']);
 

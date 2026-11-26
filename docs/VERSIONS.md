@@ -5,12 +5,12 @@ Dependencies not listed here must not be added (CLAUDE.md rule 2).
 
 | Component | Pin | Floor | Source | Date | Docker Hub |
 |-----------|-----|-------|--------|------|------------|
-| PHP | 8.5.12 | 8.5.12 | https://www.php.net/releases/8.5/en.php | 2026-11-11 | `php:8.5.12-{cli,fpm}-alpine` exists |
+| PHP | 8.5.13 | 8.5.13 | https://www.php.net/releases/index.php?json&version=8.5 | 2026-11-26 | `php:8.5.13-{cli,fpm}-alpine` exists |
 | Laravel | 13.29.0 (`^13.29`) | >=13.29.0 | https://github.com/laravel/framework/releases/tag/v13.29.0 | 2026-11-11 | n/a (v13.39.0 is current) |
 | Node.js 24 LTS "Krypton" | 24.22.3 | 24.22.3 | https://nodejs.org/en/blog/vulnerability/november-2026-security-releases | 2026-11-11 | `node:24.22.3-alpine` exists (pulled 2026-11-12) |
 | Next.js | 16.4.6 | 16.4.6 | https://github.com/vercel/next.js/releases/tag/v16.4.6 | 2026-11-12 | n/a |
-| nginx | 1.30.6 | 1.30.6 | https://nginx.org/en/CHANGES-1.30 | 2026-11-11 | `nginx:1.30.6-alpine` exists |
-| PostgreSQL | 18.6 | 18.6 | https://hub.docker.com/_/postgres/tags?name=18.6-alpine | 2026-11-22 | `postgres:18.6-alpine` exists |
+| nginx | 1.30.8 | 1.30.8 | https://nginx.org/en/CHANGES-1.30 | 2026-11-26 | `nginx:1.30.8-alpine` exists |
+| PostgreSQL | 18.7 | 18.7 | https://www.postgresql.org/support/security/ | 2026-11-26 | `postgres:18.7-alpine` exists |
 | Redis | 8.10.3 | 8.10.3 | https://hub.docker.com/_/redis/tags?name=8.10.3-alpine | 2026-11-22 | `redis:8.10.3-alpine` exists |
 | phpredis | 6.3.0 | 6.3.0 | https://pecl.php.net/package/redis/6.3.0 | 2026-11-22 | n/a (pecl) |
 | Mailpit | v1.33.1 | v1.33.1 | https://github.com/axllent/mailpit/releases/tag/v1.33.1 | 2026-11-12 | `axllent/mailpit:v1.33.1` exists |
@@ -26,6 +26,7 @@ Dependencies not listed here must not be added (CLAUDE.md rule 2).
 | spatie/laravel-permission | 8.5.0 | 8.5.0 | https://packagist.org/packages/spatie/laravel-permission#8.5.0 | 2026-11-12 | n/a (composer) |
 | ezyang/htmlpurifier | 4.19.1 | 4.19.1 | https://packagist.org/packages/ezyang/htmlpurifier#v4.19.1 | 2026-11-12 | n/a (composer) |
 | phpseclib/phpseclib | 4.0.3 | 4.0.3 | https://packagist.org/packages/phpseclib/phpseclib#4.0.3 | 2026-11-12 | n/a (composer, via Passport) |
+| symfony (http-kernel, mailer, routing) | 8.1.12 | 8.1.12 | https://symfony.com/blog/category/security-advisories | 2026-11-26 | n/a (composer, transitive via Laravel) |
 | pnpm | 12.18.0 | 12.18.0 | https://www.npmjs.com/package/pnpm/v/12.18.0 | 2026-11-12 | n/a (corepack, `packageManager` in root package.json) |
 | tailwindcss | 4.3.5 | 4.3.5 | https://www.npmjs.com/package/tailwindcss/v/4.3.5 | 2026-11-12 | n/a (npm) |
 | @tailwindcss/vite | 4.3.5 | 4.3.5 | https://www.npmjs.com/package/@tailwindcss/vite/v/4.3.5 | 2026-11-12 | n/a (npm) |
@@ -60,3 +61,4 @@ Dependencies not listed here must not be added (CLAUDE.md rule 2).
 - Phase 8 (pre-work): PostgreSQL 18.6 replaced by MariaDB 11.8.9 (LTS, Laravel `mariadb` driver, PHP `pdo_mysql` bundled with PHP); Redis 8.10.3 and phpredis 6.3.0 removed.
 - Phase 8: new exact JS pins in web/admin: react-router 7.18.5, @tanstack/react-query 5.107.1, zustand 5.1.0, vitest 5.1.0, jsdom 31.0.0, @testing-library/react 16.3.3, @testing-library/dom 10.4.2, @playwright/test 1.65.0; `pnpm audit` clean 2026-11-13. Floors equal pins. Browser tests use the image `mcr.microsoft.com/playwright:v1.65.0-noble` (compose service `e2e`, profile `e2e`), matching @playwright/test.
 - Phase 15: floors re-checked against advisories on 2026-11-13 and enforced by `node scripts/check-floors.mjs` (security gates). Added `@axe-core/playwright` 4.14.0 (pnpm audit clean). A pnpm `overrides` entry forces postcss 8.5.32 because Next 16.4.6 pins 8.5.23 (below the floor). Full results: docs/SECURITY.md.
+- Phase R10: floors raised on 2026-11-26 to the November security releases: PHP 8.5.13 (19 Nov), nginx 1.30.8 (18 and 23 Nov), PostgreSQL 18.7 (12 Nov), Symfony 8.1.12 (25 Nov, `composer update`). Redis 8.10.3, Node 24.22.3 and Next.js 16.4.6 are current. `check-floors.mjs` now also enforces two-part versions (PostgreSQL), phpredis and the Symfony floor.

@@ -6,6 +6,9 @@ FROM php:${PHP_VERSION}-fpm-alpine
 ARG PHPREDIS_VERSION
 ARG UPLOADS_CONTAINER_PATH
 
+# libxml2 fix (CVE-2026-86144) that the base image does not ship yet; see docs/SECURITY.md.
+RUN apk upgrade --no-cache libxml2
+
 RUN apk add --no-cache libpq git unzip libwebp libjpeg-turbo libpng \
  && apk add --no-cache --virtual .build $PHPIZE_DEPS postgresql-dev libwebp-dev libjpeg-turbo-dev libpng-dev \
  && docker-php-ext-configure gd --with-webp --with-jpeg \

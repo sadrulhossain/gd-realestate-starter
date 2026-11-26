@@ -1,4 +1,63 @@
-# Security review (phase 15)
+# Security review (R10, real estate kit)
+
+Run 2026-11-26 on branch `feature/phase-r10-hardening-release`. The template's phase 15 review follows below as history.
+
+## Versions and dependencies
+
+Floors re-checked against the sources in VERSIONS.md and raised to the November releases: PHP 8.5.13, nginx 1.30.8, PostgreSQL 18.7, Symfony 8.1.12 (`composer audit` reported 5 advisories in `symfony/http-kernel`, `mailer` and `routing`: fixed).
+Redis 8.10.3, Node 24.22.3 and Next.js 16.4.6 are current. After the update: `composer audit` none, `pnpm audit` and `pnpm audit --prod` none, `check-floors.mjs` ok (26 checked; it had been skipping PostgreSQL and phpredis).
+`php artisan security:routes`: every authenticated route has a permission or policy check. `check-secrets.sh`: ok.
+
+## Image scans
+
+Trivy 0.76.2, HIGH and CRITICAL, dev stack images.
+
+| Image | Result | Decision |
+|-------|--------|----------|
+| `gd-realestate-starter-php:8.5.13` (alpine 3.24.4) | 0 | fixed `libxml2` CVE-2026-86144 with `apk upgrade libxml2` in both PHP Dockerfiles |
+| `nginx:1.30.8-alpine` | 0 | clean |
+| `redis:8.10.3-alpine` | 0 | clean |
+| `axllent/mailpit:v1.33.1` | 0 | clean (dev only) |
+| `postgres:18.7-alpine` | 1 HIGH `libxml2`; 1 CRITICAL and 25 HIGH in Go `stdlib` 1.24.6 inside `gosu` | accepted: no published port; only the application reaches the database; `gosu` runs at container start and takes no network input. Recheck on the next image |
+| `node:24.22.3-alpine` | 6 HIGH: `brace-expansion`, `undici` inside the bundled npm | accepted: npm is not used at run time and the production portal image deletes it |
+
+The production images (`docker-compose.prod.yml`) were **not** built or scanned in this phase (open).
+
+## Redis ACL (finding 10 below)
+
+Re-checked on the dev stack: unauthenticated access refused, `CONFIG`, `MODULE` and `DEBUG` refused for the application user. No host port in the production compose file.
+
+## Search performance
+
+`bench:search` on 10,000 generated properties (9,210 public), PostgreSQL 18.7, 30 requests per scenario. Dev machine, 4 cores, load average 15 to 18 from other work; API served by PHP's built-in server from a copy inside the container (the Windows bind mount is far slower still).
+
+| Scenario | PostgreSQL, slowest query | HTTP median | HTTP p95 |
+|----------|---------------------------|-------------|----------|
+| default (newest) | 14 ms | 208 ms | 439 ms |
+| page 100 | 24 ms | 179 ms | 362 ms |
+| 48 per page | 25 ms | 225 ms | 426 ms |
+| filters | 4 ms | 200 ms | 385 ms |
+| whole country | 15 ms | 194 ms | 424 ms |
+| price, low first | 2 ms | 159 ms | 293 ms |
+| area, high first | 14 ms | 172 ms | 303 ms |
+| featured | 1 ms | 195 ms | 398 ms |
+| two amenities | 23 ms | 189 ms | 303 ms |
+| keyword | 6 ms | 185 ms | 406 ms |
+| keyword with typo | 13 ms | 282 ms | 493 ms |
+| radius 3 km | 30 ms | 263 ms | 594 ms |
+| detail by slug | 4 ms | 276 ms | 666 ms |
+
+**The "list API under 200 ms" target is not demonstrated (open).** Database time is well inside it; the rest is the PHP runtime on a saturated host (`/health` alone took 85 to 250 ms). Re-run `scripts/bench-search.sh` on the target server or a quiet production stack before sign-off.
+Sequential scans in the default, area sort and country filters are expected: they match most of 10,000 rows. Keyword search changed (DECISIONS.md 015).
+
+## Backup and restore
+
+`scripts/backup.sh` against the dev stack: all three archives written and valid. A `pg_dump` of the 10,000-property database restored with the `restore.sh` psql options into an empty database, and again over the restored data, without errors;
+row counts of every table, extensions, index count, the reference sequence and full-text and radius results were identical (50 checks). `restore.sh` itself was **not** run end to end, because it replaces a running stack's data (open).
+
+---
+
+# Template security review (phase 15)
 
 Reviewed 2026-11-13 on branch `feature/phase-15-security-a11y-perf`. Status: **fixed** = changed in this phase, **accepted** = documented risk,
 **open** = needs a decision or an action outside this repo.

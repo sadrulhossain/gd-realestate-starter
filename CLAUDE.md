@@ -1,7 +1,7 @@
 # gd-realestate-starter
 
 ## Repo map
-- `api/` — Laravel API (PHP 8.5, PostgreSQL 18.6, Redis 8.10.3 for cache, sessions, queue)
+- `api/` — Laravel API (PHP 8.5, PostgreSQL 18.7, Redis 8.10.3 for cache, sessions, queue)
 - `web/admin` — Next.js admin app
 - `web/portal` — Next.js public portal
 - `packages/` — shared packages

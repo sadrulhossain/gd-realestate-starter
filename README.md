@@ -1,7 +1,12 @@
 # gd-realestate-starter
 
-A small-business website you can run on one VPS: a public portal (Next.js) in two languages, an admin app (React) to edit everything,
-and a Laravel API behind both. Content: hero, about us, sections, services, pricing (per service, hidden until switched on), team, testimonials, gallery, FAQ, blog, contact inbox, settings (logo, favicon, currency, social links), users and roles.
+A real estate website you can run on one VPS: a public portal (Next.js) with property search, an admin app (React) for listings and sales,
+and a Laravel API behind both. English only. Built on the business-site template ([docs/DECISIONS.md](docs/DECISIONS.md) 012 to 014).
+
+- **Listings:** locations (country, city, area), property types, amenities, properties with a status workflow, developers, projects and units.
+- **Search:** filters, sorting, typo-tolerant keyword search, distance from a point, saved and compared lists.
+- **Sales:** agents, enquiries (lead pipeline), viewings with conflict detection, email notifications, reports with CSV export.
+- **Website:** sections, services, team, testimonials, gallery, FAQ, blog, contact inbox, settings, users and roles.
 
 | Part | Where | Stack |
 |------|-------|-------|
@@ -29,7 +34,7 @@ Then open (the `.localhost` names resolve to your machine in modern browsers; no
 
 | URL | What |
 |-----|------|
-| http://gd-realestate-starter.localhost:28080 | Portal (`/bn` for the second language when enabled) |
+| http://gd-realestate-starter.localhost:28080 | Portal |
 | http://admin.gd-realestate-starter.localhost:28080 | Admin (sign in with the superadmin below) |
 | http://api.gd-realestate-starter.localhost:28080/docs/api | API reference (Scramble, dev only) |
 | http://localhost:28026 | Mailpit, catches the contact-form mail |
@@ -37,7 +42,7 @@ Then open (the `.localhost` names resolve to your machine in modern browsers; no
 First run only: set `SUPERADMIN_EMAIL`, `SUPERADMIN_PASSWORD` and `OAUTH_ADMIN_REDIRECT_URI` in `api/.env` (copy `api/.env.example`), then
 `docker compose exec php php artisan migrate --seed`. Change every `change-me` in `.env`.
 
-Optional demo content in English and the second language (not part of `DatabaseSeeder`): `docker compose exec php php artisan db:seed --class="Database\Seeders\Site\SiteDataSeeder"`. Logo and favicon are uploaded in the admin under Settings; the built-in ones show until then. Footer credit: Powered by Orvyx Technologies.
+Optional demo website content (sections, services, team, FAQ, blog; no property listings; not part of `DatabaseSeeder`): `docker compose exec php php artisan db:seed --class="Database\Seeders\Site\SiteDataSeeder"`. Logo and favicon are uploaded in the admin under Settings; the built-in ones show until then. Footer credit: Powered by Orvyx Technologies.
 
 Daily commands:
 
@@ -52,6 +57,7 @@ Daily commands:
 | `docker compose config -q` | compose file validity |
 | `docker compose exec -T php php artisan security:routes`, `sh scripts/check-secrets.sh`, `node scripts/check-floors.mjs` | security gates: route/policy audit, secrets scan, version floors |
 | `sh scripts/check-ports.sh` | host ports from `.env` are free or ours |
+| `COMPOSE="..." sh scripts/bench-search.sh --seed=10000` | search timings and query plans on 10,000 generated properties; throwaway database only |
 | `docker compose exec -T php php artisan scramble:export --path=storage/openapi.json` | re-export the API spec; move `api/storage/openapi.json` to `packages/api-types/openapi.json`, then `pnpm generate:types` |
 
 Final phase check (stack up): `sh scripts/check.sh`. Targeted tests: `docker compose exec -T php vendor/bin/pest --compact --filter=Name`.
@@ -72,7 +78,7 @@ keeps PostgreSQL and Redis private and restarts everything on failure. Steps: [d
 |------|-------------|
 | [docs/OVERVIEW.md](docs/OVERVIEW.md) | what the product is, what a client gets, the website pages and admin modules |
 | [docs/DEPLOY.md](docs/DEPLOY.md) | VPS setup, TLS, first deploy, backups, restore |
-| [docs/CUSTOMIZE.md](docs/CUSTOMIZE.md) | brand colours, a second language, new modules and sections |
+| [docs/CUSTOMIZE.md](docs/CUSTOMIZE.md) | brand colours, listing options, new modules and sections |
 | [docs/UPGRADE.md](docs/UPGRADE.md) | updating a running site, rollback |
 | [docs/PATTERNS.md](docs/PATTERNS.md) | the reference code shapes to copy |
 | [docs/ENV.md](docs/ENV.md) | every environment variable |
