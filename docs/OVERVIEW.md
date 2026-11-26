@@ -67,7 +67,7 @@ Content changes appear on the public website straight away. Uploaded images are 
 | Public website | Next.js, Tailwind CSS |
 | Admin area | React (Vite), Tailwind CSS, TipTap editor |
 | Backend | Laravel (PHP) with OAuth 2 sign-in |
-| Database | PostgreSQL 18.6 (cache, sessions, queue and captcha/throttle state in Redis 8.10.3) |
+| Database | PostgreSQL 18.7 (cache, sessions, queue and captcha/throttle state in Redis 8.10.3) |
 
 Exact versions: [VERSIONS.md](VERSIONS.md).
 

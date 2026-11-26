@@ -83,3 +83,7 @@ containers stay on the API image. Tests keep cache/session on `array` and queue 
 
 ## 014 - No make
 2026-11-22. The Makefile is removed. Use `docker compose` and the sh scripts: `scripts/check.sh` (final check), `scripts/check-versions.sh`, `scripts/check-ports.sh`, `scripts/ensure-test-db.sh`.
+
+## 015 - Typo matching is a fallback, not part of every search
+2026-11-26. `q` searches the full-text index. Only when that finds nothing under the other filters does the search match titles by trigram (`pg_trgm`), inside a transaction with `enable_seqscan = off` so the GIN index is used.
+Why: on 10,000 properties the previous `full-text OR trigram` filter tested every row (250 to 800 ms in PostgreSQL); the two paths now take under 15 ms. Trade-off: when some listings match the words exactly, near-spellings are no longer mixed into the results.

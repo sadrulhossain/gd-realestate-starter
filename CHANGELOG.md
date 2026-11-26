@@ -3,26 +3,28 @@
 Format: [Keep a Changelog](https://keepachangelog.com), versions follow [SemVer](https://semver.org).
 Each entry lists new environment variables and seeders to run, because upgrades need them (see docs/UPGRADE.md).
 
-## [1.0.0] - 2026-11-13
+## [1.0.0] - 2026-11-26
 
-First release.
+First release of the real estate kit, forked from the business-site template (its 1.0.0 plus the phase 17 changes, commit `3eade4d`).
 
 ### Added
-- **API** (Laravel 13, PHP 8.5, MariaDB): sections, services, team, testimonials, gallery, FAQs, blog (categories, posts, sanitised rich text), contact inbox with captcha, honeypot and throttle,
-  settings, users, roles and permissions, per-user menus, dashboard, image uploads with WebP variants, content-change webhook, OAuth 2 with PKCE (Passport), OpenAPI export.
-- **Admin** (Vite, React 19): sign-in through the authorization-code flow with PKCE, CRUD screens driven by `modules.ts`, TipTap blog editor, profile, role matrix, bilingual fields.
-- **Portal** (Next.js 16): Home and section pages, services, gallery, FAQ, blog (categories, pagination), contact page, legal pages, localised 404, two languages, ISR with tag revalidation,
-  canonical/hreflang/Open Graph, `sitemap.xml`, `robots.txt`, JSON-LD.
-- **Security**: S256-only PKCE, closed CORS, security headers and CSP per vhost, per-visitor throttling, upload validation by content, security gates (route/policy audit, secrets scan, version floors).
-  Findings and scans: docs/SECURITY.md.
-- **Quality**: Pest, Larastan, Pint; Vitest; Playwright smoke and axe suites (WCAG 2 A/AA, both languages, zero violations); Lighthouse SEO 100.
-- **Production** (`docker-compose.prod.yml`, `.env.prod.example`): portal as a Node server, admin built static and served by nginx, TLS from mounted certificates, only ports 80/443 published,
-  private MariaDB, restart policies, healthchecks, rotated logs, uploads path from env. `scripts/backup.sh` and `scripts/restore.sh` (database, uploads, OAuth keys).
-- **Docs**: README, DEPLOY, CUSTOMIZE, UPGRADE, ENV, PATTERNS, DECISIONS, SECURITY, SIZING, VERSIONS, PHASES.
+- **Listings:** locations (country, city, area), property types, amenities, properties with media and a status workflow with history, developers, projects, units, publish a unit as a property.
+- **Search:** public filters, sorting, pagination, full-text with a typo-tolerant fallback, radius search, saved and compared lists.
+- **Sales:** agents with an own-records scope, public enquiries (captcha, honeypot, throttle), lead pipeline and notes, viewings with conflict detection, queued emails, reports with CSV export.
+- **Admin:** screens for all of the above; dashboard cards.
+- **Portal:** real estate design system, property search and detail, agents, location pages, projects, enquiry and viewing forms, sitemap and JSON-LD additions.
+- **Release checks:** `scripts/check.sh`, `scripts/check-versions.sh`, `scripts/bench-search.sh` (`php artisan bench:search`).
+
+### Changed
+- PostgreSQL 18 (`pg_trgm`, `cube`, `earthdistance`) replaces MariaDB; Redis 8 holds cache, sessions, queue and throttle state. Backups use `pg_dump`.
+- English only. The Makefile is removed.
+
+### Security
+- Pins and floors raised to the November 2026 releases: PHP 8.5.13, nginx 1.30.8, PostgreSQL 18.7, Symfony 8.1.12. The PHP images upgrade `libxml2` (CVE-2026-86144).
 
 ### Notes
-- Environment variables: see docs/ENV.md and `.env.prod.example`. Seeders: run `php artisan db:seed --force` once on first deploy.
-- The database is MariaDB 11.8 and there is no Redis (docs/DECISIONS.md, 010); backups use `mariadb-dump`.
-- Known limits: the portal CSP still allows inline scripts (nonces are the next step); Lighthouse performance 90+ was not reached under the default mobile throttle on the slow development host (docs/SECURITY.md).
+- This is a new product, not an upgrade path from a template site: there is no data migration from MariaDB.
+- Environment variables: docs/ENV.md and `.env.prod.example`. New since the template: `POSTGRES_*`, `REDIS_*`, `PHPREDIS_VERSION`. Seeders: run `php artisan db:seed --force` once on first deploy.
+- Known limits: the portal CSP still allows inline scripts; scan results and accepted findings are in docs/SECURITY.md.
 
-[1.0.0]: https://github.com/sadrulhossain/gd-business-site-boilerplate/releases/tag/v1.0.0
+[1.0.0]: https://github.com/sadrulhossain/gd-realestate-starter/releases/tag/v1.0.0

@@ -15,6 +15,12 @@ use Illuminate\Support\Facades\DB;
 class PropertySearch
 {
     /**
+     * PostgreSQL underprices the trigram test and reads every row; the GIN index is several times faster.
+     * Applies to the transaction it runs in.
+     */
+    public const USE_TRIGRAM_INDEX = 'set local enable_seqscan = off';
+
+    /**
      * @param  Builder<Property>  $query
      * @param  array<string, mixed>  $f
      * @return Builder<Property>
@@ -57,18 +63,31 @@ class PropertySearch
     }
 
     /**
-     * Full-text match (ranked) OR a typo-tolerant trigram match on the title.
+     * Full-text match (ranked). Only when that finds nothing under the other filters, a typo-tolerant trigram
+     * match on the title: the trigram test costs far more per row, so it is not mixed into every search.
      *
      * @param  Builder<Property>  $query
      */
     private function matching(Builder $query, string $term): void
     {
+        $fullText = "search_vector @@ websearch_to_tsquery('simple', ?)";
+
+        if ((clone $query)->whereRaw($fullText, [$term])->exists()) {
+            $query->whereRaw($fullText, [$term]);
+
+            return;
+        }
+
         // A looser word-similarity cut-off than the default 0.6, so one-letter typos still match.
         DB::select("select set_config('pg_trgm.word_similarity_threshold', '0.4', false)");
 
-        $query->where(fn ($q) => $q
-            ->whereRaw("search_vector @@ websearch_to_tsquery('simple', ?)", [$term])
-            ->orWhereRaw('?::text <% title', [$term]));
+        $ids = DB::transaction(function () use ($term): array {
+            DB::statement(self::USE_TRIGRAM_INDEX);
+
+            return Property::query()->whereRaw('?::text <% title', [$term])->toBase()->pluck('id')->all();
+        });
+
+        $query->whereIntegerInRaw('id', $ids);
     }
 
     /**

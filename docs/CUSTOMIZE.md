@@ -23,22 +23,24 @@ Rules that keep the site accessible and consistent:
 - Tailwind only sees literal class names. Write `'bg-brand-700'`, do not build class names from pieces.
 - Logo and favicon: upload them in the admin under Access > Settings > General. The favicon may be an .ico, PNG, JPEG or WebP. They show in the portal header, footer and tab icon and in the admin sidebar and tab. Until you upload them, the built-in mark (`components/SiteLogo.tsx`, `web/portal/public/icon.svg`) is used. The site name, tagline, address, phone, email and opening hours are Settings in the admin.
 - Landing page: the hero (title, description, banner) is under Content > Hero; About us (title, text, image) is under Content > About us; the other sections are under Content > Sections. Pricing is a section that starts hidden: add prices per service under Content > Pricing, then switch the Pricing section on in Content > Sections. It then appears in the Explore menu, as a "See our pricing" block on the landing page, on /pricing, and on each service page. The currency code and symbol are in Settings > General.
-- Sample content: `php artisan db:seed --class="DatabaseSeedersSiteSiteDataSeeder"` fills settings, sections, services, testimonials, team, FAQs and blog posts with demo text (or run one `Site*Seeder` alone). They are not part of `DatabaseSeeder`; re-running updates the same rows.
+- Sample content: `php artisan db:seed --class="Database\Seeders\Site\SiteDataSeeder"` fills settings, sections, services, testimonials, team, FAQs and blog posts with demo text (or run one `Site*Seeder` alone). They are not part of `DatabaseSeeder`; re-running updates the same rows.
 - Fonts: the portal uses the system sans-serif stack for headings (no font download). To use a web font, self-host it and update `--font-display`; the CSP allows `font-src 'self' data:` only.
 
-## A second language
+## Listings
 
-The site is bilingual by configuration: one default language and at most one more.
+| What | Where |
+|------|-------|
+| Currency code and symbol, area unit (`sqft` by default) | admin, Settings |
+| Locations (country > city > area), property types, amenities | admin, Catalogue. `db:seed` creates default types and amenities; locations start empty |
+| Property statuses and allowed transitions | `api/app/Enums/PropertyStatus.php` (the public site shows `available` and `under_offer`) |
+| Search filters and sort orders | `api/app/Services/PropertySearch.php` and `PublicPropertyIndexRequest`; index every new filter column, then run `scripts/bench-search.sh` |
+| Portal look (cards, search, detail) | the `estate` token layer and components ([THEME.md](THEME.md)); `/styleguide` shows them outside production |
+| Enquiry and viewing emails | `api/app/Notifications/` |
 
-1. In `.env` / `.env.prod`: `LOCALE_DEFAULT=en`, `LOCALE_SUPPORTED=en,bn` (use any two codes; the first one that is not the default becomes the second language). `LOCALE_FALLBACK` stays the default.
-   Restart the stack. The portal then serves the second language at `/<code>` (the default has no prefix), shows a language switcher, adds hreflang links and lists both languages in the sitemap.
-2. Texts that are not content live in `web/portal/messages/en.json` (the default; also the fallback for any missing key) and `web/portal/messages/second.json`. Translate `second.json`; an empty or missing key falls back to the default text.
-   The legal pages (`legal.privacy`, `legal.terms`) are a generic template in these files: **have them reviewed for your business and country**.
-3. Content texts have a second column for every translatable field (`title` and `title_2nd`). The admin shows both fields once a second language is enabled. Empty second-language text falls back to the default.
-4. The `<html dir>` switches to `rtl` for `ar`, `he`, `fa`, `ur`; the CSS uses logical properties (`ms-*`, `text-start`, `border-s`) so layouts mirror without extra work. Keep using them.
-5. Another pair than English/Bengali: also check `web/portal/lib/i18n.ts` (language names) and the test fixtures that assume `bn`.
+## Language
 
-To run with one language only, set `LOCALE_SUPPORTED=en`; the switcher and the `/<code>` routes disappear.
+The kit ships in English only (`LOCALE_SUPPORTED=en`, DECISIONS.md 013). The template's second-language support (`*_2nd` columns, `web/portal/messages/second.json`) is still in the code but is not maintained or tested here: turning it on is development work, not a setting.
+Portal texts live in `web/portal/messages/en.json`. The legal pages (`legal.privacy`, `legal.terms`) are a generic template: **have them reviewed for your business and country** (the enquiry and viewing forms collect personal data).
 
 ## Add a module (a new managed content type)
 
@@ -61,5 +63,5 @@ Sections are the blocks of the home page (hero, about, services, contact, ...). 
 2. Portal: render it in `web/portal/components/sections/index.tsx` (`SectionBlock` picks the view by `section.key`; the generic text and image view is the default, so a text-only section needs no code).
    If it lists data (like services), fetch it in `lib/api.ts` and pass it in.
 3. Optional own page (`/about`, `/services`, ...): add the key to `SECTION_PAGES` in `web/portal/lib/section-page.tsx` and create `app/[locale]/<key>/page.tsx` containing `export default sectionPage('<key>')` (copy `about/page.tsx`); add it to the sitemap's paths if it needs more than the default. The header then links to the page instead of a home anchor.
-4. Add the section title to the messages if it needs a fixed label, in both message files.
+4. Add the section title to the messages if it needs a fixed label, in `en.json`.
 5. Run the axe spec and the README checks.

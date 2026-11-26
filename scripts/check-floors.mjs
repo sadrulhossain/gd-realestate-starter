@@ -7,7 +7,7 @@ const rows = readFileSync('docs/VERSIONS.md', 'utf8')
   .split('\n')
   .filter((l) => l.startsWith('| ') && !l.startsWith('| Component') && !l.startsWith('|--'))
   .map((l) => l.split('|').map((c) => c.trim()))
-  .map((c) => ({ name: c[1], floor: (c[3].match(/\d+\.\d+\.\d+/) ?? [])[0] }))
+  .map((c) => ({ name: c[1], floor: (c[3].match(/\d+(\.\d+)+/) ?? [])[0] }))
   .filter((r) => r.floor)
 
 const floorOf = (re) => rows.find((r) => re.test(r.name))?.floor
@@ -19,13 +19,13 @@ const cmp = (a, b) => {
 
 const checks = []
 const env = existsSync('.env') ? readFileSync('.env', 'utf8') : readFileSync('.env.example', 'utf8')
-for (const [key, row] of Object.entries({ PHP_VERSION: /^PHP$/, NODE_VERSION: /^Node/, NGINX_VERSION: /^nginx/, POSTGRES_VERSION: /^PostgreSQL/, REDIS_VERSION: /^Redis/, MAILPIT_VERSION: /^Mailpit/, COMPOSER_VERSION: /^Composer/ })) {
+for (const [key, row] of Object.entries({ PHP_VERSION: /^PHP$/, NODE_VERSION: /^Node/, NGINX_VERSION: /^nginx/, POSTGRES_VERSION: /^PostgreSQL/, REDIS_VERSION: /^Redis/, MAILPIT_VERSION: /^Mailpit/, COMPOSER_VERSION: /^Composer/, PHPREDIS_VERSION: /^phpredis$/ })) {
   const v = env.match(new RegExp(`^${key}=(.+)$`, 'm'))?.[1]
   if (v) checks.push([key, v, floorOf(row)])
 }
 
 const lock = JSON.parse(readFileSync('api/composer.lock', 'utf8'))
-const php = { 'laravel/framework': /^Laravel/, 'laravel/passport': /passport/, 'spatie/laravel-permission': /spatie/, 'ezyang/htmlpurifier': /htmlpurifier/, 'phpseclib/phpseclib': /phpseclib/, 'dedoc/scramble': /scramble/ }
+const php = { 'laravel/framework': /^Laravel/, 'laravel/passport': /passport/, 'spatie/laravel-permission': /spatie/, 'ezyang/htmlpurifier': /htmlpurifier/, 'phpseclib/phpseclib': /phpseclib/, 'dedoc/scramble': /scramble/, 'symfony/http-kernel': /^symfony/, 'symfony/mailer': /^symfony/, 'symfony/routing': /^symfony/ }
 for (const p of [...lock.packages, ...lock['packages-dev']]) if (php[p.name]) checks.push([p.name, p.version, floorOf(php[p.name])])
 
 const pnpm = readFileSync('pnpm-lock.yaml', 'utf8')
