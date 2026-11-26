@@ -10,6 +10,7 @@ import { ToggleCell } from './components/ToggleCell'
 import { useAuth } from './auth/store'
 import { locationOptions, type LocationRow } from './lib/locations'
 import { statusLabel } from './lib/propertyStatus'
+import { rentalModules } from './rentalModules'
 import { LEAD_STATUSES, nextViewingStatuses, VIEWING_STATUSES } from './lib/salesStatus'
 
 /** "faqs.view" -> row "faqs", column "view". */
@@ -626,4 +627,5 @@ export const modules: CrudConfig[] = [
       { name: 'notes', label: 'Notes', type: 'textarea' },
     ],
   },
+  ...rentalModules,
 ]

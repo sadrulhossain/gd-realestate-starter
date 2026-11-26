@@ -196,3 +196,9 @@ singleton reference: Settings. Paths below are relative to `api/app` unless note
 - Structured data: `agentJsonLd` (RealEstateAgent) and `projectJsonLd` (ApartmentComplex) in `lib/seo.ts`. Sitemap now lists agents, locations and projects, each only while its section is visible.
 - E2E: `e2e/r9.spec.ts` at 390 and 1280 px (list pages, detail pages, 404s, honeypot and captcha, validation, viewing request, axe). The viewing test leaves one lead named "E2E Smoke". Checks that need data skip on an empty catalogue.
 - Language: English only (`LOCALE_SUPPORTED=en`); no second-language strings were added for these pages.
+
+## Rental management (phase R11, optional)
+- Everything is behind `config('rentals.enabled')`: the route group uses `EnsureRentalsEnabled`, the admin needs no flag because menus and permissions come from the API (`RentalsModuleSeeder` removes them when off). A new optional module follows the same shape.
+- Lease status moves only through `Services/LeaseService` (writes the rent schedule, moves the property status, voids later unpaid periods on end or termination). Payments go only through `Services/RentLedger`.
+- `rentals:run` (daily, `routes/console.php`) ends expired leases and re-marks properties with an active lease as rented. `PropertyStatusService` refuses to move such a property off `rented`.
+- Admin screens are `rentalModules.tsx`; payments are `RentPanel` inside the rent charge edit dialog; `/rental-reports` reuses the report screen. Report money is in major units.

@@ -33,6 +33,7 @@ class DatabaseSeeder extends Seeder
             LeadsModuleSeeder::class,
             ViewingsModuleSeeder::class,
             ReportsModuleSeeder::class,
+            RentalsModuleSeeder::class,
             SettingsModuleSeeder::class,
             AccessModuleSeeder::class,
             SuperadminSeeder::class,

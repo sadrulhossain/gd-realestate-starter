@@ -27,6 +27,7 @@ each service lists its own `environment:` (no `env_file`). Commit only `*.exampl
 | PORTAL_REVALIDATE_URL / PORTAL_REVALIDATE_SECRET | php*, node (secret) | empty / change-me | content changes queue a signed POST of `{"tags":[...]}` to the URL; headers `X-Webhook-Timestamp`, `X-Webhook-Signature: sha256=hmac(secret, "<timestamp>.<body>")`. Empty URL disables it |
 | OAUTH_ADMIN_CLIENT_ID | node (admin SPA) | fixed UUID | public PKCE client id; must equal `OAUTH_ADMIN_CLIENT_ID` in `api/.env` (the redirect URI is `<admin origin>/auth/callback`) |
 | CONTACT_NOTIFY_TO | php* | empty | contact form notification recipient when Settings has no email |
+| RENTALS_ENABLED | php* | true | optional rental management module; `false` switches it off (then run `RentalsModuleSeeder`, see CUSTOMIZE.md) |
 
 | APP_DEBUG | php* | true | |
 | APP_KEY | php* | set by hand (`openssl rand -base64 32`, prefixed `base64:`) | `base64:` 32 bytes |

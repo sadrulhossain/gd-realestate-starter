@@ -13,9 +13,11 @@ use App\Http\Controllers\Api\V1\GalleryItemController;
 use App\Http\Controllers\Api\V1\GalleryItemImageController;
 use App\Http\Controllers\Api\V1\HealthController;
 use App\Http\Controllers\Api\V1\LeadController;
+use App\Http\Controllers\Api\V1\LeaseController;
 use App\Http\Controllers\Api\V1\LocalesController;
 use App\Http\Controllers\Api\V1\LocationController;
 use App\Http\Controllers\Api\V1\LogoutController;
+use App\Http\Controllers\Api\V1\MaintenanceController;
 use App\Http\Controllers\Api\V1\MeController;
 use App\Http\Controllers\Api\V1\MeMenusController;
 use App\Http\Controllers\Api\V1\MenuController;
@@ -30,6 +32,8 @@ use App\Http\Controllers\Api\V1\PropertyController;
 use App\Http\Controllers\Api\V1\PropertyMediaController;
 use App\Http\Controllers\Api\V1\PropertyStatusController;
 use App\Http\Controllers\Api\V1\PropertyTypeController;
+use App\Http\Controllers\Api\V1\RentalReportController;
+use App\Http\Controllers\Api\V1\RentChargeController;
 use App\Http\Controllers\Api\V1\ReportController;
 use App\Http\Controllers\Api\V1\RoleController;
 use App\Http\Controllers\Api\V1\SectionController;
@@ -41,10 +45,12 @@ use App\Http\Controllers\Api\V1\SettingController;
 use App\Http\Controllers\Api\V1\SettingImageController;
 use App\Http\Controllers\Api\V1\TeamMemberController;
 use App\Http\Controllers\Api\V1\TeamMemberImageController;
+use App\Http\Controllers\Api\V1\TenantController;
 use App\Http\Controllers\Api\V1\TestimonialController;
 use App\Http\Controllers\Api\V1\TestimonialImageController;
 use App\Http\Controllers\Api\V1\UserController;
 use App\Http\Controllers\Api\V1\ViewingController;
+use App\Http\Middleware\EnsureRentalsEnabled;
 use App\Http\Middleware\LocalizePublicResponse;
 use Illuminate\Support\Facades\Route;
 
@@ -177,6 +183,24 @@ Route::prefix('v1')->group(function (): void {
 
         Route::get('reports/{report}', [ReportController::class, 'show'])->middleware('can:reports.view');
         Route::get('reports/{report}/export', [ReportController::class, 'export'])->middleware('can:reports.view');
+
+        // Rental management (optional: RENTALS_ENABLED)
+        Route::middleware(EnsureRentalsEnabled::class)->group(function (): void {
+            Route::apiResource('tenants', TenantController::class);
+
+            Route::apiResource('leases', LeaseController::class);
+            Route::post('leases/{lease}/status', [LeaseController::class, 'status']);
+
+            Route::apiResource('rent-charges', RentChargeController::class)->only(['index', 'show', 'update']);
+            Route::post('rent-charges/{rent_charge}/payments', [RentChargeController::class, 'pay']);
+            Route::delete('rent-charges/{rent_charge}/payments/{payment}', [RentChargeController::class, 'reverse'])->scopeBindings();
+
+            Route::apiResource('maintenance', MaintenanceController::class);
+            Route::post('maintenance/{maintenance}/status', [MaintenanceController::class, 'status']);
+
+            Route::get('rental-reports/{report}', [RentalReportController::class, 'show'])->middleware('can:rental_reports.view');
+            Route::get('rental-reports/{report}/export', [RentalReportController::class, 'export'])->middleware('can:rental_reports.view');
+        });
 
         // Contact inbox (no create/delete)
         Route::apiResource('contact-messages', ContactMessageController::class)

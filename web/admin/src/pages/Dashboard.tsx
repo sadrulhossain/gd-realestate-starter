@@ -8,6 +8,8 @@ import { Icon } from '../components/Icon'
 const CARDS: Record<string, [string, string, string]> = {
   new_leads: ['New leads', '/leads', 'inbox'],
   upcoming_viewings: ['Upcoming viewings', '/viewings', 'calendar'],
+  overdue_rent: ['Overdue rent', '/rent-charges', 'calendar'],
+  open_maintenance: ['Open maintenance', '/maintenance', 'briefcase'],
   properties: ['Properties', '/properties', 'building'],
   agents: ['Agents', '/agents', 'users'],
   unread_messages: ['Unread messages', '/messages', 'mail'],
